@@ -53,7 +53,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\Log.cs" />
+    <Compile Include="Helpers\CommonHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\Base\CommonBase.cs" />
+    <Compile Include="Types\Base\IHasFields.cs" />
+    <Compile Include="Types\Base\IHasMethods.cs" />
+    <Compile Include="Types\Base\IHasProperties.cs" />
+    <Compile Include="Types\Common\CommonAttribute.cs" />
+    <Compile Include="Types\Common\CommonField.cs" />
+    <Compile Include="Types\Common\CommonMethod.cs" />
+    <Compile Include="Types\Common\CommonParameter.cs" />
+    <Compile Include="Types\Common\CommonProperty.cs" />
+    <Compile Include="Types\Common\CommonType.cs" />
+    <Compile Include="Types\Base\IHasAttributes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
