@@ -2,12 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using ApplicationPatcher.Core.Types.Base;
 using ApplicationPatcher.Core.Types.Common;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Helpers {
 	internal static class CommonHelper {
+		internal static CommonType[] JoinTypes(IEnumerable<Type> reflectionTypes, IEnumerable<TypeDefinition> monoCecilTypes) {
+			return Join(
+				reflectionTypes,
+				monoCecilTypes,
+				reflectionType => reflectionType.FullName,
+				monoCecilType => monoCecilType.FullName,
+				typeFullName => true,
+				(reflectionType, monoCecilType) => new CommonType(reflectionType, monoCecilType));
+		}
+
 		internal static CommonField[] JoinFields(IEnumerable<FieldInfo> reflectionFields, IEnumerable<FieldDefinition> monoCecilFields) {
 			return Join(
 				reflectionFields,
@@ -44,7 +53,7 @@ namespace ApplicationPatcher.Core.Helpers {
 				monoCecilAttributes,
 				reflectionAttribute => reflectionAttribute.GetType().FullName,
 				monoCecilAttribute => monoCecilAttribute.AttributeType.FullName,
-				attributeName => true,
+				attributeFullName => true,
 				(reflectionAttribute, monoCecilAttribute) => new CommonAttribute(reflectionAttribute, monoCecilAttribute));
 		}
 
@@ -53,14 +62,14 @@ namespace ApplicationPatcher.Core.Helpers {
 																		Func<TReflection, string> getReflectionName,
 																		Func<TMonoCecil, string> getMonoCecilName,
 																		Func<string, bool> isSatisfyForSelection,
-																		Func<TReflection, TMonoCecil, TCommon> createCommon) where TCommon : CommonBase<TCommon> {
+																		Func<TReflection, TMonoCecil, TCommon> createCommon) {
 			var reflectionAttributesDictionary = reflections.ToDictionary(getReflectionName);
 			var monoCecilAttributesDictionary = monoCecils.ToDictionary(getMonoCecilName);
 
 			return reflectionAttributesDictionary.Keys
 				.Intersect(monoCecilAttributesDictionary.Keys)
 				.Where(isSatisfyForSelection)
-				.Select(key => createCommon(reflectionAttributesDictionary[key], monoCecilAttributesDictionary[key]).Load())
+				.Select(key => createCommon(reflectionAttributesDictionary[key], monoCecilAttributesDictionary[key]))
 				.ToArray();
 		}
 	}
