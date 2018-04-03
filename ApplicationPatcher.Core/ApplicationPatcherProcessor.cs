@@ -22,8 +22,24 @@ namespace ApplicationPatcher.Core {
 			CheckApplicationPath(applicationPath);
 			SetCurrentDirectory(applicationPath);
 
+			log.Info("Reading assembly...");
 			var assembly = commonAssemblyFactory.Create(applicationPath);
+			log.Info("Assembly was readed");
+
+			if (!assembly.Types.Any()) {
+				log.Debug("Types not found");
+				return;
+			}
+
+			log.Debug("Types found:", assembly.Types.Select(type => type.FullName));
+
+			log.Info("Patching application...");
 			patchers.ForEach(patcher => patcher.Patch(assembly));
+			log.Info("Application was patched");
+
+			log.Info("Save assembly...");
+			commonAssemblyFactory.Save(assembly, applicationPath);
+			log.Info("Assembly was saved");
 		}
 
 		private void CheckApplicationPath(string applicationPath) {

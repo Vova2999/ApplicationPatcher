@@ -9,6 +9,8 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
 	public class CommonAssembly : CommonBase<CommonAssembly>, IHasTypes {
+		public override string Name => GetOrCreate(() => MonoCecilAssembly.FullName);
+		public override string FullName => GetOrCreate(() => MonoCecilAssembly.FullName);
 		public CommonType[] Types { get; private set; }
 		public readonly Assembly[] ReflectionAssembly;
 		public readonly AssemblyDefinition MonoCecilAssembly;

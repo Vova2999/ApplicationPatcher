@@ -6,6 +6,8 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
 	public class CommonType : CommonBase<CommonType>, IHasFields, IHasMethods, IHasProperties, IHasAttributes {
+		public override string Name => GetOrCreate(() => MonoCecilType.Name);
+		public override string FullName => GetOrCreate(() => MonoCecilType.FullName);
 		public CommonField[] Fields { get; private set; }
 		public CommonMethod[] Methods { get; private set; }
 		public CommonProperty[] Properties { get; private set; }

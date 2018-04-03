@@ -5,6 +5,8 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
 	public class CommonProperty : CommonBase<CommonProperty>, IHasAttributes {
+		public override string Name => GetOrCreate(() => MonoCecilProperty.Name);
+		public override string FullName => GetOrCreate(() => MonoCecilProperty.FullName);
 		public CommonAttribute[] Attributes { get; private set; }
 		public readonly PropertyInfo ReflectionProperty;
 		public readonly PropertyDefinition MonoCecilProperty;
