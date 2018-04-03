@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationPatcherProcessor.cs" />
+    <Compile Include="Extensions\CommonTypeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Factories\CommonAssemblyFactory.cs" />
     <Compile Include="Helpers\Log.cs" />

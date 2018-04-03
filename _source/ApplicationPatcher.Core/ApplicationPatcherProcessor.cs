@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Factories;
 using ApplicationPatcher.Core.Helpers;
@@ -19,11 +20,14 @@ namespace ApplicationPatcher.Core {
 		}
 
 		public void PatchApplication(string applicationPath) {
+			ResetCurrentDirectory();
 			CheckApplicationPath(applicationPath);
 			SetCurrentDirectory(applicationPath);
 
+			var applicationName = Path.GetFileName(applicationPath);
+
 			log.Info("Reading assembly...");
-			var assembly = commonAssemblyFactory.Create(applicationPath);
+			var assembly = commonAssemblyFactory.Create(applicationName);
 			log.Info("Assembly was readed");
 
 			if (!assembly.Types.Any()) {
@@ -38,8 +42,12 @@ namespace ApplicationPatcher.Core {
 			log.Info("Application was patched");
 
 			log.Info("Save assembly...");
-			commonAssemblyFactory.Save(assembly, applicationPath);
+			commonAssemblyFactory.Save(assembly, applicationName);
 			log.Info("Assembly was saved");
+		}
+
+		private static void ResetCurrentDirectory() {
+			Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception());
 		}
 
 		private void CheckApplicationPath(string applicationPath) {

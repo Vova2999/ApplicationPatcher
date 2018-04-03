@@ -11,11 +11,14 @@ namespace ApplicationPatcher.Core.Types.Common {
 	public class CommonAssembly : CommonBase<CommonAssembly>, IHasTypes {
 		public override string Name => GetOrCreate(() => MonoCecilAssembly.FullName);
 		public override string FullName => GetOrCreate(() => MonoCecilAssembly.FullName);
+		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.WhereFrom(this).ToArray());
 		public CommonType[] Types { get; private set; }
+		public readonly bool HaveSymbolStore;
 		public readonly Assembly[] ReflectionAssembly;
 		public readonly AssemblyDefinition MonoCecilAssembly;
 
-		public CommonAssembly(Assembly[] reflectionAssembly, AssemblyDefinition monoCecilAssembly) {
+		public CommonAssembly(bool haveSymbolStore, Assembly[] reflectionAssembly, AssemblyDefinition monoCecilAssembly) {
+			HaveSymbolStore = haveSymbolStore;
 			ReflectionAssembly = reflectionAssembly;
 			MonoCecilAssembly = monoCecilAssembly;
 		}

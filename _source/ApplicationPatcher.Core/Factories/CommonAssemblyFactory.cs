@@ -8,15 +8,18 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Factories {
 	public class CommonAssemblyFactory {
-		public CommonAssembly Create([NotNull] string assemblyPath) {
-			var reflectionAssembly = CreateReflectionAssembly(assemblyPath);
-			var monoCecilAssembly = CreateMonoCecilAssembly(assemblyPath);
+		public CommonAssembly Create(string assemblyPath) {
+			var symbolStorePath = Path.ChangeExtension(assemblyPath, "pdb");
+			var haveSymbolStore = !string.IsNullOrEmpty(symbolStorePath) && File.Exists(symbolStorePath);
 
-			return new CommonAssembly(reflectionAssembly, monoCecilAssembly);
+			var reflectionAssembly = CreateReflectionAssembly(assemblyPath, symbolStorePath, haveSymbolStore);
+			var monoCecilAssembly = CreateMonoCecilAssembly(assemblyPath, haveSymbolStore);
+
+			return new CommonAssembly(haveSymbolStore, reflectionAssembly, monoCecilAssembly).Load();
 		}
 
-		private static Assembly[] CreateReflectionAssembly([NotNull] string assemblyPath) {
-			var mainAssembly = ReadMainReflectionAssembly(assemblyPath);
+		private static Assembly[] CreateReflectionAssembly(string assemblyPath, string symbolStorePath, bool haveSymbolStore) {
+			var mainAssembly = ReadMainReflectionAssembly(assemblyPath, symbolStorePath, haveSymbolStore);
 
 			var foundedAssemblyFiles = Directory.GetFiles(Directory.GetCurrentDirectory())
 				.GroupBy(Path.GetFileNameWithoutExtension)
@@ -27,11 +30,10 @@ namespace ApplicationPatcher.Core.Factories {
 
 			return new[] { mainAssembly }.Concat(mainAssembly.GetReferencedAssemblies().Select(Assembly.Load)).ToArray();
 		}
-		private static Assembly ReadMainReflectionAssembly([NotNull] string assemblyPath) {
-			var symbolStorePath = Path.ChangeExtension(assemblyPath, "pdb");
+		private static Assembly ReadMainReflectionAssembly([NotNull] string assemblyPath, string symbolStorePath, bool haveSymbolStore) {
 			var rawAssembly = File.ReadAllBytes(assemblyPath);
 
-			if (!File.Exists(symbolStorePath))
+			if (!haveSymbolStore)
 				return Assembly.Load(rawAssembly);
 
 			var rawSymbolStore = File.ReadAllBytes(symbolStorePath);
@@ -43,12 +45,12 @@ namespace ApplicationPatcher.Core.Factories {
 			return mainAssembly;
 		}
 
-		private static AssemblyDefinition CreateMonoCecilAssembly([NotNull] string assemblyPath) {
-			return AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters { ReadSymbols = true });
+		private static AssemblyDefinition CreateMonoCecilAssembly(string assemblyPath, bool haveSymbolStore) {
+			return AssemblyDefinition.ReadAssembly(assemblyPath, new ReaderParameters { ReadSymbols = haveSymbolStore, InMemory = true });
 		}
 
-		public virtual void Save(CommonAssembly monoCecilAssembly, [NotNull] string assemblyPath) {
-			monoCecilAssembly.MonoCecilAssembly.Write(assemblyPath, new WriterParameters { WriteSymbols = true });
+		public virtual void Save(CommonAssembly commonAssembly, string assemblyPath) {
+			commonAssembly.MonoCecilAssembly.Write(assemblyPath, new WriterParameters { WriteSymbols = commonAssembly.HaveSymbolStore });
 		}
 	}
 }

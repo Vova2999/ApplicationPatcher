@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using log4net;
+using log4net.Config;
 using log4net.Core;
 
 namespace ApplicationPatcher.Core.Helpers {
@@ -18,6 +19,10 @@ namespace ApplicationPatcher.Core.Helpers {
 
 		private Log(ILogger logger) {
 			this.logger = logger;
+		}
+
+		static Log() {
+			XmlConfigurator.Configure();
 		}
 
 		[UsedImplicitly]

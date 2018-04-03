@@ -63,14 +63,20 @@ namespace ApplicationPatcher.Core.Helpers {
 																		Func<TMonoCecil, string> getMonoCecilName,
 																		Func<string, bool> isSatisfyForSelection,
 																		Func<TReflection, TMonoCecil, TCommon> createCommon) {
-			var reflectionAttributesDictionary = reflections.ToDictionary(getReflectionName);
-			var monoCecilAttributesDictionary = monoCecils.ToDictionary(getMonoCecilName);
+			var reflectionAttributesDictionary = CreateDictionary(reflections, getReflectionName);
+			var monoCecilAttributesDictionary = CreateDictionary(monoCecils, getMonoCecilName);
 
 			return reflectionAttributesDictionary.Keys
 				.Intersect(monoCecilAttributesDictionary.Keys)
 				.Where(isSatisfyForSelection)
 				.Select(key => createCommon(reflectionAttributesDictionary[key], monoCecilAttributesDictionary[key]))
 				.ToArray();
+		}
+		private static Dictionary<string, TItem> CreateDictionary<TItem>(IEnumerable<TItem> items, Func<TItem, string> getItemName) {
+			return items
+				.GroupBy(getItemName)
+				.Where(x => x.Count() == 1)
+				.ToDictionary(x => x.Key, x => x.Single());
 		}
 	}
 }
