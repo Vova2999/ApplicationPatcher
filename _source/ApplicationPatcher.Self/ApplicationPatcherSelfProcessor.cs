@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using ApplicationPatcher.Core;
 using ApplicationPatcher.Core.Extensions;
@@ -23,6 +25,7 @@ namespace ApplicationPatcher.Self {
 
 		[DoNotAddLogOffset]
 		public void PatchSelfApplication() {
+			ResetCurrentDirectory();
 			ShiftMonoCecilApplication();
 
 			log.Info("Patching all mono cecil applications...");
@@ -34,6 +37,11 @@ namespace ApplicationPatcher.Self {
 			}
 
 			log.Info("All mono cecil applications was patched");
+		}
+
+		[DoNotAddLogOffset]
+		private static void ResetCurrentDirectory() {
+			Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception());
 		}
 
 		[DoNotAddLogOffset]
