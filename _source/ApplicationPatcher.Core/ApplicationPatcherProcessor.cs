@@ -35,7 +35,7 @@ namespace ApplicationPatcher.Core {
 				return;
 			}
 
-			log.Debug("Types found:", assembly.Types.Select(type => type.FullName));
+			log.Debug("Types found:", assembly.Types.Select(type => type.FullName).OrderBy(fullName => fullName));
 
 			log.Info("Patching application...");
 			patchers.ForEach(patcher => patcher.Patch(assembly));
@@ -46,10 +46,12 @@ namespace ApplicationPatcher.Core {
 			log.Info("Assembly was saved");
 		}
 
+		[DoNotAddLogOffset]
 		private static void ResetCurrentDirectory() {
 			Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception());
 		}
 
+		[DoNotAddLogOffset]
 		private void CheckApplicationPath(string applicationPath) {
 			if (string.IsNullOrEmpty(applicationPath))
 				throw new ArgumentException("You must specify path to application");
@@ -66,6 +68,7 @@ namespace ApplicationPatcher.Core {
 			log.Info($"Application was found: {applicationFullPath}");
 		}
 
+		[DoNotAddLogOffset]
 		private void SetCurrentDirectory(string applicationPath) {
 			var currentDirectory = Path.GetDirectoryName(Path.GetFullPath(applicationPath));
 			log.Info($"Current directory: {currentDirectory}");

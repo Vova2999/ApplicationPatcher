@@ -12,6 +12,7 @@ namespace ApplicationPatcher.Self.Patchers {
 			log = Log.For(this);
 		}
 
+		[DoNotAddLogOffset]
 		public void Patch(CommonAssembly assembly) {
 			log.Info("Patching sealed types...");
 			var sealedTypes = assembly.TypesFromThisAssembly.Where(x => x.MonoCecilType.IsSealed).ToArray();
@@ -21,9 +22,10 @@ namespace ApplicationPatcher.Self.Patchers {
 				return;
 			}
 
-			log.Debug("Sealed types found:", sealedTypes.Select(viewModel => viewModel.FullName));
-			sealedTypes.ForEach(type => type.MonoCecilType.IsSealed = false);
+			log.Debug("Sealed types found:", sealedTypes.Select(viewModel => viewModel.FullName).OrderBy(fullName => fullName));
 
+			log.Info("Patching sealed types...");
+			sealedTypes.ForEach(type => type.MonoCecilType.IsSealed = false);
 			log.Info("Sealed types was patched");
 		}
 	}

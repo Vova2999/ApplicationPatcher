@@ -21,17 +21,24 @@ namespace ApplicationPatcher.Self {
 			log = Log.For(this);
 		}
 
+		[DoNotAddLogOffset]
 		public void PatchSelfApplication() {
 			ShiftMonoCecilApplication();
 
+			log.Info("Patching all mono cecil applications...");
+
 			foreach (var monoCecilResultApplicationName in monoCecilResultApplicationNames.Values) {
-				log.Info($"Patch '{monoCecilResultApplicationName}'");
+				log.Info($"Patching '{monoCecilResultApplicationName}' application...");
 				applicationPatcherProcessor.PatchApplication(monoCecilResultApplicationName);
+				log.Info($"Application '{monoCecilResultApplicationName}' was patched");
 			}
+
+			log.Info("All mono cecil applications was patched");
 		}
 
+		[DoNotAddLogOffset]
 		private void ShiftMonoCecilApplication() {
-			log.Info($"Shift mono cecil application to '{resultDirectoryName}' directory...");
+			log.Info($"Shifting mono cecil application to '{resultDirectoryName}' directory...");
 
 			if (Directory.Exists(resultDirectoryName)) {
 				log.Debug($"Delete '{resultDirectoryName}' directory");

@@ -16,6 +16,7 @@ namespace ApplicationPatcher.Self {
 			}
 		}
 
+		[DoNotAddLogOffset]
 		private static void Run() {
 			var container = new StandardKernel(new ApplicationPatcherSelfNinjectModule());
 			container.Get<ApplicationPatcherSelfProcessor>().PatchSelfApplication();

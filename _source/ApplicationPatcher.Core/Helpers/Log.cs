@@ -10,6 +10,8 @@ using log4net.Core;
 
 namespace ApplicationPatcher.Core.Helpers {
 	public class Log {
+		private static readonly List<Module> modules = new List<Module>();
+
 		private static string OffsetString {
 			get => (string)GlobalContext.Properties["Offset"];
 			set => GlobalContext.Properties["Offset"] = value;
@@ -27,6 +29,7 @@ namespace ApplicationPatcher.Core.Helpers {
 
 		[UsedImplicitly]
 		public static Log For<TObject>(TObject obj) {
+			modules.AddRange(Assembly.GetAssembly(typeof(TObject)).Modules);
 			return new Log(LoggerManager.GetLogger(Assembly.GetExecutingAssembly(), typeof(TObject)));
 		}
 
@@ -116,18 +119,11 @@ namespace ApplicationPatcher.Core.Helpers {
 		}
 
 		private void SetOffsetAndExecuteLog(Level level, Func<string> message, Exception exception = null) {
-			var stackTrace = new StackTrace();
-			// todo: оптимизировать
-			var offset = (stackTrace.GetFrames() ?? throw new Exception())
-				.Select(frame => frame.GetMethod())
-				.Count(method => method.DeclaringType != typeof(Log) &&
-					method.DeclaringType?.FullName?.StartsWith("System") == false &&
-					method.DeclaringType?.FullName?.StartsWith("NUnit") == false &&
-					method.DeclaringType?.FullName?.StartsWith("FluentAssertions") == false &&
-					method.GetCustomAttribute<DoNotAddLogOffsetAttribute>() == null);
+			var stackMethods = (new StackTrace().GetFrames() ?? throw new Exception()).Select(x => x.GetMethod()).ToArray();
+			var offset = stackMethods.Count(method => method.DeclaringType != typeof(Log) && modules.Contains(method.Module) && method.GetCustomAttribute<DoNotAddLogOffsetAttribute>() == null);
 
 			OffsetString = new string('\t', offset - 1);
-			logger.Log(stackTrace.GetFrame(0).GetMethod().DeclaringType, level, message?.Invoke(), exception);
+			logger.Log(stackMethods.First().DeclaringType, level, message?.Invoke(), exception);
 		}
 		private static string ConvertMultiline(object message) {
 			return message.ToString().Replace("\n", $"\r\n{OffsetString}");
