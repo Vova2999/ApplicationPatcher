@@ -2,6 +2,7 @@
 using System.Reflection;
 using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Types.Base;
+using JetBrains.Annotations;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
@@ -12,7 +13,10 @@ namespace ApplicationPatcher.Core.Types.Common {
 		public CommonMethod[] Methods { get; private set; }
 		public CommonProperty[] Properties { get; private set; }
 		public CommonAttribute[] Attributes { get; private set; }
+
+		[UsedImplicitly]
 		public readonly Type ReflectionType;
+		[UsedImplicitly]
 		public readonly TypeDefinition MonoCecilType;
 
 		public CommonType(Type reflectionType, TypeDefinition monoCecilType) {

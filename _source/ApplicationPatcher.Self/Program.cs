@@ -6,6 +6,7 @@ namespace ApplicationPatcher.Self {
 	public static class Program {
 		private static readonly Log log = Log.For(typeof(Program));
 
+		[DoNotAddLogOffset]
 		public static void Main() {
 			try {
 				Run();

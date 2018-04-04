@@ -3,8 +3,10 @@ using ApplicationPatcher.Core;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Types.Common;
+using JetBrains.Annotations;
 
 namespace ApplicationPatcher.Self.Patchers {
+	[UsedImplicitly]
 	public class MonoCecilPatcher : IPatcher {
 		private readonly Log log;
 

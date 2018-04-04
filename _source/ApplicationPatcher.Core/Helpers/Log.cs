@@ -122,7 +122,7 @@ namespace ApplicationPatcher.Core.Helpers {
 			var stackMethods = (new StackTrace().GetFrames() ?? throw new Exception()).Select(x => x.GetMethod()).ToArray();
 			var offset = stackMethods.Count(method => method.DeclaringType != typeof(Log) && modules.Contains(method.Module) && method.GetCustomAttribute<DoNotAddLogOffsetAttribute>() == null);
 
-			OffsetString = new string('\t', offset - 1);
+			OffsetString = new string('\t', offset);
 			logger.Log(stackMethods.First().DeclaringType, level, message?.Invoke(), exception);
 		}
 		private static string ConvertMultiline(object message) {

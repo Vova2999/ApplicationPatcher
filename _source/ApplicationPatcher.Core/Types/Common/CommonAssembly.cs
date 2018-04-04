@@ -5,6 +5,7 @@ using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Types.Base;
+using JetBrains.Annotations;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
@@ -14,7 +15,10 @@ namespace ApplicationPatcher.Core.Types.Common {
 		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.WhereFrom(this).ToArray());
 		public CommonType[] Types { get; private set; }
 		public readonly bool HaveSymbolStore;
+
+		[UsedImplicitly]
 		public readonly Assembly[] ReflectionAssembly;
+		[UsedImplicitly]
 		public readonly AssemblyDefinition MonoCecilAssembly;
 
 		public CommonAssembly(bool haveSymbolStore, Assembly[] reflectionAssembly, AssemblyDefinition monoCecilAssembly) {
