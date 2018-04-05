@@ -31,23 +31,25 @@ namespace ApplicationPatcher.Core.Types.Common {
 
 		protected override void LoadInternal() {
 			base.LoadInternal();
-			Types = CommonHelper.JoinTypes(GetAllReflectionTypes(), GetAllMonoCecilTypes());
+			Types = CommonHelper.JoinTypes(GetReflectionTypes(), GetMonoCecilTypes());
 		}
 
-		private IEnumerable<Type> GetAllReflectionTypes() {
-			return ReflectionAssembly.SelectMany(reflectionAssembly => reflectionAssembly.GetTypes());
-		}
-
-		private IEnumerable<TypeDefinition> GetAllMonoCecilTypes() {
-			var types = new List<TypeDefinition>();
-			MonoCecilAssembly.MainModule.Types.ForEach(type => AddType(types, type));
-
+		private IEnumerable<Type> GetReflectionTypes() {
+			var types = new List<Type>();
+			ReflectionAssembly.First().GetTypes().ForEach(type => AddType(types, type, t => t.BaseType));
 			return types;
 		}
-		private static void AddType(List<TypeDefinition> types, TypeDefinition currentType) {
+
+		private IEnumerable<TypeDefinition> GetMonoCecilTypes() {
+			var types = new List<TypeDefinition>();
+			MonoCecilAssembly.MainModule.Types.ForEach(type => AddType(types, type, t => t.BaseType?.Resolve()));
+			return types;
+		}
+
+		private static void AddType<TType>(List<TType> types, TType currentType, Func<TType, TType> getBaseType) {
 			while (currentType != null && !types.Contains(currentType)) {
 				types.Add(currentType);
-				currentType = currentType.BaseType?.Resolve();
+				currentType = getBaseType(currentType);
 			}
 		}
 	}

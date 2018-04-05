@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Types.Common;
-using JetBrains.Annotations;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Factories {
@@ -25,12 +24,16 @@ namespace ApplicationPatcher.Core.Factories {
 				.GroupBy(Path.GetFileNameWithoutExtension)
 				.ToDictionary(group => group.Key, group => group.SingleOrDefault(path => Path.GetExtension(path) == ".exe" || Path.GetExtension(path) == ".dll"));
 
-			AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
-				foundedAssemblyFiles.TryGetValue(new AssemblyName(args.Name).Name, out var assemblyFile) ? Assembly.Load(File.ReadAllBytes(assemblyFile)) : null;
+			AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => FindLoadedAssembly(new AssemblyName(args.Name).Name) ??
+				(foundedAssemblyFiles.TryGetValue(new AssemblyName(args.Name).Name, out var assemblyFile) ? Assembly.Load(File.ReadAllBytes(assemblyFile)) : null);
 
 			return new[] { mainAssembly }.Concat(mainAssembly.GetReferencedAssemblies().Select(Assembly.Load)).ToArray();
 		}
-		private static Assembly ReadMainReflectionAssembly([NotNull] string assemblyPath, string symbolStorePath, bool haveSymbolStore) {
+		private static Assembly ReadMainReflectionAssembly(string assemblyPath, string symbolStorePath, bool haveSymbolStore) {
+			var loadedAssembly = FindLoadedAssembly(Path.GetFileNameWithoutExtension(assemblyPath));
+			if (loadedAssembly != null)
+				return loadedAssembly;
+
 			var rawAssembly = File.ReadAllBytes(assemblyPath);
 
 			if (!haveSymbolStore)
@@ -43,6 +46,9 @@ namespace ApplicationPatcher.Core.Factories {
 			File.WriteAllBytes(symbolStorePath, rawSymbolStore);
 
 			return mainAssembly;
+		}
+		private static Assembly FindLoadedAssembly(string assemblyName) {
+			return AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.GetName().Name == assemblyName);
 		}
 
 		private static AssemblyDefinition CreateMonoCecilAssembly(string assemblyPath, bool haveSymbolStore) {

@@ -11,8 +11,8 @@ namespace ApplicationPatcher.Core.Helpers {
 			return Join(
 				reflectionTypes,
 				monoCecilTypes,
-				reflectionType => $"{reflectionType.FullName}, {reflectionType.Assembly.FullName}",
-				monoCecilType => $"{monoCecilType.FullName}, {monoCecilType.Module.Assembly.FullName}",
+				reflectionType => reflectionType.FullName ?? Guid.NewGuid().ToString(),
+				monoCecilType => monoCecilType.FullName ?? Guid.NewGuid().ToString(),
 				typeFullName => true,
 				(reflectionType, monoCecilType) => new CommonType(reflectionType, monoCecilType));
 		}
@@ -31,8 +31,8 @@ namespace ApplicationPatcher.Core.Helpers {
 			return Join(
 				reflectionMethods,
 				monoCecilMethods,
-				reflectionMethod => reflectionMethod.Name,
-				monoCecilMethod => monoCecilMethod.Name,
+				reflectionMethod => $"{reflectionMethod.Name}({string.Join(", ", reflectionMethod.GetParameters().Select(parameter => parameter.ParameterType.Name))})",
+				monoCecilMethod => $"{monoCecilMethod.Name}({string.Join(", ", monoCecilMethod.Parameters.Select(parameter => parameter.ParameterType.Name))})",
 				methodName => methodName != ".ctor" && !methodName.StartsWith("get_") && !methodName.StartsWith("set_"),
 				(reflectionMethod, monoCecilMethod) => new CommonMethod(reflectionMethod, monoCecilMethod));
 		}
