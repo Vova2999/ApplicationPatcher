@@ -53,8 +53,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationPatcherProcessor.cs" />
+    <Compile Include="Extensions\CommonAssemblyExtensions.cs" />
     <Compile Include="Extensions\CommonTypeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\HasAttributesExtensions.cs" />
+    <Compile Include="Extensions\HasTypeExtensions.cs" />
     <Compile Include="Factories\CommonAssemblyFactory.cs" />
     <Compile Include="Helpers\Log.cs" />
     <Compile Include="Helpers\CommonHelper.cs" />
@@ -64,6 +67,7 @@
     <Compile Include="Types\Base\IHasFields.cs" />
     <Compile Include="Types\Base\IHasMethods.cs" />
     <Compile Include="Types\Base\IHasProperties.cs" />
+    <Compile Include="Types\Base\IHasType.cs" />
     <Compile Include="Types\Base\IHasTypes.cs" />
     <Compile Include="Types\Common\CommonAssembly.cs" />
     <Compile Include="Types\Common\CommonAttribute.cs" />

@@ -12,8 +12,10 @@ namespace ApplicationPatcher.Core.Types.Common {
 	public class CommonAssembly : CommonBase<CommonAssembly>, IHasTypes {
 		public override string Name => GetOrCreate(() => MonoCecilAssembly.FullName);
 		public override string FullName => GetOrCreate(() => MonoCecilAssembly.FullName);
-		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.WhereFrom(this).ToArray());
 		public CommonType[] Types { get; private set; }
+
+		[UsedImplicitly]
+		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.WhereFrom(this).ToArray());
 		public readonly bool HaveSymbolStore;
 
 		[UsedImplicitly]
