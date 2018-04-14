@@ -19,6 +19,7 @@ namespace ApplicationPatcher.Core {
 			log = Log.For(this);
 		}
 
+		[DoNotAddLogOffset]
 		public void PatchApplication(string applicationPath) {
 			ResetCurrentDirectory();
 			CheckApplicationPath(applicationPath);
