@@ -1,5 +1,6 @@
 ﻿using System;
 using ApplicationPatcher.Core.Helpers;
+using JetBrains.Annotations;
 using Ninject;
 
 namespace ApplicationPatcher.Self {
@@ -17,8 +18,8 @@ namespace ApplicationPatcher.Self {
 			}
 		}
 
-		[DoNotAddLogOffset]
-		private static void Run() {
+		[DoNotAddLogOffset, UsedImplicitly]
+		public static void Run() {
 			var container = new StandardKernel(new ApplicationPatcherSelfNinjectModule());
 			container.Get<ApplicationPatcherSelfProcessor>().PatchSelfApplication();
 		}

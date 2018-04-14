@@ -32,7 +32,7 @@ namespace ApplicationPatcher.Core.Types.Common {
 			Fields = CommonHelper.JoinFields(ReflectionType.GetFields(bindingFlags), MonoCecilType.Fields);
 			Methods = CommonHelper.JoinMethods(ReflectionType.GetMethods(bindingFlags), MonoCecilType.Methods);
 			Properties = CommonHelper.JoinProperties(ReflectionType.GetProperties(bindingFlags), MonoCecilType.Properties);
-			Attributes = CommonHelper.JoinAttributes(ReflectionType.GetCustomAttributes(), MonoCecilType.CustomAttributes);
+			Attributes = CommonHelper.JoinAttributes(ReflectionType.GetCustomAttributesData(), MonoCecilType.CustomAttributes);
 		}
 	}
 }

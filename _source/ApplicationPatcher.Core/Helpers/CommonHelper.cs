@@ -47,14 +47,14 @@ namespace ApplicationPatcher.Core.Helpers {
 				(reflectionProperty, monoCecilProperty) => new CommonProperty(reflectionProperty, monoCecilProperty));
 		}
 
-		internal static CommonAttribute[] JoinAttributes(IEnumerable<Attribute> reflectionAttributes, IEnumerable<CustomAttribute> monoCecilAttributes) {
+		internal static CommonAttribute[] JoinAttributes(IEnumerable<CustomAttributeData> reflectionAttributes, IEnumerable<CustomAttribute> monoCecilAttributes) {
 			return Join(
 				reflectionAttributes,
 				monoCecilAttributes,
-				reflectionAttribute => reflectionAttribute.GetType().FullName,
-				monoCecilAttribute => monoCecilAttribute.AttributeType.FullName,
+				reflectionAttribute => $"{reflectionAttribute.AttributeType.FullName}({string.Join(", ", reflectionAttribute.ConstructorArguments.Select(argument => $"{argument.ArgumentType.FullName}: {argument.Value}"))})",
+				monoCecilAttribute => $"{monoCecilAttribute.AttributeType.FullName}({string.Join(", ", monoCecilAttribute.ConstructorArguments.Select(argument => $"{argument.Type.FullName}: {argument.Value}"))})",
 				attributeFullName => true,
-				(reflectionAttribute, monoCecilAttribute) => new CommonAttribute(reflectionAttribute, monoCecilAttribute));
+				(reflectionAttribute, monoCecilAttribute) => new CommonAttribute((Attribute)reflectionAttribute.Constructor.Invoke(reflectionAttribute.ConstructorArguments.Select(argument => argument.Value).ToArray()), monoCecilAttribute));
 		}
 
 		private static TCommon[] Join<TCommon, TReflection, TMonoCecil>(IEnumerable<TReflection> reflections,

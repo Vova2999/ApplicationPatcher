@@ -7,10 +7,11 @@ using JetBrains.Annotations;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
-	public class CommonAssembly : CommonBase<CommonAssembly>, IHasTypes {
+	public class CommonAssembly : CommonBase<CommonAssembly>, IHasTypes, IHasAttributes {
 		public override string Name => GetOrCreate(() => MainMonoCecilAssembly.FullName);
 		public override string FullName => GetOrCreate(() => MainMonoCecilAssembly.FullName);
 		public CommonType[] Types { get; private set; }
+		public CommonAttribute[] Attributes { get; private set; }
 
 		[UsedImplicitly]
 		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.WhereFrom(this).ToArray());
@@ -43,6 +44,7 @@ namespace ApplicationPatcher.Core.Types.Common {
 			Types = CommonHelper.JoinTypes(
 				new[] { MainReflectionAssembly }.Concat(ReferencedReflectionAssemblies).SelectMany(a => a.GetTypes()),
 				new[] { MainMonoCecilAssembly }.Concat(ReferencedMonoCecilAssemblies).SelectMany(a => a.MainModule.Types));
+			Attributes = CommonHelper.JoinAttributes(MainReflectionAssembly.GetCustomAttributesData(), MainMonoCecilAssembly.CustomAttributes);
 		}
 	}
 }

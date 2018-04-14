@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("ApplicationPatcher.Tests")]
@@ -15,6 +14,5 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("1fcba6f5-46e9-457e-8081-8e26d7c5f77c")]
 
-// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

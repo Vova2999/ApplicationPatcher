@@ -10,8 +10,18 @@ namespace ApplicationPatcher.Core.Extensions {
 		}
 
 		[UsedImplicitly]
+		public static bool Is(this IHasType hasType, string typeFullName) {
+			return hasType.Type.FullName == typeFullName;
+		}
+
+		[UsedImplicitly]
 		public static bool IsNot(this IHasType hasType, Type type) {
 			return !hasType.Is(type);
+		}
+
+		[UsedImplicitly]
+		public static bool IsNot(this IHasType hasType, string typeFullName) {
+			return !hasType.Is(typeFullName);
 		}
 
 		[UsedImplicitly]

@@ -17,13 +17,15 @@ namespace ApplicationPatcher.Core.Extensions {
 		}
 
 		[UsedImplicitly]
-		public static CommonType GetCommonType(this CommonAssembly commonAssembly, Type type) {
-			return commonAssembly.Types?.FirstOrDefault(commonType => commonType.Is(type)) ?? throw new ArgumentException($"Not found type '{type.FullName}'");
+		public static CommonType GetCommonType(this CommonAssembly commonAssembly, Type type, bool throwExceptionIfNotFound = true) {
+			var foundCommonType = commonAssembly.Types?.FirstOrDefault(commonType => commonType.Is(type));
+			return foundCommonType == null && throwExceptionIfNotFound ? throw new ArgumentException($"Not found type '{type.FullName}'") : foundCommonType;
 		}
 
 		[UsedImplicitly]
-		public static CommonType GetCommonType(this CommonAssembly commonAssembly, string typeFullName) {
-			return commonAssembly.Types?.FirstOrDefault(commonType => string.Equals(commonType.ReflectionType.FullName, typeFullName, StringComparison.InvariantCultureIgnoreCase)) ?? throw new ArgumentException($"Not found type '{typeFullName}'");
+		public static CommonType GetCommonType(this CommonAssembly commonAssembly, string typeFullName, bool throwExceptionIfNotFound = true) {
+			var foundCommonType = commonAssembly.Types?.FirstOrDefault(commonType => commonType.ReflectionType.FullName == typeFullName);
+			return foundCommonType == null && throwExceptionIfNotFound ? throw new ArgumentException($"Not found type '{typeFullName}'") : foundCommonType;
 		}
 	}
 }

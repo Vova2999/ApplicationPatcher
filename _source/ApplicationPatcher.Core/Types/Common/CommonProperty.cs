@@ -24,7 +24,7 @@ namespace ApplicationPatcher.Core.Types.Common {
 
 		protected override void LoadInternal() {
 			base.LoadInternal();
-			Attributes = CommonHelper.JoinAttributes(ReflectionProperty.GetCustomAttributes(), MonoCecilProperty.CustomAttributes);
+			Attributes = CommonHelper.JoinAttributes(ReflectionProperty.GetCustomAttributesData(), MonoCecilProperty.CustomAttributes);
 		}
 	}
 }

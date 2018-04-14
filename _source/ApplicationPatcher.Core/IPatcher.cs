@@ -2,6 +2,6 @@
 
 namespace ApplicationPatcher.Core {
 	public interface IPatcher {
-		void Patch(CommonAssembly assembly);
+		PatchResult Patch(CommonAssembly assembly);
 	}
 }

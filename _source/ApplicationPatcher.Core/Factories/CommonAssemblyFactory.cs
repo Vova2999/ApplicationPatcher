@@ -33,7 +33,7 @@ namespace ApplicationPatcher.Core.Factories {
 			var mainMonoCecilAssembly = ReadMainMonoCecilAssembly(assemblyPath, haveSymbolStore);
 			var referencedMonoCecilAssemblies = ReadReferencedMonoCecilAssemblies(mainMonoCecilAssembly, foundedAssemblyFiles);
 
-			return new CommonAssembly(mainReflectionAssembly, referencedReflectionAssemblies, mainMonoCecilAssembly, referencedMonoCecilAssemblies, haveSymbolStore).Load();
+			return new CommonAssembly(mainReflectionAssembly, referencedReflectionAssemblies, mainMonoCecilAssembly, referencedMonoCecilAssemblies, haveSymbolStore);
 		}
 
 		private static Assembly ReadMainReflectionAssembly(string assemblyPath, string symbolStorePath, bool haveSymbolStore) {

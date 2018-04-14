@@ -22,7 +22,7 @@ namespace ApplicationPatcher.Core.Types.Common {
 
 		protected override void LoadInternal() {
 			base.LoadInternal();
-			Attributes = CommonHelper.JoinAttributes(ReflectionMethod.GetCustomAttributes(), MonoCecilMethod.CustomAttributes);
+			Attributes = CommonHelper.JoinAttributes(ReflectionMethod.GetCustomAttributesData(), MonoCecilMethod.CustomAttributes);
 		}
 	}
 }

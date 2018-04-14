@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ApplicationPatcherSelfConfiguration>
+	<ApplicationPatcherCoreDirectoryName>..\ApplicationPatcher.Core</ApplicationPatcherCoreDirectoryName>
+	<MonoCecilResultDirectoryName>Result</MonoCecilResultDirectoryName>
+	<MonoCecilApplicationNames>
+		<string>Mono.Cecil.dll</string>
+		<string>Mono.Cecil.Mdb.dll</string>
+		<string>Mono.Cecil.Pdb.dll</string>
+		<string>Mono.Cecil.Rocks.dll</string>
+	</MonoCecilApplicationNames>
+	<MonoCecilSelectedAssemblyReferenceNames>
+		<string>Mono.Cecil</string>
+	</MonoCecilSelectedAssemblyReferenceNames>
+	<MonoCecilSelectedInternalsVisibleToAttributeNames>
+		<string>Mono.Cecil.Pdb</string>
+		<string>Mono.Cecil.Mdb</string>
+		<string>Mono.Cecil.Rocks</string>
+		<string>Mono.Cecil.Tests</string>
+	</MonoCecilSelectedInternalsVisibleToAttributeNames>
+	<MonoCecilSelectedPatchingTypeFullNames>
+		<string>Mono.Cecil.AssemblyDefinition</string>
+		<string>Mono.Cecil.CustomAttribute</string>
+		<string>Mono.Cecil.FieldDefinition</string>
+		<string>Mono.Cecil.MethodDefinition</string>
+		<string>Mono.Cecil.MethodReference</string>
+		<string>Mono.Cecil.ModuleDefinition</string>
+		<string>Mono.Cecil.ParameterDefinition</string>
+		<string>Mono.Cecil.PropertyDefinition</string>
+		<string>Mono.Cecil.TypeDefinition</string>
+		<string>Mono.Cecil.TypeReference</string>
+	</MonoCecilSelectedPatchingTypeFullNames>
+</ApplicationPatcherSelfConfiguration>
