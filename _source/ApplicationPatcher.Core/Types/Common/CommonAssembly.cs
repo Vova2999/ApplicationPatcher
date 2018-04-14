@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Helpers;
@@ -10,8 +8,8 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
 	public class CommonAssembly : CommonBase<CommonAssembly>, IHasTypes {
-		public override string Name => GetOrCreate(() => MonoCecilAssembly.FullName);
-		public override string FullName => GetOrCreate(() => MonoCecilAssembly.FullName);
+		public override string Name => GetOrCreate(() => MainMonoCecilAssembly.FullName);
+		public override string FullName => GetOrCreate(() => MainMonoCecilAssembly.FullName);
 		public CommonType[] Types { get; private set; }
 
 		[UsedImplicitly]
@@ -19,38 +17,32 @@ namespace ApplicationPatcher.Core.Types.Common {
 		public readonly bool HaveSymbolStore;
 
 		[UsedImplicitly]
-		public readonly Assembly[] ReflectionAssembly;
+		public readonly Assembly MainReflectionAssembly;
 		[UsedImplicitly]
-		public readonly AssemblyDefinition MonoCecilAssembly;
+		public readonly Assembly[] ReferencedReflectionAssemblies;
 
-		public CommonAssembly(bool haveSymbolStore, Assembly[] reflectionAssembly, AssemblyDefinition monoCecilAssembly) {
+		[UsedImplicitly]
+		public readonly AssemblyDefinition MainMonoCecilAssembly;
+		[UsedImplicitly]
+		public readonly AssemblyDefinition[] ReferencedMonoCecilAssemblies;
+
+		public CommonAssembly(Assembly mainReflectionAssembly,
+							  Assembly[] referencedReflectionAssemblies,
+							  AssemblyDefinition mainMonoCecilAssembly,
+							  AssemblyDefinition[] referencedMonoCecilAssemblies,
+							  bool haveSymbolStore) {
+			MainReflectionAssembly = mainReflectionAssembly;
+			ReferencedReflectionAssemblies = referencedReflectionAssemblies;
+			MainMonoCecilAssembly = mainMonoCecilAssembly;
+			ReferencedMonoCecilAssemblies = referencedMonoCecilAssemblies;
 			HaveSymbolStore = haveSymbolStore;
-			ReflectionAssembly = reflectionAssembly;
-			MonoCecilAssembly = monoCecilAssembly;
 		}
 
 		protected override void LoadInternal() {
 			base.LoadInternal();
-			Types = CommonHelper.JoinTypes(GetReflectionTypes(), GetMonoCecilTypes());
-		}
-
-		private IEnumerable<Type> GetReflectionTypes() {
-			var types = new List<Type>();
-			ReflectionAssembly.First().GetTypes().ForEach(type => AddType(types, type, t => t.BaseType));
-			return types;
-		}
-
-		private IEnumerable<TypeDefinition> GetMonoCecilTypes() {
-			var types = new List<TypeDefinition>();
-			MonoCecilAssembly.MainModule.Types.ForEach(type => AddType(types, type, t => t.BaseType?.Resolve()));
-			return types;
-		}
-
-		private static void AddType<TType>(List<TType> types, TType currentType, Func<TType, TType> getBaseType) {
-			while (currentType != null && !types.Contains(currentType)) {
-				types.Add(currentType);
-				currentType = getBaseType(currentType);
-			}
+			Types = CommonHelper.JoinTypes(
+				new[] { MainReflectionAssembly }.Concat(ReferencedReflectionAssemblies).SelectMany(a => a.GetTypes()),
+				new[] { MainMonoCecilAssembly }.Concat(ReferencedMonoCecilAssemblies).SelectMany(a => a.MainModule.Types));
 		}
 	}
 }

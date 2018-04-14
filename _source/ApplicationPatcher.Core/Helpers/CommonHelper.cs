@@ -11,8 +11,8 @@ namespace ApplicationPatcher.Core.Helpers {
 			return Join(
 				reflectionTypes,
 				monoCecilTypes,
-				reflectionType => reflectionType.FullName ?? Guid.NewGuid().ToString(),
-				monoCecilType => monoCecilType.FullName ?? Guid.NewGuid().ToString(),
+				reflectionType => reflectionType.AssemblyQualifiedName,
+				monoCecilType => $"{monoCecilType.FullName}, {monoCecilType.Module.Assembly.FullName}",
 				typeFullName => true,
 				(reflectionType, monoCecilType) => new CommonType(reflectionType, monoCecilType));
 		}

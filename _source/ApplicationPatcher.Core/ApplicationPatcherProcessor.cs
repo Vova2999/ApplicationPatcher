@@ -31,12 +31,12 @@ namespace ApplicationPatcher.Core {
 			var assembly = commonAssemblyFactory.Create(applicationName);
 			log.Info("Assembly was readed");
 
-			if (!assembly.Types.Any()) {
-				log.Debug("Types not found");
+			if (!assembly.TypesFromThisAssembly.Any()) {
+				log.Debug("Types from this assembly not found");
 				return;
 			}
 
-			log.Debug("Types found:", assembly.Types.Select(type => type.FullName).OrderBy(fullName => fullName));
+			log.Debug("Types from this assembly found:", assembly.TypesFromThisAssembly.Select(type => type.FullName).OrderBy(fullName => fullName));
 
 			log.Info("Patching application...");
 			patchers.ForEach(patcher => patcher.Patch(assembly));
