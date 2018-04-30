@@ -84,8 +84,9 @@ namespace ApplicationPatcher.Core.Factories {
 				.ToArray();
 		}
 
-		public virtual void Save(CommonAssembly commonAssembly, string assemblyPath) {
-			commonAssembly.MainMonoCecilAssembly.Write(assemblyPath, new WriterParameters { WriteSymbols = commonAssembly.HaveSymbolStore });
+		public virtual void Save(CommonAssembly commonAssembly, string assemblyPath, string signaturePath = null) {
+			var strongNameKeyPair = string.IsNullOrEmpty(signaturePath) ? null : new StrongNameKeyPair(File.ReadAllBytes(signaturePath));
+			commonAssembly.MainMonoCecilAssembly.Write(assemblyPath, new WriterParameters { WriteSymbols = commonAssembly.HaveSymbolStore, StrongNameKeyPair = strongNameKeyPair });
 		}
 	}
 }

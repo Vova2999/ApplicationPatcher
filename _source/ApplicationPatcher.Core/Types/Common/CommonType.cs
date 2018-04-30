@@ -28,7 +28,7 @@ namespace ApplicationPatcher.Core.Types.Common {
 		protected override void LoadInternal() {
 			base.LoadInternal();
 
-			const BindingFlags bindingFlags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+			const BindingFlags bindingFlags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 			Fields = CommonHelper.JoinFields(ReflectionType.GetFields(bindingFlags), MonoCecilType.Fields);
 			Methods = CommonHelper.JoinMethods(ReflectionType.GetMethods(bindingFlags), MonoCecilType.Methods);
 			Properties = CommonHelper.JoinProperties(ReflectionType.GetProperties(bindingFlags), MonoCecilType.Properties);

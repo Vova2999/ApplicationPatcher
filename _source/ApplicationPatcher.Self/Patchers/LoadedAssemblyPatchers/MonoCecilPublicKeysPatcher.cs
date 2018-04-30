@@ -10,37 +10,36 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 	[UsedImplicitly]
-	public class MonoCecilRemovePublicKeysPatcher : LoadedAssemblyPatcher {
+	public class MonoCecilPublicKeysPatcher : LoadedAssemblyPatcher {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly Log log;
 
-		public MonoCecilRemovePublicKeysPatcher(ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration) {
+		public MonoCecilPublicKeysPatcher(ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration) {
 			this.applicationPatcherSelfConfiguration = applicationPatcherSelfConfiguration;
 			log = Log.For(this);
 		}
 
 		public override PatchResult Patch(CommonAssembly assembly) {
-			RemoveFromMainAssembly(assembly);
-			RemoveFromAssemblyReferences(assembly);
-			RemoveFromInternalsVisibleToAttribute(assembly);
+			MainAssembly(assembly);
+			AssemblyReferences(assembly);
+			InternalVisibleToAttributes(assembly);
+
 			return PatchResult.Succeeded;
 		}
 
 		[DoNotAddLogOffset]
-		private void RemoveFromMainAssembly(CommonAssembly assembly) {
-			log.Info("Clean assembly public key...");
+		private void MainAssembly(CommonAssembly assembly) {
+			log.Info("Rewrite assembly public key...");
 
-			assembly.MainMonoCecilAssembly.Name.HasPublicKey = false;
-			assembly.MainMonoCecilAssembly.Name.PublicKey = new byte[0];
-			assembly.MainMonoCecilAssembly.Name.PublicKeyToken = new byte[0];
-			assembly.MainMonoCecilAssembly.MainModule.Attributes &= ~ModuleAttributes.StrongNameSigned;
+			assembly.MainMonoCecilAssembly.Name.PublicKey = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey;
+			assembly.MainMonoCecilAssembly.Name.PublicKeyToken = applicationPatcherSelfConfiguration.MonoCecilNewPublicKeyToken;
 
-			log.Info("Assembly public key cleaned");
+			log.Info("Assembly public key rewrited");
 		}
 
 		[DoNotAddLogOffset]
-		private void RemoveFromAssemblyReferences(CommonAssembly assembly) {
-			log.Info("Clean selected assembly references public key...");
+		private void AssemblyReferences(CommonAssembly assembly) {
+			log.Info("Rewrite selected assembly references public key...");
 
 			var assemblyReferences = assembly.MainMonoCecilAssembly.MainModule.AssemblyReferences
 				.Where(assemblyReference => applicationPatcherSelfConfiguration.MonoCecilSelectedAssemblyReferenceNames.Contains(assemblyReference.Name))
@@ -52,19 +51,18 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 			}
 
 			foreach (var assemblyReference in assemblyReferences) {
-				log.Debug($"Clean public key from reference assembly '{assemblyReference.Name}'");
+				log.Debug($"Rewrite public key from reference assembly '{assemblyReference.Name}'");
 
-				assemblyReference.HasPublicKey = false;
-				assemblyReference.PublicKey = new byte[0];
-				assemblyReference.PublicKeyToken = new byte[0];
+				assemblyReference.PublicKey = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey;
+				assemblyReference.PublicKeyToken = applicationPatcherSelfConfiguration.MonoCecilNewPublicKeyToken;
 			}
 
-			log.Info("Selected assembly references public key cleaned");
+			log.Info("Selected assembly references public key rewrited");
 		}
 
 		[DoNotAddLogOffset]
-		private void RemoveFromInternalsVisibleToAttribute(CommonAssembly assembly) {
-			log.Info("Clean public keys from selected InternalsVisibleToAttribute...");
+		private void InternalVisibleToAttributes(CommonAssembly assembly) {
+			log.Info("Rewrite public keys from selected InternalsVisibleToAttribute...");
 
 			var selectedAttributes = assembly.GetAttributes<InternalsVisibleToAttribute>()
 				.Select(commonAttribute => {
@@ -82,15 +80,18 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 			}
 
 			foreach (var selectedAttribute in selectedAttributes) {
-				selectedAttribute.AttributeParams.RemoveAll(attributeParam => attributeParam.StartsWith("PublicKey"));
+				var attributeParams = selectedAttribute.AttributeParams
+					.Where(attributeParam => !attributeParam.StartsWith("PublicKey"))
+					.Concat(new[] { $"PublicKey={applicationPatcherSelfConfiguration.MonoCecilNewPublicKey.ToHexString()}" })
+					.ToArray();
 
-				log.Debug($"Clean public key from InternalsVisibleToAttribute with assembly name '{selectedAttribute.AssemblyName}'");
+				log.Debug($"Rewrite public key from InternalsVisibleToAttribute with assembly name '{selectedAttribute.AssemblyName}'");
 				selectedAttribute.MonoCecilAttribute.ConstructorArguments.Clear();
 				selectedAttribute.MonoCecilAttribute.ConstructorArguments.Add(
-					new CustomAttributeArgument(selectedAttribute.ConstructorArgument.Type, string.Join(", ", selectedAttribute.AttributeParams)));
+					new CustomAttributeArgument(selectedAttribute.ConstructorArgument.Type, string.Join(", ", attributeParams)));
 			}
 
-			log.Info("Public keys from selected InternalsVisibleToAttribute cleaned");
+			log.Info("Public keys from selected InternalsVisibleToAttribute rewrited");
 		}
 	}
 }

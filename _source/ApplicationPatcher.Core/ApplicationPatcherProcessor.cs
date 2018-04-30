@@ -25,7 +25,7 @@ namespace ApplicationPatcher.Core {
 		}
 
 		[DoNotAddLogOffset]
-		public void PatchApplication(string applicationPath) {
+		public void PatchApplication(string applicationPath, string signaturePath = null) {
 			CheckApplicationPath(applicationPath);
 
 			log.Info("Reading assembly...");
@@ -52,7 +52,7 @@ namespace ApplicationPatcher.Core {
 			log.Info("Application was patched");
 
 			log.Info("Save assembly...");
-			commonAssemblyFactory.Save(assembly, applicationPath);
+			commonAssemblyFactory.Save(assembly, applicationPath, signaturePath);
 			log.Info("Assembly was saved");
 		}
 

@@ -6,13 +6,22 @@ namespace ApplicationPatcher.Self {
 		protected override string ConfigurationFileName => "ApplicationPatcher.Self.config.xml";
 
 		[UsedImplicitly]
+		public byte[] MonoCecilNewPublicKey { get; set; }
+
+		[UsedImplicitly]
+		public byte[] MonoCecilNewPublicKeyToken { get; set; }
+
+		[UsedImplicitly]
 		public string ApplicationPatcherCoreDirectoryName { get; set; }
 
 		[UsedImplicitly]
 		public string MonoCecilResultDirectoryName { get; set; }
 
 		[UsedImplicitly]
-		public string[] MonoCecilApplicationNames { get; set; }
+		public string MonoCecilSignatureFileName { get; set; }
+
+		[UsedImplicitly]
+		public string[] MonoCecilApplicationFileNames { get; set; }
 
 		[UsedImplicitly]
 		public string[] MonoCecilSelectedAssemblyReferenceNames { get; set; }

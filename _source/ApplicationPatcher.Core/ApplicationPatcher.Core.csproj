@@ -36,25 +36,25 @@
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=null, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.dll')">
+    <Reference Include="Mono.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.dll')">
       <HintPath>..\..\Build\ApplicationPatcher.Self\Result\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL" Condition="!Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.dll')">
       <HintPath>..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=null, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Mdb.dll')">
+    <Reference Include="Mono.Cecil.Mdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Mdb.dll')">
       <HintPath>..\..\Build\ApplicationPatcher.Self\Result\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Mdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL" Condition="!Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Mdb.dll')">
       <HintPath>..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=null, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Pdb.dll')">
+    <Reference Include="Mono.Cecil.Pdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Pdb.dll')">
       <HintPath>..\..\Build\ApplicationPatcher.Self\Result\Mono.Cecil.Pdb.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Pdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL" Condition="!Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Pdb.dll')">
       <HintPath>..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Version=0.10.0.0, Culture=neutral, PublicKeyToken=null, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Rocks.dll')">
+    <Reference Include="Mono.Cecil.Rocks, Version=0.10.0.0, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Rocks.dll')">
       <HintPath>..\..\Build\ApplicationPatcher.Self\Result\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Rocks, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL" Condition="!Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Rocks.dll')">
@@ -67,10 +67,12 @@
   <ItemGroup>
     <Compile Include="ApplicationPatcherProcessor.cs" />
     <Compile Include="ConfigurationFile.cs" />
+    <Compile Include="Extensions\BytesExtensions.cs" />
     <Compile Include="Extensions\CommonAssemblyExtensions.cs" />
     <Compile Include="Extensions\CommonTypeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\HasAttributesExtensions.cs" />
+    <Compile Include="Extensions\HasFieldsExtensions.cs" />
     <Compile Include="Extensions\HasTypeExtensions.cs" />
     <Compile Include="Factories\CommonAssemblyFactory.cs" />
     <Compile Include="Helpers\Log.cs" />
