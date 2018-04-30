@@ -11,7 +11,6 @@ namespace ApplicationPatcher.Tests {
 		[Test]
 		public void A() {
 			//new ApplicationPatcherProcessor(new CommonAssemblyFactory(), new ILoadedAssemblyPatcher[0], new INotLoadedAssemblyPatcher[0]).PatchApplication(@"C:\Users\Vladimir\Documents\Visual Studio 2017\Projects\WpfApp3\WpfApp3\bin\Debug\WpfApp3.exe");
-			Directory.SetCurrentDirectory(@"C:\Users\Vladimir\Documents\Visual Studio 2017\Projects\WpfApp3\WpfApp3\bin\Debug");
 			var commonAssembly = new CommonAssemblyFactory().Create(@"C:\Users\Vladimir\Documents\Visual Studio 2017\Projects\WpfApp3\WpfApp3\bin\Debug\WpfApp3.exe");
 			commonAssembly.Load().TypesFromThisAssembly.Select(type => type.FullName).ForEach(Console.WriteLine);
 		}

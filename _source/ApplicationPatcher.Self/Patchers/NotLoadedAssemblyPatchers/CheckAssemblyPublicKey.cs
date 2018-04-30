@@ -5,8 +5,8 @@ using JetBrains.Annotations;
 
 namespace ApplicationPatcher.Self.Patchers.NotLoadedAssemblyPatchers {
 	[UsedImplicitly]
-	public class CheckAssemblyPublicKey : INotLoadedAssemblyPatcher {
-		public PatchResult Patch(CommonAssembly assembly) {
+	public class CheckAssemblyPublicKey : NotLoadedAssemblyPatcher {
+		public override PatchResult Patch(CommonAssembly assembly) {
 			return assembly.MainMonoCecilAssembly.Name.HasPublicKey ? PatchResult.Succeeded : PatchResult.Canceled;
 		}
 	}

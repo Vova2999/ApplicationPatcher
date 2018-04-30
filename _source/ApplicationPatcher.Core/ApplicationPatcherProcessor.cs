@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using ApplicationPatcher.Core.Factories;
 using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Patchers;
@@ -12,13 +11,13 @@ namespace ApplicationPatcher.Core {
 	public class ApplicationPatcherProcessor {
 		private static readonly string[] availableExtensions = { ".exe", ".dll" };
 		private readonly CommonAssemblyFactory commonAssemblyFactory;
-		private readonly ILoadedAssemblyPatcher[] loadedAssemblyPatchers;
-		private readonly INotLoadedAssemblyPatcher[] notLoadedAssemblyPatchers;
+		private readonly LoadedAssemblyPatcher[] loadedAssemblyPatchers;
+		private readonly NotLoadedAssemblyPatcher[] notLoadedAssemblyPatchers;
 		private readonly Log log;
 
 		public ApplicationPatcherProcessor(CommonAssemblyFactory commonAssemblyFactory,
-										   ILoadedAssemblyPatcher[] loadedAssemblyPatchers,
-										   INotLoadedAssemblyPatcher[] notLoadedAssemblyPatchers) {
+										   LoadedAssemblyPatcher[] loadedAssemblyPatchers,
+										   NotLoadedAssemblyPatcher[] notLoadedAssemblyPatchers) {
 			this.commonAssemblyFactory = commonAssemblyFactory;
 			this.loadedAssemblyPatchers = loadedAssemblyPatchers;
 			this.notLoadedAssemblyPatchers = notLoadedAssemblyPatchers;
@@ -27,14 +26,10 @@ namespace ApplicationPatcher.Core {
 
 		[DoNotAddLogOffset]
 		public void PatchApplication(string applicationPath) {
-			ResetCurrentDirectory();
 			CheckApplicationPath(applicationPath);
-			SetCurrentDirectory(applicationPath);
-
-			var applicationFullPath = Path.GetFullPath(Path.GetFileName(applicationPath) ?? throw new Exception());
 
 			log.Info("Reading assembly...");
-			var assembly = commonAssemblyFactory.Create(applicationFullPath);
+			var assembly = commonAssemblyFactory.Create(applicationPath);
 			log.Info("Assembly was readed");
 
 			var notLoadedAssemblyPatchResult = PatchApplication(notLoadedAssemblyPatchers, assembly);
@@ -57,13 +52,8 @@ namespace ApplicationPatcher.Core {
 			log.Info("Application was patched");
 
 			log.Info("Save assembly...");
-			commonAssemblyFactory.Save(assembly, applicationFullPath);
+			commonAssemblyFactory.Save(assembly, applicationPath);
 			log.Info("Assembly was saved");
-		}
-
-		[DoNotAddLogOffset]
-		private static void ResetCurrentDirectory() {
-			Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception());
 		}
 
 		[DoNotAddLogOffset]
@@ -81,14 +71,6 @@ namespace ApplicationPatcher.Core {
 					$"Available extensions: {string.Join(", ", availableExtensions.Select(availableExtension => $"'{availableExtension}'"))}");
 
 			log.Info($"Application was found: {applicationFullPath}");
-		}
-
-		[DoNotAddLogOffset]
-		private void SetCurrentDirectory(string applicationPath) {
-			var currentDirectory = Path.GetDirectoryName(Path.GetFullPath(applicationPath));
-			log.Info($"Current directory: {currentDirectory}");
-
-			Directory.SetCurrentDirectory(currentDirectory ?? throw new Exception());
 		}
 
 		[DoNotAddLogOffset]

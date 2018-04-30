@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 
 namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 	[UsedImplicitly]
-	public class MonoCecilSelectedTypesPatcher : ILoadedAssemblyPatcher {
+	public class MonoCecilSelectedTypesPatcher : LoadedAssemblyPatcher {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly Log log;
 
@@ -17,7 +17,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 			log = Log.For(this);
 		}
 
-		public PatchResult Patch(CommonAssembly assembly) {
+		public override PatchResult Patch(CommonAssembly assembly) {
 			log.Info("Patching selected types...");
 			var foundedSelectedPatchingTypes = assembly.TypesFromThisAssembly
 				.Where(type => applicationPatcherSelfConfiguration.MonoCecilSelectedPatchingTypeFullNames.Contains(type.FullName))

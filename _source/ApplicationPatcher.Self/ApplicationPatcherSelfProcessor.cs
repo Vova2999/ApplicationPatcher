@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using ApplicationPatcher.Core;
 using ApplicationPatcher.Core.Helpers;
 
@@ -34,14 +33,7 @@ namespace ApplicationPatcher.Self {
 		}
 
 		[DoNotAddLogOffset]
-		private static void ResetCurrentDirectory() {
-			Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new Exception());
-		}
-
-		[DoNotAddLogOffset]
 		private string[] ShiftMonoCecilApplications(IEnumerable<string> monoCecilApplicationNames, string resultDirectoryName, bool overwrite) {
-			ResetCurrentDirectory();
-
 			var resultDirectoryPath = Path.GetFullPath(resultDirectoryName);
 			log.Info($"Shifting mono cecil applications to '{resultDirectoryPath}' directory...");
 

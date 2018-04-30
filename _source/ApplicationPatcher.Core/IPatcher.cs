@@ -1,7 +1,7 @@
 ﻿using ApplicationPatcher.Core.Types.Common;
 
 namespace ApplicationPatcher.Core {
-	public interface IPatcher {
+	internal interface IPatcher {
 		PatchResult Patch(CommonAssembly assembly);
 	}
 }

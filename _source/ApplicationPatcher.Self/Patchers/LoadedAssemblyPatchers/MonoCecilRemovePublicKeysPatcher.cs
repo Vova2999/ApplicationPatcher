@@ -10,7 +10,7 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 	[UsedImplicitly]
-	public class MonoCecilRemovePublicKeysPatcher : ILoadedAssemblyPatcher {
+	public class MonoCecilRemovePublicKeysPatcher : LoadedAssemblyPatcher {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly Log log;
 
@@ -19,7 +19,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 			log = Log.For(this);
 		}
 
-		public PatchResult Patch(CommonAssembly assembly) {
+		public override PatchResult Patch(CommonAssembly assembly) {
 			RemoveFromMainAssembly(assembly);
 			RemoveFromAssemblyReferences(assembly);
 			RemoveFromInternalsVisibleToAttribute(assembly);
