@@ -32,6 +32,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 			log.Info("Rewrite assembly public key...");
 
 			assembly.MainMonoCecilAssembly.Name.PublicKey = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey;
+			//assembly.MainMonoCecilAssembly.Name.PublicKey = new byte[0];
 			assembly.MainMonoCecilAssembly.Name.PublicKeyToken = applicationPatcherSelfConfiguration.MonoCecilNewPublicKeyToken;
 
 			log.Info("Assembly public key rewrited");
@@ -54,6 +55,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 				log.Debug($"Rewrite public key from reference assembly '{assemblyReference.Name}'");
 
 				assemblyReference.PublicKey = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey;
+				//assemblyReference.PublicKey = new byte[0];
 				assemblyReference.PublicKeyToken = applicationPatcherSelfConfiguration.MonoCecilNewPublicKeyToken;
 			}
 

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using JetBrains.Annotations;
 
 namespace ApplicationPatcher.Core.Types.Base {
 	public abstract class CommonBase<TCommon> where TCommon : CommonBase<TCommon> {
-		[UsedImplicitly]
 		public abstract string Name { get; }
-		[UsedImplicitly]
 		public abstract string FullName { get; }
 
 		private bool isLoaded;

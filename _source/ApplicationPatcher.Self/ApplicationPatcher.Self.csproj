@@ -84,7 +84,7 @@
     <Compile Include="ApplicationPatcherSelfProcessor.cs" />
     <Compile Include="Patchers\LoadedAssemblyPatchers\MonoCecilConstsTypePatcher.cs" />
     <Compile Include="Patchers\LoadedAssemblyPatchers\MonoCecilPublicKeysPatcher.cs" />
-    <Compile Include="Patchers\NotLoadedAssemblyPatchers\CheckAssemblyPublicKey.cs" />
+    <Compile Include="Patchers\NotLoadedAssemblyPatchers\CheckAssemblyPublicKeyPatcher.cs" />
     <Compile Include="Patchers\LoadedAssemblyPatchers\MonoCecilSelectedTypesPatcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

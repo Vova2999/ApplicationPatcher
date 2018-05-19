@@ -7,23 +7,26 @@ using JetBrains.Annotations;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
-	public class CommonAssembly : CommonBase<CommonAssembly>, IHasTypes, IHasAttributes {
+	public class CommonAssembly : CommonBase<CommonAssembly>, IHasAttributes, IHasTypes {
 		public override string Name => GetOrCreate(() => MainMonoCecilAssembly.FullName);
 		public override string FullName => GetOrCreate(() => MainMonoCecilAssembly.FullName);
-		public CommonType[] Types { get; private set; }
 		public CommonAttribute[] Attributes { get; private set; }
+		public CommonType[] Types { get; private set; }
 
 		[UsedImplicitly]
 		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.WhereFrom(this).ToArray());
+
 		public readonly bool HaveSymbolStore;
 
 		[UsedImplicitly]
 		public readonly Assembly MainReflectionAssembly;
+
 		[UsedImplicitly]
 		public readonly Assembly[] ReferencedReflectionAssemblies;
 
 		[UsedImplicitly]
-		public readonly AssemblyDefinition MainMonoCecilAssembly;
+		public virtual AssemblyDefinition MainMonoCecilAssembly { get; }
+
 		[UsedImplicitly]
 		public readonly AssemblyDefinition[] ReferencedMonoCecilAssemblies;
 
@@ -41,10 +44,10 @@ namespace ApplicationPatcher.Core.Types.Common {
 
 		protected override void LoadInternal() {
 			base.LoadInternal();
+			Attributes = CommonHelper.JoinAttributes(MainReflectionAssembly.GetCustomAttributesData(), MainMonoCecilAssembly.CustomAttributes);
 			Types = CommonHelper.JoinTypes(
 				new[] { MainReflectionAssembly }.Concat(ReferencedReflectionAssemblies).SelectMany(a => a.GetTypes()),
 				new[] { MainMonoCecilAssembly }.Concat(ReferencedMonoCecilAssemblies).SelectMany(a => a.MainModule.Types));
-			Attributes = CommonHelper.JoinAttributes(MainReflectionAssembly.GetCustomAttributesData(), MainMonoCecilAssembly.CustomAttributes);
 		}
 	}
 }

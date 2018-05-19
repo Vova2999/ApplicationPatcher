@@ -75,6 +75,9 @@ namespace ApplicationPatcher.Core {
 
 		[DoNotAddLogOffset]
 		private PatchResult PatchApplication(IEnumerable<IPatcher> patchers, CommonAssembly assembly) {
+			if (patchers == null)
+				return PatchResult.Succeeded;
+
 			foreach (var patcher in patchers) {
 				log.Info($"Apply '{patcher.GetType().FullName}' patcher...");
 				var patchResult = patcher.Patch(assembly);

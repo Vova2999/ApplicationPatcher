@@ -9,7 +9,7 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Factories {
 	public class CommonAssemblyFactory {
-		public CommonAssembly Create(string assemblyPath) {
+		public virtual CommonAssembly Create(string assemblyPath) {
 			var assemblyName = Path.GetFileName(assemblyPath);
 			var oldCurrentDirectory = Directory.GetCurrentDirectory();
 			var newCurrentDirectory = Path.GetDirectoryName(Path.GetFullPath(assemblyPath));

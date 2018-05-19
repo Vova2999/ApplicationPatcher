@@ -23,13 +23,19 @@
 	</MonoCecilSelectedInternalsVisibleToAttributeNames>
 	<MonoCecilSelectedPatchingTypeFullNames>
 		<string>Mono.Cecil.AssemblyDefinition</string>
+		<string>Mono.Cecil.AssemblyNameDefinition</string>
+		<string>Mono.Cecil.AssemblyNameReference</string>
 		<string>Mono.Cecil.CustomAttribute</string>
 		<string>Mono.Cecil.FieldDefinition</string>
+		<string>Mono.Cecil.FieldReference</string>
 		<string>Mono.Cecil.MethodDefinition</string>
 		<string>Mono.Cecil.MethodReference</string>
 		<string>Mono.Cecil.ModuleDefinition</string>
+		<string>Mono.Cecil.ModuleReference</string>
 		<string>Mono.Cecil.ParameterDefinition</string>
+		<string>Mono.Cecil.ParameterReference</string>
 		<string>Mono.Cecil.PropertyDefinition</string>
+		<string>Mono.Cecil.PropertyReference</string>
 		<string>Mono.Cecil.TypeDefinition</string>
 		<string>Mono.Cecil.TypeReference</string>
 	</MonoCecilSelectedPatchingTypeFullNames>
