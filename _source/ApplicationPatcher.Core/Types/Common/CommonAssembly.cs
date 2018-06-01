@@ -7,47 +7,41 @@ using JetBrains.Annotations;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
-	public class CommonAssembly : CommonBase<CommonAssembly>, IHasAttributes, IHasTypes {
-		public override string Name => GetOrCreate(() => MainMonoCecilAssembly.FullName);
-		public override string FullName => GetOrCreate(() => MainMonoCecilAssembly.FullName);
+	// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
+
+	public class CommonAssembly : CommonBase<CommonAssembly, Assembly, AssemblyDefinition>, IHasAttributes, IHasTypes {
+		public override string Name => GetOrCreate(() => MonoCecil.FullName);
+		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 		public CommonAttribute[] Attributes { get; private set; }
 		public CommonType[] Types { get; private set; }
 
 		[UsedImplicitly]
-		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.WhereFrom(this).ToArray());
+		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.CheckLoaded().WhereFrom(this).ToArray());
+
+		[UsedImplicitly]
+		public virtual Assembly[] ReferencedReflectionAssemblies { get; }
+
+		[UsedImplicitly]
+		public virtual AssemblyDefinition[] ReferencedMonoCecilAssemblies { get; }
 
 		public readonly bool HaveSymbolStore;
-
-		[UsedImplicitly]
-		public readonly Assembly MainReflectionAssembly;
-
-		[UsedImplicitly]
-		public readonly Assembly[] ReferencedReflectionAssemblies;
-
-		[UsedImplicitly]
-		public virtual AssemblyDefinition MainMonoCecilAssembly { get; }
-
-		[UsedImplicitly]
-		public readonly AssemblyDefinition[] ReferencedMonoCecilAssemblies;
 
 		public CommonAssembly(Assembly mainReflectionAssembly,
 							  Assembly[] referencedReflectionAssemblies,
 							  AssemblyDefinition mainMonoCecilAssembly,
 							  AssemblyDefinition[] referencedMonoCecilAssemblies,
-							  bool haveSymbolStore) {
-			MainReflectionAssembly = mainReflectionAssembly;
+							  bool haveSymbolStore) : base(mainReflectionAssembly, mainMonoCecilAssembly) {
 			ReferencedReflectionAssemblies = referencedReflectionAssemblies;
-			MainMonoCecilAssembly = mainMonoCecilAssembly;
 			ReferencedMonoCecilAssemblies = referencedMonoCecilAssemblies;
 			HaveSymbolStore = haveSymbolStore;
 		}
 
 		protected override void LoadInternal() {
 			base.LoadInternal();
-			Attributes = CommonHelper.JoinAttributes(MainReflectionAssembly.GetCustomAttributesData(), MainMonoCecilAssembly.CustomAttributes);
+			Attributes = CommonHelper.JoinAttributes(Reflection.GetCustomAttributesData(), MonoCecil.CustomAttributes);
 			Types = CommonHelper.JoinTypes(
-				new[] { MainReflectionAssembly }.Concat(ReferencedReflectionAssemblies).SelectMany(a => a.GetTypes()),
-				new[] { MainMonoCecilAssembly }.Concat(ReferencedMonoCecilAssemblies).SelectMany(a => a.MainModule.Types));
+				new[] { Reflection }.Concat(ReferencedReflectionAssemblies).SelectMany(a => a.GetTypes()),
+				new[] { MonoCecil }.Concat(ReferencedMonoCecilAssemblies).SelectMany(a => a.MainModule.Types));
 		}
 	}
 }

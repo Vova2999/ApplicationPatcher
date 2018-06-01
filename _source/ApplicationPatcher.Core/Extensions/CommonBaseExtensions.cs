@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 
 namespace ApplicationPatcher.Core.Extensions {
 	public static class CommonBaseExtensions {
+		[UsedImplicitly, DoNotAddLogOffset]
 		public static IEnumerable<TCommonBase> CheckLoaded<TCommonBase>(this IEnumerable<TCommonBase> commonBases) {
 			return commonBases ?? throw new InvalidOperationException("Not loaded");
 		}

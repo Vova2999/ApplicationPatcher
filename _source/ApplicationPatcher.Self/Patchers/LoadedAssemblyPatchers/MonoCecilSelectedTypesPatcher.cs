@@ -34,36 +34,40 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 			log.Debug("Selected types found:", foundedSelectedPatchingTypes.Select(viewModel => viewModel.FullName).OrderBy(fullName => fullName));
 
 			foreach (var type in foundedSelectedPatchingTypes) {
+				log.Info($"Loading type '{type.FullName}'...");
 				type.Load();
-				type.MonoCecilType.IsSealed = false;
+				log.Info($"Type '{type.FullName}' was loaded");
 
-				var constructorMethod = type.GetConstructor(new Type[0]);
-				if (constructorMethod != null) {
-					constructorMethod.MonoCecilConstructor.IsPublic = true;
-					constructorMethod.MonoCecilConstructor.IsPrivate = false;
-				}
+				log.Info($"Patching type '{type.FullName}'...");
+
+				type.MonoCecil.IsSealed = false;
+
+				var emptyConstructor = type.GetEmptyConstructor();
+				if (emptyConstructor != null)
+					emptyConstructor.MonoCecil.IsAssembly = true;
 				else {
-					var objectType = assembly.GetCommonType(typeof(object)).Load();
-					var objectConstructorMethod = objectType.GetConstructor(new Type[0]).Load();
-					var a = assembly.MainMonoCecilAssembly.MainModule.ImportReference(objectConstructorMethod.MonoCecilConstructor);
+					const MethodAttributes emptyConstructorMethodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
+					var objectEmptyConstructorMethod = assembly.MonoCecil.MainModule.ImportReference(typeof(object).GetConstructor(Type.EmptyTypes));
 
-					var methodDefinition = new MethodDefinition(".ctor", MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName, assembly.MainMonoCecilAssembly.MainModule.TypeSystem.Void);
-					methodDefinition.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
-					methodDefinition.Body.Instructions.Add(Instruction.Create(OpCodes.Call, a));
-					methodDefinition.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
+					var emptyConstructorMethod = new MethodDefinition(".ctor", emptyConstructorMethodAttributes, assembly.MonoCecil.MainModule.TypeSystem.Void);
+					emptyConstructorMethod.Body.Instructions.Add(Instruction.Create(OpCodes.Ldarg_0));
+					emptyConstructorMethod.Body.Instructions.Add(Instruction.Create(OpCodes.Call, objectEmptyConstructorMethod));
+					emptyConstructorMethod.Body.Instructions.Add(Instruction.Create(OpCodes.Ret));
 
-					type.MonoCecilType.Methods.Add(methodDefinition);
+					type.MonoCecil.Methods.Add(emptyConstructorMethod);
 				}
 
 				foreach (var property in type.Properties) {
-					if (property.MonoCecilProperty.GetMethod != null)
-						property.MonoCecilProperty.GetMethod.IsVirtual = true;
-					if (property.MonoCecilProperty.SetMethod != null)
-						property.MonoCecilProperty.SetMethod.IsVirtual = true;
+					if (property.MonoCecil.GetMethod != null)
+						property.MonoCecil.GetMethod.IsVirtual = true;
+					if (property.MonoCecil.SetMethod != null)
+						property.MonoCecil.SetMethod.IsVirtual = true;
 				}
+
+				log.Info($"Type '{type.FullName}' was patched");
 			}
 
-			foundedSelectedPatchingTypes.ForEach(type => type.Load().MonoCecilType.IsSealed = false);
+			foundedSelectedPatchingTypes.ForEach(type => type.Load().MonoCecil.IsSealed = false);
 			log.Info("Sealed types was patched");
 			return PatchResult.Succeeded;
 		}

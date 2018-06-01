@@ -7,27 +7,22 @@ using JetBrains.Annotations;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
-	public class CommonConstructor : CommonBase<CommonConstructor>, IHasAttributes, IHasParameters {
-		public override string Name => GetOrCreate(() => MonoCecilConstructor.Name);
-		public override string FullName => GetOrCreate(() => MonoCecilConstructor.FullName);
+	public class CommonConstructor : CommonBase<CommonConstructor, ConstructorInfo, MethodDefinition>, IHasAttributes, IHasParameters {
+		public override string Name => GetOrCreate(() => MonoCecil.Name);
+		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 		public CommonAttribute[] Attributes { get; private set; }
 		public CommonParameter[] Parameters { get; private set; }
 
 		[UsedImplicitly]
-		public Type[] ParameterTypes => GetOrCreate(() => ReflectionConstructor.GetParameters().Select(parameter => parameter.ParameterType).ToArray());
+		public Type[] ParameterTypes => GetOrCreate(() => Reflection.GetParameters().Select(parameter => parameter.ParameterType).ToArray());
 
-		public readonly ConstructorInfo ReflectionConstructor;
-		public readonly MethodDefinition MonoCecilConstructor;
-
-		public CommonConstructor(ConstructorInfo reflectionConstructor, MethodDefinition monoCecilConstructor) {
-			ReflectionConstructor = reflectionConstructor;
-			MonoCecilConstructor = monoCecilConstructor;
+		public CommonConstructor(ConstructorInfo reflectionConstructor, MethodDefinition monoCecilConstructor) : base(reflectionConstructor, monoCecilConstructor) {
 		}
 
 		protected override void LoadInternal() {
 			base.LoadInternal();
-			Attributes = CommonHelper.JoinAttributes(ReflectionConstructor.GetCustomAttributesData(), MonoCecilConstructor.CustomAttributes);
-			Parameters = CommonHelper.JoinParameters(ReflectionConstructor.GetParameters(), MonoCecilConstructor.Parameters);
+			Attributes = CommonHelper.JoinAttributes(Reflection.GetCustomAttributesData(), MonoCecil.CustomAttributes);
+			Parameters = CommonHelper.JoinParameters(Reflection.GetParameters(), MonoCecil.Parameters);
 		}
 	}
 }

@@ -11,6 +11,9 @@ using Mono.Cecil;
 namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 	[UsedImplicitly]
 	public class MonoCecilPublicKeysPatcher : LoadedAssemblyPatcher {
+		private const string moqAssemblyName = "DynamicProxyGenAssembly2";
+		private const string moqAssemblyPublicKey = "0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7";
+
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly Log log;
 
@@ -31,18 +34,17 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 		private void MainAssembly(CommonAssembly assembly) {
 			log.Info("Rewrite assembly public key...");
 
-			assembly.MainMonoCecilAssembly.Name.PublicKey = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey;
-			//assembly.MainMonoCecilAssembly.Name.PublicKey = new byte[0];
-			assembly.MainMonoCecilAssembly.Name.PublicKeyToken = applicationPatcherSelfConfiguration.MonoCecilNewPublicKeyToken;
+			assembly.MonoCecil.Name.PublicKey = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey;
+			assembly.MonoCecil.Name.PublicKeyToken = applicationPatcherSelfConfiguration.MonoCecilNewPublicKeyToken;
 
-			log.Info("Assembly public key rewrited");
+			log.Info("Assembly public key was rewrited");
 		}
 
 		[DoNotAddLogOffset]
 		private void AssemblyReferences(CommonAssembly assembly) {
 			log.Info("Rewrite selected assembly references public key...");
 
-			var assemblyReferences = assembly.MainMonoCecilAssembly.MainModule.AssemblyReferences
+			var assemblyReferences = assembly.MonoCecil.MainModule.AssemblyReferences
 				.Where(assemblyReference => applicationPatcherSelfConfiguration.MonoCecilSelectedAssemblyReferenceNames.Contains(assemblyReference.Name))
 				.ToArray();
 
@@ -55,45 +57,59 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 				log.Debug($"Rewrite public key from reference assembly '{assemblyReference.Name}'");
 
 				assemblyReference.PublicKey = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey;
-				//assemblyReference.PublicKey = new byte[0];
 				assemblyReference.PublicKeyToken = applicationPatcherSelfConfiguration.MonoCecilNewPublicKeyToken;
 			}
 
-			log.Info("Selected assembly references public key rewrited");
+			log.Info("Selected assembly references public key was rewrited");
 		}
 
 		[DoNotAddLogOffset]
 		private void InternalVisibleToAttributes(CommonAssembly assembly) {
-			log.Info("Rewrite public keys from selected InternalsVisibleToAttribute...");
+			log.Info($"Create InternalsVisibleToAttribute for '{moqAssemblyName}'...");
 
-			var selectedAttributes = assembly.GetAttributes<InternalsVisibleToAttribute>()
+			var internalsVisibleToAttributes = assembly.GetAttributes<InternalsVisibleToAttribute>()
 				.Select(commonAttribute => {
-					var constructorArgument = commonAttribute.MonoCecilAttribute.ConstructorArguments.FirstOrDefault();
+					var constructorArgument = commonAttribute.MonoCecil.ConstructorArguments.FirstOrDefault();
 					var attributeParams = ((string)constructorArgument.Value).Split(',').Select(x => x.Trim()).ToList();
 					var assemblyName = attributeParams.FirstOrDefault();
-					return new { AssemblyName = assemblyName, AttributeParams = attributeParams, ConstructorArgument = constructorArgument, commonAttribute.MonoCecilAttribute };
+					return new { AssemblyName = assemblyName, AttributeParams = attributeParams, ConstructorArgument = constructorArgument, commonAttribute.MonoCecil };
 				})
+				.ToArray();
+
+			if (internalsVisibleToAttributes.Any(attribute => attribute.AssemblyName == moqAssemblyName))
+				log.Info($"InternalsVisibleToAttribute for '{moqAssemblyName}' already created");
+			else {
+				var internalsVisibleToAttribute = new CustomAttribute(assembly.MonoCecil.MainModule.ImportReference(typeof(InternalsVisibleToAttribute).GetConstructor(new[] { typeof(string) })));
+				internalsVisibleToAttribute.ConstructorArguments.Add(new CustomAttributeArgument(assembly.MonoCecil.MainModule.TypeSystem.String, $"{moqAssemblyName}, PublicKey={moqAssemblyPublicKey}"));
+				assembly.MonoCecil.CustomAttributes.Add(internalsVisibleToAttribute);
+
+				log.Info($"InternalsVisibleToAttribute for '{moqAssemblyName}' was created");
+			}
+
+			log.Info("Rewrite public keys from selected InternalsVisibleToAttributes...");
+
+			var selectedInternalsVisibleToAttributes = internalsVisibleToAttributes
 				.Where(attribute => applicationPatcherSelfConfiguration.MonoCecilSelectedInternalsVisibleToAttributeNames.Contains(attribute.AssemblyName))
 				.ToArray();
 
-			if (!selectedAttributes.Any()) {
-				log.Info("Not found selected InternalsVisibleToAttribute");
+			if (!selectedInternalsVisibleToAttributes.Any()) {
+				log.Info("Not found selected InternalsVisibleToAttributes");
 				return;
 			}
 
-			foreach (var selectedAttribute in selectedAttributes) {
-				var attributeParams = selectedAttribute.AttributeParams
+			foreach (var selectedInternalsVisibleToAttribute in selectedInternalsVisibleToAttributes) {
+				var attributeParams = selectedInternalsVisibleToAttribute.AttributeParams
 					.Where(attributeParam => !attributeParam.StartsWith("PublicKey"))
 					.Concat(new[] { $"PublicKey={applicationPatcherSelfConfiguration.MonoCecilNewPublicKey.ToHexString()}" })
 					.ToArray();
 
-				log.Debug($"Rewrite public key from InternalsVisibleToAttribute with assembly name '{selectedAttribute.AssemblyName}'");
-				selectedAttribute.MonoCecilAttribute.ConstructorArguments.Clear();
-				selectedAttribute.MonoCecilAttribute.ConstructorArguments.Add(
-					new CustomAttributeArgument(selectedAttribute.ConstructorArgument.Type, string.Join(", ", attributeParams)));
+				log.Debug($"Rewrite public key from InternalsVisibleToAttribute with assembly name '{selectedInternalsVisibleToAttribute.AssemblyName}'");
+				selectedInternalsVisibleToAttribute.MonoCecil.ConstructorArguments.Clear();
+				selectedInternalsVisibleToAttribute.MonoCecil.ConstructorArguments.Add(
+					new CustomAttributeArgument(selectedInternalsVisibleToAttribute.ConstructorArgument.Type, string.Join(", ", attributeParams)));
 			}
 
-			log.Info("Public keys from selected InternalsVisibleToAttribute rewrited");
+			log.Info("Public keys from selected InternalsVisibleToAttributes was rewrited");
 		}
 	}
 }

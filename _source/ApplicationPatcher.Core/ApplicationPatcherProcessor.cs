@@ -6,8 +6,10 @@ using ApplicationPatcher.Core.Factories;
 using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Patchers;
 using ApplicationPatcher.Core.Types.Common;
+using JetBrains.Annotations;
 
 namespace ApplicationPatcher.Core {
+	[UsedImplicitly]
 	public class ApplicationPatcherProcessor {
 		private static readonly string[] availableExtensions = { ".exe", ".dll" };
 		private readonly CommonAssemblyFactory commonAssemblyFactory;
@@ -70,7 +72,7 @@ namespace ApplicationPatcher.Core {
 				throw new FileLoadException($"Extension of application can not be '{applicationExtension}'. " +
 					$"Available extensions: {string.Join(", ", availableExtensions.Select(availableExtension => $"'{availableExtension}'"))}");
 
-			log.Info($"Application was found: {applicationFullPath}");
+			log.Info($"Application was found: '{applicationFullPath}'");
 		}
 
 		[DoNotAddLogOffset]

@@ -20,16 +20,16 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 			const string constsTypeFullName = "Consts";
 			log.Info($"Patching '{constsTypeFullName}' type...");
 
-			var constsType = assembly.GetCommonType(constsTypeFullName, false);
+			var constsType = assembly.GetCommonType(constsTypeFullName);
 
 			if (constsType == null) {
 				log.Info($"Not found '{constsTypeFullName}' type");
 				return PatchResult.Succeeded;
 			}
 
-			constsType.Load().GetField("PublicKey").MonoCecilField.Constant = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey.ToHexString();
+			constsType.Load().GetField("PublicKey").MonoCecil.Constant = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey.ToHexString();
 
-			log.Info($"{constsTypeFullName} type was patched");
+			log.Info($"'{constsTypeFullName}' type was patched");
 			return PatchResult.Succeeded;
 		}
 	}

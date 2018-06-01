@@ -5,9 +5,13 @@ using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Types.Common;
+using JetBrains.Annotations;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Factories {
+	// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
+
+	[UsedImplicitly]
 	public class CommonAssemblyFactory {
 		public virtual CommonAssembly Create(string assemblyPath) {
 			var assemblyName = Path.GetFileName(assemblyPath);
@@ -61,7 +65,7 @@ namespace ApplicationPatcher.Core.Factories {
 			return mainAssembly;
 		}
 
-		private static Assembly[] ReadReferencedReflectionAssemblies(Assembly mainReflectionAssembly, Dictionary<string, string> foundedAssemblyFiles) {
+		private static Assembly[] ReadReferencedReflectionAssemblies(Assembly mainReflectionAssembly, IDictionary<string, string> foundedAssemblyFiles) {
 			AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => FindLoadedAssembly(new AssemblyName(args.Name).Name) ??
 				(foundedAssemblyFiles.TryGetValue(new AssemblyName(args.Name).Name, out var assemblyFile) ? Assembly.Load(File.ReadAllBytes(assemblyFile)) : null);
 
@@ -76,7 +80,7 @@ namespace ApplicationPatcher.Core.Factories {
 			return AssemblyDefinition.ReadAssembly(assemblyName, new ReaderParameters { ReadSymbols = haveSymbolStore, InMemory = true });
 		}
 
-		private static AssemblyDefinition[] ReadReferencedMonoCecilAssemblies(AssemblyDefinition mainMonoCecilAssembly, Dictionary<string, string> foundedAssemblyFiles) {
+		private static AssemblyDefinition[] ReadReferencedMonoCecilAssemblies(AssemblyDefinition mainMonoCecilAssembly, IDictionary<string, string> foundedAssemblyFiles) {
 			return mainMonoCecilAssembly.MainModule.AssemblyReferences
 				.Select(assembly => foundedAssemblyFiles.TryGetValue(assembly.Name, out var assemblyFile)
 					? AssemblyDefinition.ReadAssembly(assemblyFile)
@@ -86,7 +90,7 @@ namespace ApplicationPatcher.Core.Factories {
 
 		public virtual void Save(CommonAssembly commonAssembly, string assemblyPath, string signaturePath = null) {
 			var strongNameKeyPair = string.IsNullOrEmpty(signaturePath) ? null : new StrongNameKeyPair(File.ReadAllBytes(signaturePath));
-			commonAssembly.MainMonoCecilAssembly.Write(assemblyPath, new WriterParameters { WriteSymbols = commonAssembly.HaveSymbolStore, StrongNameKeyPair = strongNameKeyPair });
+			commonAssembly.MonoCecil.Write(assemblyPath, new WriterParameters { WriteSymbols = commonAssembly.HaveSymbolStore, StrongNameKeyPair = strongNameKeyPair });
 		}
 	}
 }

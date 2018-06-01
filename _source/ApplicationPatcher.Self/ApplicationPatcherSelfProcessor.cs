@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using ApplicationPatcher.Core;
 using ApplicationPatcher.Core.Helpers;
+using JetBrains.Annotations;
 
 namespace ApplicationPatcher.Self {
+	[UsedImplicitly]
 	public class ApplicationPatcherSelfProcessor {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly ApplicationPatcherProcessor applicationPatcherProcessor;

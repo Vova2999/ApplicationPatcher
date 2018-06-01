@@ -19,12 +19,12 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.NotLoadedAssemblyPatchers {
 			mainMonoCecilAssembly.Setup(assembly => assembly.Name).Returns(assemblyNameDefinition.Object);
 
 			var commonAssembly = new Mock<CommonAssembly>(MockBehavior.Strict, null, null, null, null, false);
-			commonAssembly.Setup(assembly => assembly.MainMonoCecilAssembly).Returns(mainMonoCecilAssembly.Object);
+			commonAssembly.Setup(assembly => assembly.MonoCecil).Returns(mainMonoCecilAssembly.Object);
 
-			var checkAssemblyPublicKeyPatcher = new CheckAssemblyPublicKeyPatcher(new ApplicationPatcherSelfConfiguration());
+			var checkAssemblyPublicKeyPatcher = new CheckAssemblyPublicKeyPatcher(new ApplicationPatcherSelfConfiguration { MonoCecilNewPublicKeyToken = new byte[] { 1, 2, 3 } });
 			var patchResult = checkAssemblyPublicKeyPatcher.Patch(commonAssembly.Object);
 
-			patchResult.Should().Be(PatchResult.Succeeded);
+			patchResult.Should().Be(PatchResult.Canceled);
 		}
 	}
 }

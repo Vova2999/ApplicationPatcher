@@ -23,7 +23,7 @@ namespace ApplicationPatcher.Core.Helpers {
 			xmlSerializers = new ConcurrentDictionary<Type, XmlSerializer>();
 		}
 
-		public static byte[] Serializing(object obj) {
+		internal static byte[] Serializing(object obj) {
 			var xmlSerializer = GetXmlSerializer(obj.GetType());
 
 			using (var memoryStream = new MemoryStream())
@@ -33,7 +33,7 @@ namespace ApplicationPatcher.Core.Helpers {
 			}
 		}
 
-		public static TKey Deserializing<TKey>(byte[] bytes) {
+		internal static TKey Deserializing<TKey>(byte[] bytes) {
 			var xmlSerializer = GetXmlSerializer(typeof(TKey));
 
 			using (var stream = new MemoryStream(bytes))

@@ -5,23 +5,18 @@ using ApplicationPatcher.Core.Types.Base;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.Common {
-	public class CommonProperty : CommonBase<CommonProperty>, IHasAttributes, IHasType {
-		public Type Type => GetOrCreate(() => ReflectionProperty.PropertyType);
-		public override string Name => GetOrCreate(() => MonoCecilProperty.Name);
-		public override string FullName => GetOrCreate(() => MonoCecilProperty.FullName);
+	public class CommonProperty : CommonBase<CommonProperty, PropertyInfo, PropertyDefinition>, IHasAttributes, IHasType {
+		public Type Type => GetOrCreate(() => Reflection.PropertyType);
+		public override string Name => GetOrCreate(() => MonoCecil.Name);
+		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 		public CommonAttribute[] Attributes { get; private set; }
 
-		public readonly PropertyInfo ReflectionProperty;
-		public readonly PropertyDefinition MonoCecilProperty;
-
-		public CommonProperty(PropertyInfo reflectionProperty, PropertyDefinition monoCecilProperty) {
-			ReflectionProperty = reflectionProperty;
-			MonoCecilProperty = monoCecilProperty;
+		public CommonProperty(PropertyInfo reflectionProperty, PropertyDefinition monoCecilProperty) : base(reflectionProperty, monoCecilProperty) {
 		}
 
 		protected override void LoadInternal() {
 			base.LoadInternal();
-			Attributes = CommonHelper.JoinAttributes(ReflectionProperty.GetCustomAttributesData(), MonoCecilProperty.CustomAttributes);
+			Attributes = CommonHelper.JoinAttributes(Reflection.GetCustomAttributesData(), MonoCecil.CustomAttributes);
 		}
 	}
 }
