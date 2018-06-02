@@ -47,17 +47,29 @@
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.dll')">
       <HintPath>..\..\Build\ApplicationPatcher.Self\Result\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Mdb, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL" Condition="!Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.dll')">
+      <HintPath>..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Mdb.dll')">
       <HintPath>..\..\Build\ApplicationPatcher.Self\Result\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Pdb, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil.Mdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL" Condition="!Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Mdb.dll')">
+      <HintPath>..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Pdb.dll')">
       <HintPath>..\..\Build\ApplicationPatcher.Self\Result\Mono.Cecil.Pdb.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Rocks, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL">
+    <Reference Include="Mono.Cecil.Pdb, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL" Condition="!Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Pdb.dll')">
+      <HintPath>..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.10.0.0, Culture=neutral, PublicKeyToken=e8b8c77f796ba1b1, processorArchitecture=MSIL" Condition="Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Rocks.dll')">
       <HintPath>..\..\Build\ApplicationPatcher.Self\Result\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.10.0.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e, processorArchitecture=MSIL" Condition="!Exists('$(OutDir)\..\ApplicationPatcher.Self\Result\Mono.Cecil.Rocks.dll')">
+      <HintPath>..\packages\Mono.Cecil.0.10.0\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="Moq, Version=4.8.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.8.2\lib\net45\Moq.dll</HintPath>
