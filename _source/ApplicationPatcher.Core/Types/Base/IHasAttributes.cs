@@ -1,9 +1,10 @@
 using ApplicationPatcher.Core.Types.Common;
-using JetBrains.Annotations;
+
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMemberInSuper.Global
 
 namespace ApplicationPatcher.Core.Types.Base {
 	public interface IHasAttributes {
-		[UsedImplicitly]
 		CommonAttribute[] Attributes { get; }
 	}
 }

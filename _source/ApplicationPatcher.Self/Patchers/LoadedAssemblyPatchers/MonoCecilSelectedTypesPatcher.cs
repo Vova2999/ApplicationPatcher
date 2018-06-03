@@ -5,12 +5,10 @@ using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Patchers;
 using ApplicationPatcher.Core.Types.Common;
-using JetBrains.Annotations;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
-	[UsedImplicitly]
 	public class MonoCecilSelectedTypesPatcher : LoadedAssemblyPatcher {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly Log log;

@@ -1,9 +1,10 @@
 ﻿using System;
-using JetBrains.Annotations;
+
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMemberInSuper.Global
 
 namespace ApplicationPatcher.Core.Types.Base {
 	public interface IHasType {
-		[UsedImplicitly]
 		Type Type { get; }
 	}
 }

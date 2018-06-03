@@ -6,9 +6,10 @@ using ApplicationPatcher.Core.Types.Base;
 using JetBrains.Annotations;
 using Mono.Cecil;
 
-namespace ApplicationPatcher.Core.Types.Common {
-	// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
+// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
+// ReSharper disable MemberCanBeProtected.Global
 
+namespace ApplicationPatcher.Core.Types.Common {
 	public class CommonAssembly : CommonBase<CommonAssembly, Assembly, AssemblyDefinition>, IHasAttributes, IHasTypes {
 		public override string Name => GetOrCreate(() => MonoCecil.FullName);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
@@ -18,10 +19,7 @@ namespace ApplicationPatcher.Core.Types.Common {
 		[UsedImplicitly]
 		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.CheckLoaded().WhereFrom(this).ToArray());
 
-		[UsedImplicitly]
 		public virtual Assembly[] ReferencedReflectionAssemblies { get; }
-
-		[UsedImplicitly]
 		public virtual AssemblyDefinition[] ReferencedMonoCecilAssemblies { get; }
 
 		public readonly bool HaveSymbolStore;

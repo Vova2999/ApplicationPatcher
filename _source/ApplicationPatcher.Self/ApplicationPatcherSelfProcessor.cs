@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using ApplicationPatcher.Core;
 using ApplicationPatcher.Core.Helpers;
-using JetBrains.Annotations;
+
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace ApplicationPatcher.Self {
-	[UsedImplicitly]
 	public class ApplicationPatcherSelfProcessor {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly ApplicationPatcherProcessor applicationPatcherProcessor;
@@ -18,7 +18,6 @@ namespace ApplicationPatcher.Self {
 			log = Log.For(this);
 		}
 
-		[DoNotAddLogOffset]
 		public void PatchSelfApplication() {
 			log.Info("Patching all mono cecil applications...");
 
@@ -34,7 +33,6 @@ namespace ApplicationPatcher.Self {
 			ShiftMonoCecilApplications(monoCecilApplicationResultNames, applicationPatcherSelfConfiguration.ApplicationPatcherCoreDirectoryName, true);
 		}
 
-		[DoNotAddLogOffset]
 		private string[] ShiftMonoCecilApplications(IEnumerable<string> monoCecilApplicationNames, string resultDirectoryName, bool overwrite) {
 			var resultDirectoryPath = Path.GetFullPath(resultDirectoryName);
 			log.Info($"Shifting mono cecil applications to '{resultDirectoryPath}' directory...");
@@ -59,6 +57,7 @@ namespace ApplicationPatcher.Self {
 			return monoCecilApplicationResultNames.ToArray();
 		}
 
+		[AddLogOffset]
 		private static void PatchApplication(ApplicationPatcherProcessor applicationPatcherProcessor, string applicationPath, string signaturePath) {
 			applicationPatcherProcessor.PatchApplication(applicationPath, signaturePath);
 		}

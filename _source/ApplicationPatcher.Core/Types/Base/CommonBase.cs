@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using JetBrains.Annotations;
+
+// ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable VirtualMemberNeverOverridden.Global
 
 namespace ApplicationPatcher.Core.Types.Base {
-	// ReSharper disable VirtualMemberNeverOverridden.Global
-
 	public abstract class CommonBase<TCommon, TReflection, TMonoCecil> where TCommon : CommonBase<TCommon, TReflection, TMonoCecil> {
-		[UsedImplicitly]
 		public abstract string Name { get; }
-
-		[UsedImplicitly]
 		public abstract string FullName { get; }
 
-		[UsedImplicitly]
 		public virtual TReflection Reflection { get; }
-
-		[UsedImplicitly]
 		public virtual TMonoCecil MonoCecil { get; }
 
 		private bool isLoaded;

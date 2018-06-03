@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Factories;
 using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Patchers;
 using ApplicationPatcher.Core.Types.Common;
-using JetBrains.Annotations;
+
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace ApplicationPatcher.Core {
-	[UsedImplicitly]
 	public class ApplicationPatcherProcessor {
 		private static readonly string[] availableExtensions = { ".exe", ".dll" };
 		private readonly CommonAssemblyFactory commonAssemblyFactory;
@@ -26,7 +27,6 @@ namespace ApplicationPatcher.Core {
 			log = Log.For(this);
 		}
 
-		[DoNotAddLogOffset]
 		public void PatchApplication(string applicationPath, string signaturePath = null) {
 			CheckApplicationPath(applicationPath);
 
@@ -58,9 +58,8 @@ namespace ApplicationPatcher.Core {
 			log.Info("Assembly was saved");
 		}
 
-		[DoNotAddLogOffset]
 		private void CheckApplicationPath(string applicationPath) {
-			if (string.IsNullOrEmpty(applicationPath))
+			if (applicationPath.IsNullOrEmpty())
 				throw new ArgumentException("You must specify path to application");
 
 			var applicationFullPath = Path.GetFullPath(applicationPath);
@@ -75,7 +74,6 @@ namespace ApplicationPatcher.Core {
 			log.Info($"Application was found: '{applicationFullPath}'");
 		}
 
-		[DoNotAddLogOffset]
 		private PatchResult PatchApplication(IEnumerable<IPatcher> patchers, CommonAssembly assembly) {
 			if (patchers == null)
 				return PatchResult.Succeeded;

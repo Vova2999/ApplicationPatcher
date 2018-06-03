@@ -7,7 +7,6 @@ namespace ApplicationPatcher.Self {
 	public static class Program {
 		private static readonly Log log = Log.For(typeof(Program));
 
-		[DoNotAddLogOffset]
 		public static void Main() {
 			try {
 				Run();
@@ -18,7 +17,7 @@ namespace ApplicationPatcher.Self {
 			}
 		}
 
-		[DoNotAddLogOffset, UsedImplicitly]
+		[UsedImplicitly]
 		public static void Run() {
 			var container = new StandardKernel(new ApplicationPatcherSelfNinjectModule());
 			container.Get<ApplicationPatcherSelfProcessor>().PatchSelfApplication();

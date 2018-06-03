@@ -5,13 +5,12 @@ using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Types.Common;
-using JetBrains.Annotations;
 using Mono.Cecil;
 
-namespace ApplicationPatcher.Core.Factories {
-	// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 
-	[UsedImplicitly]
+namespace ApplicationPatcher.Core.Factories {
 	public class CommonAssemblyFactory {
 		public virtual CommonAssembly Create(string assemblyPath) {
 			var assemblyName = Path.GetFileName(assemblyPath);
@@ -20,7 +19,7 @@ namespace ApplicationPatcher.Core.Factories {
 			Directory.SetCurrentDirectory(newCurrentDirectory ?? throw new Exception());
 
 			var symbolStorePath = Path.ChangeExtension(assemblyName, "pdb");
-			var haveSymbolStore = !string.IsNullOrEmpty(symbolStorePath) && File.Exists(symbolStorePath);
+			var haveSymbolStore = !symbolStorePath.IsNullOrEmpty() && File.Exists(symbolStorePath);
 
 			var foundedAssemblyFiles = Directory.GetFiles(Directory.GetCurrentDirectory())
 				.Select(filePath => new { Path = filePath, Extension = Path.GetExtension(filePath) })
@@ -89,7 +88,7 @@ namespace ApplicationPatcher.Core.Factories {
 		}
 
 		public virtual void Save(CommonAssembly commonAssembly, string assemblyPath, string signaturePath = null) {
-			var strongNameKeyPair = string.IsNullOrEmpty(signaturePath) ? null : new StrongNameKeyPair(File.ReadAllBytes(signaturePath));
+			var strongNameKeyPair = signaturePath.IsNullOrEmpty() ? null : new StrongNameKeyPair(File.ReadAllBytes(signaturePath));
 			commonAssembly.MonoCecil.Write(assemblyPath, new WriterParameters { WriteSymbols = commonAssembly.HaveSymbolStore, StrongNameKeyPair = strongNameKeyPair });
 		}
 	}
