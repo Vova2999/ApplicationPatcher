@@ -56,18 +56,31 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 				}
 
 				foreach (var property in type.Properties) {
-					if (property.MonoCecil.GetMethod != null)
-						property.MonoCecil.GetMethod.IsVirtual = true;
-					if (property.MonoCecil.SetMethod != null)
-						property.MonoCecil.SetMethod.IsVirtual = true;
+					SetVirtualMethod(property.MonoCecil.GetMethod);
+					SetVirtualMethod(property.MonoCecil.SetMethod);
 				}
+
+				type.Methods.Where(method => !method.MonoCecil.IsStatic).ForEach(method => SetVirtualMethod(method.MonoCecil));
 
 				log.Info($"Type '{type.FullName}' was patched");
 			}
 
 			foundedSelectedPatchingTypes.ForEach(type => type.Load().MonoCecil.IsSealed = false);
-			log.Info("Sealed types was patched");
+			log.Info("Selected types was patched");
 			return PatchResult.Succeeded;
+		}
+
+		private static void SetVirtualMethod(MethodDefinition method) {
+			if (method == null)
+				return;
+
+			method.IsFinal = false;
+
+			if (method.IsVirtual)
+				return;
+
+			method.IsNewSlot = true;
+			method.IsVirtual = true;
 		}
 	}
 }

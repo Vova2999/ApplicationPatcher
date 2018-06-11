@@ -3,15 +3,14 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 
 // ReSharper disable UnusedMemberInSuper.Global
-// ReSharper disable VirtualMemberNeverOverridden.Global
 
 namespace ApplicationPatcher.Core.Types.Base {
 	public abstract class CommonBase<TCommon, TReflection, TMonoCecil> where TCommon : CommonBase<TCommon, TReflection, TMonoCecil> {
 		public abstract string Name { get; }
 		public abstract string FullName { get; }
 
-		public virtual TReflection Reflection { get; }
-		public virtual TMonoCecil MonoCecil { get; }
+		public TReflection Reflection { get; }
+		public TMonoCecil MonoCecil { get; }
 
 		private bool isLoaded;
 		private readonly ConcurrentDictionary<string, object> values = new ConcurrentDictionary<string, object>();
@@ -21,7 +20,7 @@ namespace ApplicationPatcher.Core.Types.Base {
 			MonoCecil = monoCecil;
 		}
 
-		public virtual TCommon Load() {
+		public TCommon Load() {
 			var common = (TCommon)this;
 
 			if (isLoaded)
@@ -31,7 +30,7 @@ namespace ApplicationPatcher.Core.Types.Base {
 			return common;
 		}
 
-		protected virtual void LoadInternal() {
+		internal virtual void LoadInternal() {
 			isLoaded = true;
 		}
 

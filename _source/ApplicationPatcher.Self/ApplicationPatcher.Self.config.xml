@@ -38,5 +38,6 @@
 		<string>Mono.Cecil.PropertyReference</string>
 		<string>Mono.Cecil.TypeDefinition</string>
 		<string>Mono.Cecil.TypeReference</string>
+		<string>Mono.Cecil.TypeSystem</string>
 	</MonoCecilSelectedPatchingTypeFullNames>
 </ApplicationPatcherSelfConfiguration>

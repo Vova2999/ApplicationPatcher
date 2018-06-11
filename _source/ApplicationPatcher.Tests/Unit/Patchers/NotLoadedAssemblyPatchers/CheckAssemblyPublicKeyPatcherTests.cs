@@ -1,30 +1,35 @@
 ﻿using ApplicationPatcher.Core;
-using ApplicationPatcher.Core.Types.Common;
 using ApplicationPatcher.Self;
 using ApplicationPatcher.Self.Patchers.NotLoadedAssemblyPatchers;
 using FluentAssertions;
 using Mono.Cecil;
-using Moq;
 using NUnit.Framework;
 
 namespace ApplicationPatcher.Tests.Unit.Patchers.NotLoadedAssemblyPatchers {
 	[TestFixture]
-	public class CheckAssemblyPublicKeyPatcherTests {
+	public class CheckAssemblyPublicKeyPatcherTests : PatcherTestsBase {
 		[Test]
-		public void A() {
-			var assemblyNameDefinition = new Mock<AssemblyNameDefinition>(MockBehavior.Strict);
-			assemblyNameDefinition.Setup(assemblyName => assemblyName.PublicKeyToken).Returns(new byte[] { 1, 2, 3 });
+		public void EqualPublicKeyTokens() {
+			CheckPublicKeyTokens(new byte[] { 1, 2, 3 }, new byte[] { 1, 2, 3 }, PatchResult.Canceled);
+		}
 
-			var mainMonoCecilAssembly = new Mock<AssemblyDefinition>(MockBehavior.Strict);
-			mainMonoCecilAssembly.Setup(assembly => assembly.Name).Returns(assemblyNameDefinition.Object);
+		[Test]
+		public void NotEqualPublicKeyTokens() {
+			CheckPublicKeyTokens(new byte[] { 1, 2, 3 }, new byte[] { 1, 3, 2 }, PatchResult.Succeeded);
+		}
 
-			var commonAssembly = new Mock<CommonAssembly>(MockBehavior.Strict, null, null, null, null, false);
-			commonAssembly.Setup(assembly => assembly.MonoCecil).Returns(mainMonoCecilAssembly.Object);
+		private static void CheckPublicKeyTokens(byte[] assemblyPublicKeyToken, byte[] configurationPublicKeyToken, PatchResult expectedPatchResult) {
+			var assemblyNameDefinition = CreateMockFor<AssemblyNameDefinition>();
+			assemblyNameDefinition.Setup(assemblyName => assemblyName.PublicKeyToken).Returns(assemblyPublicKeyToken);
 
-			var checkAssemblyPublicKeyPatcher = new CheckAssemblyPublicKeyPatcher(new ApplicationPatcherSelfConfiguration { MonoCecilNewPublicKeyToken = new byte[] { 1, 2, 3 } });
-			var patchResult = checkAssemblyPublicKeyPatcher.Patch(commonAssembly.Object);
+			var assembly = FakeCommonAssemblyBuilder.Create();
+			assembly.MainMonoCecilAssemblyMock.Setup(mainMonoCecilAssembly => mainMonoCecilAssembly.Name).Returns(assemblyNameDefinition.Object);
 
-			patchResult.Should().Be(PatchResult.Canceled);
+			var applicationPatcherSelfConfiguration = new ApplicationPatcherSelfConfiguration { MonoCecilNewPublicKeyToken = configurationPublicKeyToken };
+			var checkAssemblyPublicKeyPatcher = new CheckAssemblyPublicKeyPatcher(applicationPatcherSelfConfiguration);
+			var patchResult = checkAssemblyPublicKeyPatcher.Patch(assembly.CommonAssembly);
+
+			patchResult.Should().Be(expectedPatchResult);
 		}
 	}
 }

@@ -13,8 +13,8 @@ namespace ApplicationPatcher.Core.Types.Common {
 	public class CommonAssembly : CommonBase<CommonAssembly, Assembly, AssemblyDefinition>, IHasAttributes, IHasTypes {
 		public override string Name => GetOrCreate(() => MonoCecil.FullName);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
-		public CommonAttribute[] Attributes { get; private set; }
-		public CommonType[] Types { get; private set; }
+		public virtual CommonAttribute[] Attributes { get; private set; }
+		public virtual CommonType[] Types { get; private set; }
 
 		[UsedImplicitly]
 		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.CheckLoaded().WhereFrom(this).ToArray());
@@ -34,7 +34,7 @@ namespace ApplicationPatcher.Core.Types.Common {
 			HaveSymbolStore = haveSymbolStore;
 		}
 
-		protected override void LoadInternal() {
+		internal override void LoadInternal() {
 			base.LoadInternal();
 			Attributes = CommonHelper.JoinAttributes(Reflection.GetCustomAttributesData(), MonoCecil.CustomAttributes);
 			Types = CommonHelper.JoinTypes(

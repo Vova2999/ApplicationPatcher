@@ -4,21 +4,23 @@ using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Types.Base;
 using Mono.Cecil;
 
+// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
+
 namespace ApplicationPatcher.Core.Types.Common {
 	public class CommonType : CommonBase<CommonType, Type, TypeDefinition>, IHasAttributes, IHasConstructors, IHasFields, IHasMethods, IHasProperties, IHasType {
-		public Type Type => GetOrCreate(() => Reflection);
+		public virtual Type Type => GetOrCreate(() => Reflection);
 		public override string Name => GetOrCreate(() => MonoCecil.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
-		public CommonAttribute[] Attributes { get; private set; }
-		public CommonConstructor[] Constructors { get; private set; }
-		public CommonField[] Fields { get; private set; }
-		public CommonMethod[] Methods { get; private set; }
-		public CommonProperty[] Properties { get; private set; }
+		public virtual CommonAttribute[] Attributes { get; private set; }
+		public virtual CommonConstructor[] Constructors { get; private set; }
+		public virtual CommonField[] Fields { get; private set; }
+		public virtual CommonMethod[] Methods { get; private set; }
+		public virtual CommonProperty[] Properties { get; private set; }
 
 		public CommonType(Type reflectionType, TypeDefinition monoCecilType) : base(reflectionType, monoCecilType) {
 		}
 
-		protected override void LoadInternal() {
+		internal override void LoadInternal() {
 			base.LoadInternal();
 
 			const BindingFlags bindingFlags = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;

@@ -1,7 +1,13 @@
 namespace ApplicationPatcher.Tests.FakeTypes {
 	public class FakeMethod {
-		public string Name { get; set; }
-		public FakeParameter[] Parameters { get; set; }
-		public FakeAttribute[] Attributes { get; set; }
+		public readonly string Name;
+		public readonly FakeParameter[] Parameters;
+		public readonly FakeAttribute[] Attributes;
+
+		public FakeMethod(string name, FakeParameter[] parameters, FakeAttribute[] attributes = null) {
+			Name = name;
+			Parameters = parameters;
+			Attributes = attributes;
+		}
 	}
 }

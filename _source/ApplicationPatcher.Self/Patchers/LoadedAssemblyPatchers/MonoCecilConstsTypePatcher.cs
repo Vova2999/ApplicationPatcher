@@ -18,7 +18,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 			const string constsTypeFullName = "Consts";
 			log.Info($"Patching '{constsTypeFullName}' type...");
 
-			var constsType = assembly.GetCommonType(constsTypeFullName);
+			var constsType = assembly.GetCommonTypeFromThisAssembly(constsTypeFullName);
 
 			if (constsType == null) {
 				log.Info($"Not found '{constsTypeFullName}' type");
