@@ -4,6 +4,10 @@ using System.Linq;
 
 namespace ApplicationPatcher.Core.Extensions {
 	public static class EnumerableExtensions {
+		public static string JoinToString<TValue>(this IEnumerable<TValue> values, string separator) {
+			return string.Join(separator, values);
+		}
+
 		public static void ForEach<TValue>(this IEnumerable<TValue> values, Action<TValue> actionOnValue) {
 			foreach (var value in values)
 				actionOnValue(value);

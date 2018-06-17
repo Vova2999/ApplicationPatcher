@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using ApplicationPatcher.Core;
-using ApplicationPatcher.Core.Helpers;
+using ApplicationPatcher.Core.Logs;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -10,7 +10,7 @@ namespace ApplicationPatcher.Self {
 	public class ApplicationPatcherSelfProcessor {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly ApplicationPatcherProcessor applicationPatcherProcessor;
-		private readonly Log log;
+		private readonly ILog log;
 
 		public ApplicationPatcherSelfProcessor(ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration, ApplicationPatcherProcessor applicationPatcherProcessor) {
 			this.applicationPatcherSelfConfiguration = applicationPatcherSelfConfiguration;

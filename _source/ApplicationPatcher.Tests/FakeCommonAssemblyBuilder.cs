@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ApplicationPatcher.Core.Types.Common;
 using Mono.Cecil;
 using Moq;
@@ -36,6 +37,9 @@ namespace ApplicationPatcher.Tests {
 			return new FakeCommonAssemblyBuilder(commonAssembly, monoCecilModule, monoCecilAssembly);
 		}
 
+		public FakeCommonAssemblyBuilder AddCommonTypes(IEnumerable<CommonType> types, bool fromThisAssembly = true) {
+			return types.Aggregate(this, (typeBuilder, type) => typeBuilder.AddCommonType(type, fromThisAssembly));
+		}
 		public FakeCommonAssemblyBuilder AddCommonType(CommonType commonType, bool fromThisAssembly = true) {
 			if (fromThisAssembly)
 				FakeCommonTypeBuilder.GetMockFor(commonType.MonoCecil).Setup(type => type.Module).Returns(() => MainMonoCecilModule);

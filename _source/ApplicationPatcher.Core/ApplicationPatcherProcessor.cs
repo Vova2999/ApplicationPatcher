@@ -5,6 +5,7 @@ using System.Linq;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Factories;
 using ApplicationPatcher.Core.Helpers;
+using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
 using ApplicationPatcher.Core.Types.Common;
 
@@ -16,7 +17,7 @@ namespace ApplicationPatcher.Core {
 		private readonly CommonAssemblyFactory commonAssemblyFactory;
 		private readonly LoadedAssemblyPatcher[] loadedAssemblyPatchers;
 		private readonly NotLoadedAssemblyPatcher[] notLoadedAssemblyPatchers;
-		private readonly Log log;
+		private readonly ILog log;
 
 		public ApplicationPatcherProcessor(CommonAssemblyFactory commonAssemblyFactory,
 										   LoadedAssemblyPatcher[] loadedAssemblyPatchers,
@@ -69,7 +70,7 @@ namespace ApplicationPatcher.Core {
 			var applicationExtension = Path.GetExtension(applicationPath);
 			if (!availableExtensions.Any(availableExtension => string.Equals(availableExtension, applicationExtension, StringComparison.InvariantCultureIgnoreCase)))
 				throw new FileLoadException($"Extension of application can not be '{applicationExtension}'. " +
-					$"Available extensions: {string.Join(", ", availableExtensions.Select(availableExtension => $"'{availableExtension}'"))}");
+					$"Available extensions: {availableExtensions.Select(availableExtension => $"'{availableExtension}'").JoinToString(", ")}");
 
 			log.Info($"Application was found: '{applicationFullPath}'");
 		}

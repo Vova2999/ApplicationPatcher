@@ -1,9 +1,16 @@
-﻿using Moq;
+﻿using ApplicationPatcher.Core.Helpers;
+using ApplicationPatcher.Core.Logs;
+using Moq;
 using NUnit.Framework;
 
 namespace ApplicationPatcher.Tests.Unit.Patchers {
 	[TestFixture]
 	public abstract class PatcherTestsBase {
+		[OneTimeSetUp]
+		public void OneTimeSetUp() {
+			Log.DefaultOffset = -1;
+		}
+
 		[TearDown]
 		public void TearDown() {
 			FakeCommonTypeBuilder.ClearCreatedTypes();

@@ -36,10 +36,13 @@ namespace ApplicationPatcher.Core {
 		}
 
 		public void WriteConfiguration() {
-			if (!Directory.Exists(configurationFileDirectory))
-				Directory.CreateDirectory(configurationFileDirectory);
+			var configurationFilePath = Path.Combine(configurationFileDirectory, ConfigurationFileName);
+			var configurationFileCurrentDirectory = Path.GetDirectoryName(configurationFilePath) ?? throw new Exception();
 
-			File.WriteAllBytes(Path.Combine(configurationFileDirectory, ConfigurationFileName), XmlSerializerHelper.Serializing(this));
+			if (!Directory.Exists(configurationFileCurrentDirectory))
+				Directory.CreateDirectory(configurationFileCurrentDirectory);
+
+			File.WriteAllBytes(configurationFilePath, XmlSerializerHelper.Serializing(this));
 		}
 	}
 }

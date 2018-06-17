@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Types.Common;
 using ApplicationPatcher.Tests.FakeTypes;
 using Mono.Cecil;
@@ -74,8 +75,8 @@ namespace ApplicationPatcher.Tests {
 			return this;
 		}
 
-		public FakeCommonTypeBuilder AddMethod(string name, FakeParameter[] parameters, FakeAttribute[] methodAttributes = null) {
-			methods.Add(new FakeMethod(name, parameters, methodAttributes));
+		public FakeCommonTypeBuilder AddMethod(string name, FakeType returnType, FakeParameter[] parameters, FakeAttribute[] methodAttributes = null) {
+			methods.Add(new FakeMethod(name, returnType, parameters, methodAttributes));
 			return this;
 		}
 
@@ -154,7 +155,7 @@ namespace ApplicationPatcher.Tests {
 		}
 		private static CommonConstructor CreateCommonConstructor(FakeConstructor fakeConstructor, string typeFullName) {
 			const string constructorName = ".ctor";
-			var constructorFullName = $"{typeFullName}.{constructorName}";
+			var constructorFullName = $"{typeFullName}::{constructorName}({fakeConstructor.Parameters?.Select(parameter => parameter.ParameterType.FullName).JoinToString(",")})";
 			var commonAttributes = CreateCommonAttributes(fakeConstructor.Attributes);
 			var commonParameters = CreateCommonParameters(fakeConstructor.Parameters);
 
@@ -178,7 +179,7 @@ namespace ApplicationPatcher.Tests {
 		}
 		private static CommonField CreateCommonField(FakeField fakeField, string typeFullName) {
 			var fieldName = fakeField.Name;
-			var fieldFullName = $"{typeFullName}.{fieldName}";
+			var fieldFullName = $"{fakeField.FieldType.FullName} {typeFullName}::{fieldName}()";
 			var commonAttributes = CreateCommonAttributes(fakeField.Attributes);
 
 			var monoCecilField = CreateMockFor<FieldDefinition>();
@@ -202,13 +203,15 @@ namespace ApplicationPatcher.Tests {
 				return null;
 
 			var methodName = fakeMethod.Name;
-			var methodFullName = $"{typeFullName}.{methodName}";
+			var methodFullName = $"{typeFullName}::{methodName}({fakeMethod.Parameters?.Select(parameter => parameter.ParameterType.FullName).JoinToString(",")})";
 			var commonAttributes = CreateCommonAttributes(fakeMethod.Attributes);
 			var commonParameters = CreateCommonParameters(fakeMethod.Parameters);
+			var returnTypeReference = CreateTypeReference(fakeMethod.ReturnType);
 
 			var monoCecilMethod = CreateMockFor<MethodDefinition>();
 			monoCecilMethod.Setup(method => method.Name).Returns(() => methodName);
 			monoCecilMethod.Setup(method => method.FullName).Returns(() => methodFullName);
+			monoCecilMethod.Setup(method => method.ReturnType).Returns(() => returnTypeReference);
 			monoCecilMethod.Setup(method => method.CustomAttributes).Returns(() => new Collection<CustomAttribute>(commonAttributes.Select(attribute => attribute.MonoCecil).ToArray()));
 			monoCecilMethod.Setup(method => method.Parameters).Returns(() => new Collection<ParameterDefinition>(commonParameters.Select(parameter => parameter.MonoCecil).ToArray()));
 

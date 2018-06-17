@@ -1,11 +1,11 @@
 ﻿using System;
-using ApplicationPatcher.Core.Helpers;
+using ApplicationPatcher.Core.Logs;
 using JetBrains.Annotations;
 using Ninject;
 
 namespace ApplicationPatcher.Self {
 	public static class Program {
-		private static readonly Log log = Log.For(typeof(Program));
+		private static readonly ILog log = Log.For(typeof(Program));
 
 		public static void Main() {
 			try {

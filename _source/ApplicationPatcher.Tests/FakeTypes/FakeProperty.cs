@@ -17,14 +17,14 @@ namespace ApplicationPatcher.Tests.FakeTypes {
 
 			switch (propertyMethods) {
 				case PropertyMethods.HasGetOnly:
-					GetMethod = new FakeMethod($"get_{name}", null);
+					GetMethod = new FakeMethod($"get_{name}", propertyType, null);
 					break;
 				case PropertyMethods.HasSetOnly:
-					SetMethod = new FakeMethod($"set_{name}", new[] { new FakeParameter("value", propertyType) });
+					SetMethod = new FakeMethod($"set_{name}", null, new[] { new FakeParameter("value", propertyType) });
 					break;
 				case PropertyMethods.HasGetAndSet:
-					GetMethod = new FakeMethod($"get_{name}", null);
-					SetMethod = new FakeMethod($"set_{name}", new[] { new FakeParameter("value", propertyType) });
+					GetMethod = new FakeMethod($"get_{name}", propertyType, null);
+					SetMethod = new FakeMethod($"set_{name}", null, new[] { new FakeParameter("value", propertyType) });
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(propertyMethods), propertyMethods, null);

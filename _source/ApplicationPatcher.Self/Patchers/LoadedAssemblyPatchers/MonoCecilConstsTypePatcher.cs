@@ -1,13 +1,13 @@
 ﻿using ApplicationPatcher.Core;
 using ApplicationPatcher.Core.Extensions;
-using ApplicationPatcher.Core.Helpers;
+using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
 using ApplicationPatcher.Core.Types.Common;
 
 namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 	public class MonoCecilConstsTypePatcher : LoadedAssemblyPatcher {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
-		private readonly Log log;
+		private readonly ILog log;
 
 		public MonoCecilConstsTypePatcher(ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration) {
 			this.applicationPatcherSelfConfiguration = applicationPatcherSelfConfiguration;

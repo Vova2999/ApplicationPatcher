@@ -81,7 +81,8 @@
     <Compile Include="Extensions\HasTypeExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\CommonAssemblyFactory.cs" />
-    <Compile Include="Helpers\Log.cs" />
+    <Compile Include="Logs\ILog.cs" />
+    <Compile Include="Logs\Log.cs" />
     <Compile Include="Helpers\CommonHelper.cs" />
     <Compile Include="Patchers\LoadedAssemblyPatcher.cs" />
     <Compile Include="Patchers\NotLoadedAssemblyPatcher.cs" />
