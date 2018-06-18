@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using ApplicationPatcher.Core;
+using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Logs;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -21,16 +22,20 @@ namespace ApplicationPatcher.Self {
 		public void PatchSelfApplication() {
 			log.Info("Patching all mono cecil applications...");
 
-			var monoCecilApplicationResultNames = ShiftMonoCecilApplications(applicationPatcherSelfConfiguration.MonoCecilApplicationFileNames, applicationPatcherSelfConfiguration.MonoCecilResultDirectoryName, false);
+			using (CurrentDirectoryHelper.FromExecutingAssembly()) {
+				var monoCecilApplicationResultNames = ShiftMonoCecilApplications(applicationPatcherSelfConfiguration.MonoCecilApplicationFileNames, applicationPatcherSelfConfiguration.MonoCecilResultDirectoryName, false);
 
-			foreach (var monoCecilResultApplicationName in monoCecilApplicationResultNames) {
-				log.Info($"Patching '{monoCecilResultApplicationName}' application...");
-				PatchApplication(applicationPatcherProcessor, monoCecilResultApplicationName, applicationPatcherSelfConfiguration.MonoCecilSignatureFileName);
-				log.Info($"Application '{monoCecilResultApplicationName}' was patched");
+				foreach (var monoCecilResultApplicationName in monoCecilApplicationResultNames) {
+					log.Info($"Patching '{monoCecilResultApplicationName}' application...");
+					PatchApplication(applicationPatcherProcessor, monoCecilResultApplicationName, applicationPatcherSelfConfiguration.MonoCecilSignatureFileName);
+					log.Info($"Application '{monoCecilResultApplicationName}' was patched");
+				}
+
+				log.Info("All mono cecil applications was patched");
+
+				foreach (var monoCecilOutputDirectory in applicationPatcherSelfConfiguration.MonoCecilOutputDirectories)
+					ShiftMonoCecilApplications(monoCecilApplicationResultNames, monoCecilOutputDirectory, true);
 			}
-
-			log.Info("All mono cecil applications was patched");
-			ShiftMonoCecilApplications(monoCecilApplicationResultNames, applicationPatcherSelfConfiguration.ApplicationPatcherCoreDirectoryName, true);
 		}
 
 		private string[] ShiftMonoCecilApplications(IEnumerable<string> monoCecilApplicationNames, string resultDirectoryName, bool overwrite) {

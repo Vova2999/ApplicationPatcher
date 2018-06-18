@@ -3,7 +3,6 @@
 <ApplicationPatcherSelfConfiguration>
 	<MonoCecilNewPublicKey>ACQAAASAAACUAAAABgIAAAAkAABSU0ExAAQAAAEAAQA3iIB6kZ9Eg7TmkNy7MxAteXDtEwEW73a+3SdAt99pGyJRZ6U9HJNBdYaJf7tKcnNCGXLGrVA7mbs+UWchfRVqnY903nJhdNeVgn7R+8qOVt6lRQnW2s0aqrtgtbbRZLPX6vmPtyIWts0CAZVktpNeYiPB7fxC/xuYmLqhvbYrkA==</MonoCecilNewPublicKey>
 	<MonoCecilNewPublicKeyToken>6LjHf3lrobE=</MonoCecilNewPublicKeyToken>
-	<ApplicationPatcherCoreDirectoryName>..\ApplicationPatcher.Core</ApplicationPatcherCoreDirectoryName>
 	<MonoCecilResultDirectoryName>Result</MonoCecilResultDirectoryName>
 	<MonoCecilSignatureFileName>ApplicationPatcher.Self.snk</MonoCecilSignatureFileName>
 	<MonoCecilApplicationFileNames>
@@ -12,6 +11,9 @@
 		<string>Mono.Cecil.Pdb.dll</string>
 		<string>Mono.Cecil.Rocks.dll</string>
 	</MonoCecilApplicationFileNames>
+	<MonoCecilOutputDirectories>
+		<string>..\ApplicationPatcher.Core</string>
+	</MonoCecilOutputDirectories>
 	<MonoCecilSelectedAssemblyReferenceNames>
 		<string>Mono.Cecil</string>
 	</MonoCecilSelectedAssemblyReferenceNames>

@@ -1,5 +1,7 @@
 using System;
 
+// ReSharper disable UnusedMember.Global
+
 namespace ApplicationPatcher.Tests.FakeTypes {
 	public class FakeParameter {
 		public readonly string Name;

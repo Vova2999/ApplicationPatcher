@@ -1,5 +1,4 @@
-﻿using ApplicationPatcher.Core.Helpers;
-using ApplicationPatcher.Core.Logs;
+﻿using ApplicationPatcher.Core.Logs;
 using Moq;
 using NUnit.Framework;
 

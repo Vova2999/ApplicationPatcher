@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Factories;
-using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
 using ApplicationPatcher.Core.Types.Common;

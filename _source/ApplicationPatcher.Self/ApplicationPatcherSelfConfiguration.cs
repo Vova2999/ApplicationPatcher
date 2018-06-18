@@ -8,10 +8,10 @@ namespace ApplicationPatcher.Self {
 
 		public byte[] MonoCecilNewPublicKey { get; set; }
 		public byte[] MonoCecilNewPublicKeyToken { get; set; }
-		public string ApplicationPatcherCoreDirectoryName { get; set; }
 		public string MonoCecilResultDirectoryName { get; set; }
 		public string MonoCecilSignatureFileName { get; set; }
 		public string[] MonoCecilApplicationFileNames { get; set; }
+		public string[] MonoCecilOutputDirectories { get; set; }
 		public string[] MonoCecilSelectedAssemblyReferenceNames { get; set; }
 		public string[] MonoCecilSelectedInternalsVisibleToAttributeNames { get; set; }
 		public string[] MonoCecilSelectedPatchingTypeFullNames { get; set; }

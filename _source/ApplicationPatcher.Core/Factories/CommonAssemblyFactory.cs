@@ -4,45 +4,43 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
+using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Types.Common;
 using Mono.Cecil;
 
 // ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 
 namespace ApplicationPatcher.Core.Factories {
 	public class CommonAssemblyFactory {
 		public virtual CommonAssembly Create(string assemblyPath) {
-			var assemblyName = Path.GetFileName(assemblyPath);
-			var oldCurrentDirectory = Directory.GetCurrentDirectory();
-			var newCurrentDirectory = Path.GetDirectoryName(Path.GetFullPath(assemblyPath));
-			Directory.SetCurrentDirectory(newCurrentDirectory ?? throw new Exception());
+			using (CurrentDirectoryHelper.From(Path.GetDirectoryName(Path.GetFullPath(assemblyPath)))) {
+				var assemblyName = Path.GetFileName(assemblyPath);
 
-			var symbolStorePath = Path.ChangeExtension(assemblyName, "pdb");
-			var haveSymbolStore = !symbolStorePath.IsNullOrEmpty() && File.Exists(symbolStorePath);
+				var symbolStorePath = Path.ChangeExtension(assemblyName, "pdb");
+				var haveSymbolStore = File.Exists(symbolStorePath);
 
-			var foundedAssemblyFiles = Directory.GetFiles(Directory.GetCurrentDirectory())
-				.Select(filePath => new { Path = filePath, Extension = Path.GetExtension(filePath) })
-				.Where(file =>
-					string.Equals(file.Extension, ".exe", StringComparison.InvariantCultureIgnoreCase) ||
-					string.Equals(file.Extension, ".dll", StringComparison.InvariantCultureIgnoreCase))
-				.GroupBy(file => Path.GetFileNameWithoutExtension(file.Path))
-				.ToDictionary(group => group.Key, group => group.Single().Path);
+				var foundedAssemblyFiles = Directory.GetFiles(Directory.GetCurrentDirectory())
+					.Select(filePath => new { Path = filePath, Extension = Path.GetExtension(filePath) })
+					.Where(file =>
+						string.Equals(file.Extension, ".exe", StringComparison.InvariantCultureIgnoreCase) ||
+						string.Equals(file.Extension, ".dll", StringComparison.InvariantCultureIgnoreCase))
+					.GroupBy(file => Path.GetFileNameWithoutExtension(file.Path))
+					.ToDictionary(group => group.Key, group => group.Single().Path);
 
-			var mainReflectionAssembly = ReadMainReflectionAssembly(assemblyName, symbolStorePath, haveSymbolStore);
-			var referencedReflectionAssemblies = ReadReferencedReflectionAssemblies(mainReflectionAssembly, foundedAssemblyFiles);
+				var mainReflectionAssembly = ReadMainReflectionAssembly(assemblyName, symbolStorePath, haveSymbolStore);
+				var referencedReflectionAssemblies = ReadReferencedReflectionAssemblies(mainReflectionAssembly, foundedAssemblyFiles);
 
-			const string codeBasePrefix = "file:///";
-			referencedReflectionAssemblies
-				.Select(assembly => new { assembly.GetName().Name, assembly.CodeBase })
-				.Where(assembly => !foundedAssemblyFiles.ContainsKey(assembly.Name))
-				.ForEach(assembly => foundedAssemblyFiles[assembly.Name] = assembly.CodeBase.Substring(codeBasePrefix.Length));
+				const string codeBasePrefix = "file:///";
+				referencedReflectionAssemblies
+					.Select(assembly => new { assembly.GetName().Name, assembly.CodeBase })
+					.Where(assembly => !foundedAssemblyFiles.ContainsKey(assembly.Name))
+					.ForEach(assembly => foundedAssemblyFiles[assembly.Name] = assembly.CodeBase.Substring(codeBasePrefix.Length));
 
-			var mainMonoCecilAssembly = ReadMainMonoCecilAssembly(assemblyName, haveSymbolStore);
-			var referencedMonoCecilAssemblies = ReadReferencedMonoCecilAssemblies(mainMonoCecilAssembly, foundedAssemblyFiles);
+				var mainMonoCecilAssembly = ReadMainMonoCecilAssembly(assemblyName, haveSymbolStore);
+				var referencedMonoCecilAssemblies = ReadReferencedMonoCecilAssemblies(mainMonoCecilAssembly, foundedAssemblyFiles);
 
-			Directory.SetCurrentDirectory(oldCurrentDirectory);
-			return new CommonAssembly(mainReflectionAssembly, referencedReflectionAssemblies, mainMonoCecilAssembly, referencedMonoCecilAssemblies, haveSymbolStore);
+				return new CommonAssembly(mainReflectionAssembly, referencedReflectionAssemblies, mainMonoCecilAssembly, referencedMonoCecilAssemblies, haveSymbolStore);
+			}
 		}
 
 		private static Assembly ReadMainReflectionAssembly(string assemblyName, string symbolStorePath, bool haveSymbolStore) {
