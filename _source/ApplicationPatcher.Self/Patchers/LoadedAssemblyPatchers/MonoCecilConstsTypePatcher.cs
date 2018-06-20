@@ -22,13 +22,13 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 
 			if (constsType == null) {
 				log.Info($"Not found '{constsTypeFullName}' type");
-				return PatchResult.Succeeded;
+				return PatchResult.Continue;
 			}
 
 			constsType.Load().GetField("PublicKey").MonoCecil.Constant = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey.ToHexString();
 
 			log.Info($"'{constsTypeFullName}' type was patched");
-			return PatchResult.Succeeded;
+			return PatchResult.Continue;
 		}
 	}
 }

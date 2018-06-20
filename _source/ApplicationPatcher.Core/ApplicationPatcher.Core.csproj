@@ -82,6 +82,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\CommonAssemblyFactory.cs" />
     <Compile Include="Helpers\CurrentDirectoryHelper.cs" />
+    <Compile Include="Helpers\PatchHelper.cs" />
     <Compile Include="Logs\ILog.cs" />
     <Compile Include="Logs\Log.cs" />
     <Compile Include="Helpers\CommonHelper.cs" />

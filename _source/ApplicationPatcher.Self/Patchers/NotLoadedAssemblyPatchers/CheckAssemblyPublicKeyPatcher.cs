@@ -13,8 +13,8 @@ namespace ApplicationPatcher.Self.Patchers.NotLoadedAssemblyPatchers {
 
 		public override PatchResult Patch(CommonAssembly assembly) {
 			return assembly.MonoCecil.Name.PublicKeyToken.SequenceEqual(applicationPatcherSelfConfiguration.MonoCecilNewPublicKeyToken ?? new byte[0])
-				? PatchResult.Canceled
-				: PatchResult.Succeeded;
+				? PatchResult.Cancel
+				: PatchResult.Continue;
 		}
 	}
 }

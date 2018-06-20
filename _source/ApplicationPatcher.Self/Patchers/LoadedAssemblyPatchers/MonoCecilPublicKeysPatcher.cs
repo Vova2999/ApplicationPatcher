@@ -25,7 +25,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 			RewriteSelectedAssemblyReferencesPublicKey(assembly);
 			RewriteOrCreateInternalVisibleToAttributes(assembly);
 
-			return PatchResult.Succeeded;
+			return PatchResult.Continue;
 		}
 
 		private void RewriteMainAssemblyPublicKey(CommonAssembly assembly) {

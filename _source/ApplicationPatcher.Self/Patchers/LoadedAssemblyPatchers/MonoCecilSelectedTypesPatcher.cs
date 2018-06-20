@@ -27,7 +27,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 
 			if (!foundedSelectedPatchingTypes.Any()) {
 				log.Info("Not found selected types");
-				return PatchResult.Succeeded;
+				return PatchResult.Continue;
 			}
 
 			log.Debug("Selected types found:", foundedSelectedPatchingTypes.Select(viewModel => viewModel.FullName).OrderBy(fullName => fullName));
@@ -50,7 +50,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 
 			foundedSelectedPatchingTypes.ForEach(type => type.Load().MonoCecil.IsSealed = false);
 			log.Info("Selected types was patched");
-			return PatchResult.Succeeded;
+			return PatchResult.Continue;
 		}
 
 		[AddLogOffset]

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Factories;
+using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
-using ApplicationPatcher.Core.Types.Common;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -34,8 +33,8 @@ namespace ApplicationPatcher.Core {
 			var assembly = commonAssemblyFactory.Create(applicationPath);
 			log.Info("Assembly was readed");
 
-			var notLoadedAssemblyPatchResult = PatchApplication(notLoadedAssemblyPatchers, assembly);
-			if (notLoadedAssemblyPatchResult == PatchResult.Canceled)
+			var notLoadedAssemblyPatchResult = PatchHelper.PatchApplication(notLoadedAssemblyPatchers, patcher => patcher.Patch(assembly), log);
+			if (notLoadedAssemblyPatchResult == PatchResult.Cancel)
 				return;
 
 			log.Info("Loading assembly...");
@@ -47,8 +46,8 @@ namespace ApplicationPatcher.Core {
 			else
 				log.Debug("Types from this assembly not found");
 
-			var loadedAssemblyPatchResult = PatchApplication(loadedAssemblyPatchers, assembly);
-			if (loadedAssemblyPatchResult == PatchResult.Canceled)
+			var loadedAssemblyPatchResult = PatchHelper.PatchApplication(loadedAssemblyPatchers, patcher => patcher.Patch(assembly), log);
+			if (loadedAssemblyPatchResult == PatchResult.Cancel)
 				return;
 
 			log.Info("Application was patched");
@@ -72,29 +71,6 @@ namespace ApplicationPatcher.Core {
 					$"Available extensions: {availableExtensions.Select(availableExtension => $"'{availableExtension}'").JoinToString(", ")}");
 
 			log.Info($"Application was found: '{applicationFullPath}'");
-		}
-
-		private PatchResult PatchApplication(IEnumerable<IPatcher> patchers, CommonAssembly assembly) {
-			if (patchers == null)
-				return PatchResult.Succeeded;
-
-			foreach (var patcher in patchers) {
-				log.Info($"Apply '{patcher.GetType().FullName}' patcher...");
-				var patchResult = patcher.Patch(assembly);
-				log.Info($"Patcher '{patcher.GetType().FullName}' was applied with result: {patchResult}");
-
-				switch (patchResult) {
-					case PatchResult.Succeeded:
-						continue;
-					case PatchResult.Canceled:
-						log.Info("Patching application was canceled");
-						return PatchResult.Canceled;
-					default:
-						throw new ArgumentOutOfRangeException(nameof(patchResult));
-				}
-			}
-
-			return PatchResult.Succeeded;
 		}
 	}
 }
