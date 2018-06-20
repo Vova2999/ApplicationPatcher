@@ -48,7 +48,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		public void MonoCecilSelectedTypesPatcherTest_HaveSelectedTypes_WithoutEmptyConstructor() {
 			var typeWithoutEmptyConstructor = FakeCommonTypeBuilder.Create("TypeWithoutConstructor").Build();
 			FakeCommonTypeBuilder.GetMockFor(typeWithoutEmptyConstructor.MonoCecil).Setup(type => type.Methods).Returns(new Collection<MethodDefinition>());
-			
+
 			Patch(typeWithoutEmptyConstructor);
 			typeWithoutEmptyConstructor.MonoCecil.Methods.Should().HaveCount(1).And.Subject.First().Name.Should().Be(".ctor");
 		}

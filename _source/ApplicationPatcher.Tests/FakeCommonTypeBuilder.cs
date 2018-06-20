@@ -228,15 +228,15 @@ namespace ApplicationPatcher.Tests {
 			return fakeParameters?.Select(CreateCommonParameter).ToArray() ?? new CommonParameter[0];
 		}
 		private static CommonParameter CreateCommonParameter(FakeParameter fakeParameter) {
-			var reflectionParameter = CreateMockFor<ParameterInfo>() ;
+			var reflectionParameter = CreateMockFor<ParameterInfo>();
 			reflectionParameter.Setup(parameter => parameter.ParameterType).Returns(() => CreateReflectionType(fakeParameter.ParameterType));
 
-			var monoCecilParameter = CreateMockFor<ParameterDefinition>() ;
+			var monoCecilParameter = CreateMockFor<ParameterDefinition>();
 			var typeReference = CreateTypeReference(fakeParameter.ParameterType);
 			monoCecilParameter.Setup(parameter => parameter.Name).Returns(() => fakeParameter.Name);
 			monoCecilParameter.Setup(parameter => parameter.ParameterType).Returns(() => typeReference);
 
-			var commonParameter = CreateMockFor<CommonParameter>(reflectionParameter.Object, monoCecilParameter.Object) ;
+			var commonParameter = CreateMockFor<CommonParameter>(reflectionParameter.Object, monoCecilParameter.Object);
 			commonParameter.Setup(parameter => parameter.Type).Returns(() => CreateReflectionType(fakeParameter.ParameterType));
 			commonParameter.Setup(parameter => parameter.LoadInternal());
 
@@ -255,12 +255,12 @@ namespace ApplicationPatcher.Tests {
 			var propertyGetMethod = CreateCommonMethod(fakeProperty.GetMethod, typeFullName, true);
 			var propertySetMethod = CreateCommonMethod(fakeProperty.SetMethod, typeFullName, true);
 
-			var reflectionProperty = CreateMockFor<PropertyInfo>() ;
+			var reflectionProperty = CreateMockFor<PropertyInfo>();
 			reflectionProperty.Setup(property => property.GetMethod).Returns(() => propertyGetMethod?.Reflection);
 			reflectionProperty.Setup(property => property.SetMethod).Returns(() => propertySetMethod?.Reflection);
 			reflectionProperty.Setup(property => property.PropertyType).Returns(() => reflectionType);
 
-			var monoCecilProperty = CreateMockFor<PropertyDefinition>() ;
+			var monoCecilProperty = CreateMockFor<PropertyDefinition>();
 			monoCecilProperty.Setup(property => property.Name).Returns(() => propertyName);
 			monoCecilProperty.Setup(property => property.FullName).Returns(() => propertyFullName);
 			monoCecilProperty.Setup(property => property.GetMethod).Returns(() => propertyGetMethod?.MonoCecil);
@@ -268,7 +268,7 @@ namespace ApplicationPatcher.Tests {
 			monoCecilProperty.Setup(property => property.PropertyType).Returns(() => typeReference);
 			monoCecilProperty.Setup(property => property.CustomAttributes).Returns(() => new Collection<CustomAttribute>(commonAttributes.Select(attribute => attribute.MonoCecil).ToArray()));
 
-			var commonProperty = CreateMockFor<CommonProperty>(reflectionProperty.Object, monoCecilProperty.Object) ;
+			var commonProperty = CreateMockFor<CommonProperty>(reflectionProperty.Object, monoCecilProperty.Object);
 			commonProperty.Setup(property => property.Type).Returns(() => reflectionType);
 			commonProperty.Setup(property => property.Attributes).Returns(() => commonAttributes);
 			commonProperty.Setup(property => property.LoadInternal());
@@ -280,7 +280,7 @@ namespace ApplicationPatcher.Tests {
 			if (fakeType == null)
 				return null;
 
-			var monoCecilTypeReference = CreateMockFor<TypeReference>() ;
+			var monoCecilTypeReference = CreateMockFor<TypeReference>();
 			monoCecilTypeReference.Setup(reference => reference.Name).Returns(() => fakeType.FullName.Split('.').Last());
 			monoCecilTypeReference.Setup(reference => reference.FullName).Returns(() => fakeType.FullName);
 
