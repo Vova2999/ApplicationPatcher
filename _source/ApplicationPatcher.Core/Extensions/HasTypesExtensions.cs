@@ -12,8 +12,8 @@ namespace ApplicationPatcher.Core.Extensions {
 		public static IEnumerable<CommonType> GetInheritanceCommonTypes(this IHasTypes hasTypes, Type baseType) {
 			return hasTypes.Types.CheckLoaded().Where(type => type.IsInheritedFrom(baseType));
 		}
-		public static IEnumerable<CommonType> GetInheritanceCommonTypes(this IHasTypes hasTypes, CommonType baseCommonType) {
-			return hasTypes.GetInheritanceCommonTypes(baseCommonType.Reflection);
+		public static IEnumerable<CommonType> GetInheritanceCommonTypes(this IHasTypes hasTypes, IHasType hasType) {
+			return hasTypes.GetInheritanceCommonTypes(hasType.Type);
 		}
 
 		public static CommonType GetCommonType(this IHasTypes hasTypes, Type type, bool throwExceptionIfNotFound = false) {

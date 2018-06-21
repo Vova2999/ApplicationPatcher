@@ -9,6 +9,9 @@ using ApplicationPatcher.Core.Types.Common;
 
 namespace ApplicationPatcher.Core.Extensions {
 	public static class HasAttributesExtensions {
+		public static IEnumerable<TAttribute> GetReflectionAttributes<TAttribute>(this IHasAttributes hasAttributes) where TAttribute : Attribute {
+			return hasAttributes.GetAttributes<TAttribute>().Select(attribute => (TAttribute)attribute.Reflection);
+		}
 		public static TAttribute GetReflectionAttribute<TAttribute>(this IHasAttributes hasAttributes, bool throwExceptionIfNotFound = false) where TAttribute : Attribute {
 			return (TAttribute)hasAttributes.GetAttribute<TAttribute>(throwExceptionIfNotFound)?.Reflection;
 		}
@@ -18,6 +21,9 @@ namespace ApplicationPatcher.Core.Extensions {
 		}
 		public static CommonAttribute GetAttribute(this IHasAttributes hasAttributes, Type attributeType, bool throwExceptionIfNotFound = false) {
 			return hasAttributes.Attributes.CheckLoaded().SingleOrDefault(attribute => attribute.Is(attributeType), throwExceptionIfNotFound, attributeType.FullName);
+		}
+		public static CommonAttribute GetAttribute(this IHasAttributes hasAttributes, IHasType attributeHasType, bool throwExceptionIfNotFound = false) {
+			return hasAttributes.GetAttribute(attributeHasType.Type, throwExceptionIfNotFound);
 		}
 		public static CommonAttribute GetAttribute(this IHasAttributes hasAttributes, string attributeTypeFullName, bool throwExceptionIfNotFound = false) {
 			return hasAttributes.Attributes.CheckLoaded().SingleOrDefault(attribute => attribute.Is(attributeTypeFullName), throwExceptionIfNotFound, attributeTypeFullName);
@@ -29,6 +35,9 @@ namespace ApplicationPatcher.Core.Extensions {
 		public static IEnumerable<CommonAttribute> GetAttributes(this IHasAttributes hasAttributes, Type attributeType) {
 			return hasAttributes.Attributes.CheckLoaded().Where(attribute => attribute.Is(attributeType));
 		}
+		public static IEnumerable<CommonAttribute> GetAttributes(this IHasAttributes hasAttributes, IHasType attributeHasType) {
+			return hasAttributes.GetAttributes(attributeHasType.Type);
+		}
 		public static IEnumerable<CommonAttribute> GetAttributes(this IHasAttributes hasAttributes, string attributeTypeFullName) {
 			return hasAttributes.Attributes.CheckLoaded().Where(attribute => attribute.Is(attributeTypeFullName));
 		}
@@ -39,6 +48,9 @@ namespace ApplicationPatcher.Core.Extensions {
 		public static bool ContainsAttribute(this IHasAttributes hasAttributes, Type attributeType) {
 			return hasAttributes.Attributes.CheckLoaded().Any(attribute => attribute.Is(attributeType));
 		}
+		public static bool ContainsAttribute(this IHasAttributes hasAttributes, IHasType attributeHasType) {
+			return hasAttributes.ContainsAttribute(attributeHasType.Type);
+		}
 		public static bool ContainsAttribute(this IHasAttributes hasAttributes, string attributeTypeFullName) {
 			return hasAttributes.Attributes.CheckLoaded().Any(attribute => attribute.Is(attributeTypeFullName));
 		}
@@ -48,6 +60,9 @@ namespace ApplicationPatcher.Core.Extensions {
 		}
 		public static bool NotContainsAttribute(this IHasAttributes hasAttributes, Type attributeType) {
 			return !hasAttributes.ContainsAttribute(attributeType);
+		}
+		public static bool NotContainsAttribute(this IHasAttributes hasAttributes, IHasType attributeHasType) {
+			return !hasAttributes.ContainsAttribute(attributeHasType);
 		}
 		public static bool NotContainsAttribute(this IHasAttributes hasAttributes, string attributeTypeFullName) {
 			return !hasAttributes.ContainsAttribute(attributeTypeFullName);
