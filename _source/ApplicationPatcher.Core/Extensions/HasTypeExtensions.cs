@@ -1,5 +1,5 @@
 ﻿using System;
-using ApplicationPatcher.Core.Types.Base;
+using ApplicationPatcher.Core.Types.Interfaces;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Helpers;
-using ApplicationPatcher.Core.Types.Common;
+using ApplicationPatcher.Core.Types.CommonMembers;
 using Mono.Cecil;
 
 // ReSharper disable ClassNeverInstantiated.Global

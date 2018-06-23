@@ -4,8 +4,8 @@ using System.Diagnostics;
 
 // ReSharper disable UnusedMemberInSuper.Global
 
-namespace ApplicationPatcher.Core.Types.Base {
-	public abstract class CommonBase<TCommon, TReflection, TMonoCecil> where TCommon : CommonBase<TCommon, TReflection, TMonoCecil> {
+namespace ApplicationPatcher.Core.Types {
+	public abstract class CommonMemberBase<TCommon, TReflection, TMonoCecil> where TCommon : CommonMemberBase<TCommon, TReflection, TMonoCecil> {
 		public abstract string Name { get; }
 		public abstract string FullName { get; }
 
@@ -15,7 +15,7 @@ namespace ApplicationPatcher.Core.Types.Base {
 		private bool isLoaded;
 		private readonly ConcurrentDictionary<string, object> values = new ConcurrentDictionary<string, object>();
 
-		protected CommonBase(TReflection reflection, TMonoCecil monoCecil) {
+		protected CommonMemberBase(TReflection reflection, TMonoCecil monoCecil) {
 			Reflection = reflection;
 			MonoCecil = monoCecil;
 		}

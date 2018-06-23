@@ -2,15 +2,15 @@
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Helpers;
-using ApplicationPatcher.Core.Types.Base;
+using ApplicationPatcher.Core.Types.Interfaces;
 using JetBrains.Annotations;
 using Mono.Cecil;
 
 // ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 // ReSharper disable MemberCanBeProtected.Global
 
-namespace ApplicationPatcher.Core.Types.Common {
-	public class CommonAssembly : CommonBase<CommonAssembly, Assembly, AssemblyDefinition>, IHasAttributes, IHasTypes {
+namespace ApplicationPatcher.Core.Types.CommonMembers {
+	public class CommonAssembly : CommonMemberBase<CommonAssembly, Assembly, AssemblyDefinition>, IHasAttributes, IHasTypes {
 		public override string Name => GetOrCreate(() => MonoCecil.FullName);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 		public virtual CommonAttribute[] Attributes { get; private set; }

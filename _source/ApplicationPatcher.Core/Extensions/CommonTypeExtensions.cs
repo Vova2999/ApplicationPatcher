@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ApplicationPatcher.Core.Types.Common;
+using ApplicationPatcher.Core.Types.CommonMembers;
 
 namespace ApplicationPatcher.Core.Extensions {
 	public static class CommonTypeExtensions {

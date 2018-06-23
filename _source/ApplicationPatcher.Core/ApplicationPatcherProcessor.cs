@@ -13,16 +13,14 @@ namespace ApplicationPatcher.Core {
 	public class ApplicationPatcherProcessor {
 		private static readonly string[] availableExtensions = { ".exe", ".dll" };
 		private readonly CommonAssemblyFactory commonAssemblyFactory;
-		private readonly LoadedAssemblyPatcher[] loadedAssemblyPatchers;
-		private readonly NotLoadedAssemblyPatcher[] notLoadedAssemblyPatchers;
+		private readonly NotLoadedPatcher[] notLoadedPatchers;
+		private readonly Patcher[] patchers;
 		private readonly ILog log;
 
-		public ApplicationPatcherProcessor(CommonAssemblyFactory commonAssemblyFactory,
-										   LoadedAssemblyPatcher[] loadedAssemblyPatchers,
-										   NotLoadedAssemblyPatcher[] notLoadedAssemblyPatchers) {
+		public ApplicationPatcherProcessor(CommonAssemblyFactory commonAssemblyFactory, NotLoadedPatcher[] notLoadedPatchers, Patcher[] patchers) {
 			this.commonAssemblyFactory = commonAssemblyFactory;
-			this.loadedAssemblyPatchers = loadedAssemblyPatchers;
-			this.notLoadedAssemblyPatchers = notLoadedAssemblyPatchers;
+			this.notLoadedPatchers = notLoadedPatchers;
+			this.patchers = patchers;
 			log = Log.For(this);
 		}
 
@@ -33,7 +31,7 @@ namespace ApplicationPatcher.Core {
 			var assembly = commonAssemblyFactory.Create(applicationPath);
 			log.Info("Assembly was readed");
 
-			var notLoadedAssemblyPatchResult = PatchHelper.PatchApplication(notLoadedAssemblyPatchers, patcher => patcher.Patch(assembly), log);
+			var notLoadedAssemblyPatchResult = PatchHelper.PatchApplication(notLoadedPatchers, patcher => patcher.Patch(assembly), log);
 			if (notLoadedAssemblyPatchResult == PatchResult.Cancel)
 				return;
 
@@ -46,7 +44,7 @@ namespace ApplicationPatcher.Core {
 			else
 				log.Debug("Types from this assembly not found");
 
-			var loadedAssemblyPatchResult = PatchHelper.PatchApplication(loadedAssemblyPatchers, patcher => patcher.Patch(assembly), log);
+			var loadedAssemblyPatchResult = PatchHelper.PatchApplication(patchers, patcher => patcher.Patch(assembly), log);
 			if (loadedAssemblyPatchResult == PatchResult.Cancel)
 				return;
 

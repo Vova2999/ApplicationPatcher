@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ApplicationPatcher.Core.Types.Common;
+using ApplicationPatcher.Core.Types.CommonMembers;
 using Mono.Cecil;
 using Moq;
 

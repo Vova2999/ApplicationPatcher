@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using ApplicationPatcher.Core.Types.Base;
-using ApplicationPatcher.Core.Types.Common;
+using ApplicationPatcher.Core.Types.CommonMembers;
+using ApplicationPatcher.Core.Types.Interfaces;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global

@@ -2,14 +2,14 @@
 using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Helpers;
-using ApplicationPatcher.Core.Types.Base;
+using ApplicationPatcher.Core.Types.Interfaces;
 using JetBrains.Annotations;
 using Mono.Cecil;
 
 // ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 
-namespace ApplicationPatcher.Core.Types.Common {
-	public class CommonConstructor : CommonBase<CommonConstructor, ConstructorInfo, MethodDefinition>, IHasAttributes, IHasParameters {
+namespace ApplicationPatcher.Core.Types.CommonMembers {
+	public class CommonConstructor : CommonMemberBase<CommonConstructor, ConstructorInfo, MethodDefinition>, IHasAttributes, IHasParameters {
 		public override string Name => GetOrCreate(() => MonoCecil.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 		public virtual CommonAttribute[] Attributes { get; private set; }

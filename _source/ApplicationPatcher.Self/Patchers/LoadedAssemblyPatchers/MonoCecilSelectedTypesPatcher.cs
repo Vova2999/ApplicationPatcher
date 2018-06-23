@@ -4,13 +4,13 @@ using ApplicationPatcher.Core;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
-using ApplicationPatcher.Core.Types.Base;
-using ApplicationPatcher.Core.Types.Common;
+using ApplicationPatcher.Core.Types.CommonMembers;
+using ApplicationPatcher.Core.Types.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
 namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
-	public class MonoCecilSelectedTypesPatcher : LoadedAssemblyPatcher {
+	public class MonoCecilSelectedTypesPatcher : Patcher {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly ILog log;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
-using ApplicationPatcher.Core.Types.Common;
+using ApplicationPatcher.Core.Types.CommonMembers;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Helpers {

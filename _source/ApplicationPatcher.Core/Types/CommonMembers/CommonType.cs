@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Reflection;
 using ApplicationPatcher.Core.Helpers;
-using ApplicationPatcher.Core.Types.Base;
+using ApplicationPatcher.Core.Types.Interfaces;
 using Mono.Cecil;
 
 // ReSharper disable ClassWithVirtualMembersNeverInherited.Global
 
-namespace ApplicationPatcher.Core.Types.Common {
-	public class CommonType : CommonBase<CommonType, Type, TypeDefinition>, IHasAttributes, IHasConstructors, IHasFields, IHasMethods, IHasProperties, IHasType {
+namespace ApplicationPatcher.Core.Types.CommonMembers {
+	public class CommonType : CommonMemberBase<CommonType, Type, TypeDefinition>, IHasAttributes, IHasConstructors, IHasFields, IHasMethods, IHasProperties, IHasType {
 		public virtual Type Type => GetOrCreate(() => Reflection);
 		public override string Name => GetOrCreate(() => MonoCecil.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);

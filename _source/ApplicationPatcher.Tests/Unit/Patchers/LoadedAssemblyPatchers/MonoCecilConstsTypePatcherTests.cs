@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using ApplicationPatcher.Core.Extensions;
-using ApplicationPatcher.Core.Types.Common;
+using ApplicationPatcher.Core.Types.CommonMembers;
 using ApplicationPatcher.Self;
 using ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers;
 using Moq;

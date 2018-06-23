@@ -1,9 +1,9 @@
-using ApplicationPatcher.Core.Types.Common;
+using ApplicationPatcher.Core.Types.CommonMembers;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMemberInSuper.Global
 
-namespace ApplicationPatcher.Core.Types.Base {
+namespace ApplicationPatcher.Core.Types.Interfaces {
 	public interface IHasFields {
 		CommonField[] Fields { get; }
 	}

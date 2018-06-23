@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ApplicationPatcher.Core.Extensions;
-using ApplicationPatcher.Core.Types.Common;
+using ApplicationPatcher.Core.Types.CommonMembers;
 using ApplicationPatcher.Tests.FakeTypes;
 using Mono.Cecil;
 using Mono.Collections.Generic;
