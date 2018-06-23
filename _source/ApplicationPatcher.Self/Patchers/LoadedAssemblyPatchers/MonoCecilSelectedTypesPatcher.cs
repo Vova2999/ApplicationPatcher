@@ -21,18 +21,18 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 
 		public override PatchResult Patch(CommonAssembly assembly) {
 			log.Info("Patching selected types...");
-			var foundedSelectedPatchingTypes = assembly.TypesFromThisAssembly
+			var foundSelectedPatchingTypes = assembly.TypesFromThisAssembly
 				.Where(type => applicationPatcherSelfConfiguration.MonoCecilSelectedPatchingTypeFullNames.Contains(type.FullName))
 				.ToArray();
 
-			if (!foundedSelectedPatchingTypes.Any()) {
+			if (!foundSelectedPatchingTypes.Any()) {
 				log.Info("Not found selected types");
 				return PatchResult.Continue;
 			}
 
-			log.Debug("Selected types found:", foundedSelectedPatchingTypes.Select(viewModel => viewModel.FullName).OrderBy(fullName => fullName));
+			log.Debug("Selected types found:", foundSelectedPatchingTypes.Select(viewModel => viewModel.FullName).OrderBy(fullName => fullName));
 
-			foreach (var type in foundedSelectedPatchingTypes) {
+			foreach (var type in foundSelectedPatchingTypes) {
 				log.Info($"Patching type '{type.FullName}'...");
 
 				log.Info($"Loading type '{type.FullName}'...");
@@ -48,7 +48,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 				log.Info($"Type '{type.FullName}' was patched");
 			}
 
-			foundedSelectedPatchingTypes.ForEach(type => type.Load().MonoCecil.IsSealed = false);
+			foundSelectedPatchingTypes.ForEach(type => type.Load().MonoCecil.IsSealed = false);
 			log.Info("Selected types was patched");
 			return PatchResult.Continue;
 		}

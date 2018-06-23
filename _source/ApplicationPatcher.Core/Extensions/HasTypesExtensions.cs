@@ -16,6 +16,13 @@ namespace ApplicationPatcher.Core.Extensions {
 			return hasTypes.GetInheritanceCommonTypes(hasType.Type);
 		}
 
+		public static bool TryGetCommonType(this IHasTypes hasTypes, Type type, out CommonType foundCommonType) {
+			return (foundCommonType = hasTypes.GetCommonType(type)) != null;
+		}
+		public static bool TryGetCommonType(this IHasTypes hasTypes, string typeFullName, out CommonType foundCommonType) {
+			return (foundCommonType = hasTypes.GetCommonType(typeFullName)) != null;
+		}
+
 		public static CommonType GetCommonType(this IHasTypes hasTypes, Type type, bool throwExceptionIfNotFound = false) {
 			return hasTypes.Types.CheckLoaded().SingleOrDefault(commonType => commonType.Is(type), throwExceptionIfNotFound, type.FullName);
 		}

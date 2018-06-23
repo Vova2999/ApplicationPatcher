@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Types.CommonMembers;
+using ApplicationPatcher.Core.Types.Interfaces;
 using ApplicationPatcher.Tests.FakeTypes;
 using Mono.Cecil;
 using Mono.Collections.Generic;
@@ -41,8 +42,14 @@ namespace ApplicationPatcher.Tests {
 		public static FakeCommonTypeBuilder Create(Type type) {
 			return new FakeCommonTypeBuilder(type);
 		}
-		public static FakeCommonTypeBuilder Create(string typeName, Type baseType = null) {
+		public static FakeCommonTypeBuilder Create(string typeName) {
+			return new FakeCommonTypeBuilder(typeName);
+		}
+		public static FakeCommonTypeBuilder Create(string typeName, Type baseType) {
 			return new FakeCommonTypeBuilder(typeName, baseType);
+		}
+		public static FakeCommonTypeBuilder Create(string typeName, IHasType commonBaseType) {
+			return new FakeCommonTypeBuilder(typeName, commonBaseType?.Type);
 		}
 
 		public static void ClearCreatedTypes() {
@@ -57,34 +64,67 @@ namespace ApplicationPatcher.Tests {
 			return (Mock<TObject>)(savedMocks[savedMock.Object] = savedMock);
 		}
 
-		public FakeCommonTypeBuilder AddAttribute(Attribute attributeInstance) {
-			attributes.Add(new FakeAttribute(attributeInstance));
+		public FakeCommonTypeBuilder AddAttribute(Attribute typeAttribute) {
+			return AddAttribute(new FakeAttribute(typeAttribute));
+		}
+		public FakeCommonTypeBuilder AddAttribute(FakeAttribute typeFakeAttribute) {
+			attributes.Add(typeFakeAttribute);
 			return this;
 		}
 
-		public FakeCommonTypeBuilder AddConstructor(FakeParameter[] parameters, FakeAttribute[] methodAttributes = null) {
-			constructors.Add(new FakeConstructor(parameters, methodAttributes));
+		public FakeCommonTypeBuilder AddConstructor(FakeParameter[] parameters) {
+			return AddConstructor(parameters, (FakeAttribute[])null);
+		}
+		public FakeCommonTypeBuilder AddConstructor(FakeParameter[] parameters, params Attribute[] methodAttributes) {
+			return AddConstructor(parameters, methodAttributes.Select(attribute => new FakeAttribute(attribute)).ToArray());
+		}
+		public FakeCommonTypeBuilder AddConstructor(FakeParameter[] parameters, params FakeAttribute[] methodFakeAttributes) {
+			constructors.Add(new FakeConstructor(parameters, methodFakeAttributes));
 			return this;
 		}
 
-		public FakeCommonTypeBuilder AddField(string name, Type fieldType, FakeAttribute[] fieldAttributes = null) {
-			return AddField(name, new FakeType(fieldType), fieldAttributes);
+		public FakeCommonTypeBuilder AddField(string name, Type fieldType) {
+			return AddField(name, new FakeType(fieldType), (FakeAttribute[])null);
 		}
-		public FakeCommonTypeBuilder AddField(string name, FakeType fieldType, FakeAttribute[] fieldAttributes = null) {
-			fields.Add(new FakeField(name, fieldType, fieldAttributes));
+		public FakeCommonTypeBuilder AddField(string name, Type fieldType, params Attribute[] fieldAttributes) {
+			return AddField(name, new FakeType(fieldType), fieldAttributes.Select(attribute => new FakeAttribute(attribute)).ToArray());
+		}
+		public FakeCommonTypeBuilder AddField(string name, Type fieldType, params FakeAttribute[] fieldFakeAttributes) {
+			return AddField(name, new FakeType(fieldType), fieldFakeAttributes);
+		}
+		public FakeCommonTypeBuilder AddField(string name, FakeType fieldType, params Attribute[] fieldAttributes) {
+			return AddField(name, fieldType, fieldAttributes.Select(attribute => new FakeAttribute(attribute)).ToArray());
+		}
+		public FakeCommonTypeBuilder AddField(string name, FakeType fieldType, params FakeAttribute[] fieldFakeAttributes) {
+			fields.Add(new FakeField(name, fieldType, fieldFakeAttributes));
 			return this;
 		}
 
-		public FakeCommonTypeBuilder AddMethod(string name, FakeType returnType, FakeParameter[] parameters, FakeAttribute[] methodAttributes = null) {
-			methods.Add(new FakeMethod(name, returnType, parameters, methodAttributes));
+		public FakeCommonTypeBuilder AddMethod(string name, FakeType returnType, FakeParameter[] parameters) {
+			return AddMethod(name, returnType, parameters, (FakeAttribute[])null);
+		}
+		public FakeCommonTypeBuilder AddMethod(string name, FakeType returnType, FakeParameter[] parameters, params Attribute[] methodAttributes) {
+			return AddMethod(name, returnType, parameters, methodAttributes.Select(attribute => new FakeAttribute(attribute)).ToArray());
+		}
+		public FakeCommonTypeBuilder AddMethod(string name, FakeType returnType, FakeParameter[] parameters, params FakeAttribute[] methodFakeAttributes) {
+			methods.Add(new FakeMethod(name, returnType, parameters, methodFakeAttributes));
 			return this;
 		}
 
-		public FakeCommonTypeBuilder AddProperty(string name, Type propertyType, PropertyMethods propertyMethods, FakeAttribute[] propertyAttributes = null) {
-			return AddProperty(name, new FakeType(propertyType), propertyMethods, propertyAttributes);
+		public FakeCommonTypeBuilder AddProperty(string name, Type propertyType, PropertyMethods propertyMethods) {
+			return AddProperty(name, new FakeType(propertyType), propertyMethods, (FakeAttribute[])null);
 		}
-		public FakeCommonTypeBuilder AddProperty(string name, FakeType propertyType, PropertyMethods propertyMethods, FakeAttribute[] propertyAttributes = null) {
-			properties.Add(new FakeProperty(name, propertyType, propertyMethods, propertyAttributes));
+		public FakeCommonTypeBuilder AddProperty(string name, Type propertyType, PropertyMethods propertyMethods, params Attribute[] propertyAttributes) {
+			return AddProperty(name, new FakeType(propertyType), propertyMethods, propertyAttributes.Select(attribute => new FakeAttribute(attribute)).ToArray());
+		}
+		public FakeCommonTypeBuilder AddProperty(string name, Type propertyType, PropertyMethods propertyMethods, params FakeAttribute[] propertyFakeAttributes) {
+			return AddProperty(name, new FakeType(propertyType), propertyMethods, propertyFakeAttributes);
+		}
+		public FakeCommonTypeBuilder AddProperty(string name, FakeType propertyType, PropertyMethods propertyMethods, params Attribute[] propertyAttributes) {
+			return AddProperty(name, propertyType, propertyMethods, propertyAttributes.Select(attribute => new FakeAttribute(attribute)).ToArray());
+		}
+		public FakeCommonTypeBuilder AddProperty(string name, FakeType propertyType, PropertyMethods propertyMethods, params FakeAttribute[] propertyFakeAttributes) {
+			properties.Add(new FakeProperty(name, propertyType, propertyMethods, propertyFakeAttributes));
 			return this;
 		}
 

@@ -9,6 +9,16 @@ using ApplicationPatcher.Core.Types.Interfaces;
 
 namespace ApplicationPatcher.Core.Extensions {
 	public static class CommonAssemblyExtensions {
+		public static bool TryGetCommonTypeFromThisAssembly(this CommonAssembly commonAssembly, Type type, out CommonType foundCommonType) {
+			return (foundCommonType = commonAssembly.GetCommonTypeFromThisAssembly(type)) != null;
+		}
+		public static bool TryGetCommonTypeFromThisAssembly(this CommonAssembly commonAssembly, IHasType hasType, out CommonType foundCommonType) {
+			return (foundCommonType = commonAssembly.GetCommonTypeFromThisAssembly(hasType)) != null;
+		}
+		public static bool TryGetCommonTypeFromThisAssembly(this CommonAssembly commonAssembly, string typeFullName, out CommonType foundCommonType) {
+			return (foundCommonType = commonAssembly.GetCommonTypeFromThisAssembly(typeFullName)) != null;
+		}
+
 		public static CommonType GetCommonTypeFromThisAssembly(this CommonAssembly commonAssembly, Type type, bool throwExceptionIfNotFound = false) {
 			return commonAssembly.TypesFromThisAssembly.SingleOrDefault(commonType => commonType.Is(type), throwExceptionIfNotFound, type.FullName);
 		}

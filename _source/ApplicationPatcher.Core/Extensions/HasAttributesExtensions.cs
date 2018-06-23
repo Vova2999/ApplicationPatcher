@@ -12,8 +12,24 @@ namespace ApplicationPatcher.Core.Extensions {
 		public static IEnumerable<TAttribute> GetReflectionAttributes<TAttribute>(this IHasAttributes hasAttributes) where TAttribute : Attribute {
 			return hasAttributes.GetAttributes<TAttribute>().Select(attribute => (TAttribute)attribute.Reflection);
 		}
+		public static bool TryGetReflectionAttribute<TAttribute>(this IHasAttributes hasAttributes, out TAttribute foundAttribute) where TAttribute : Attribute {
+			return (foundAttribute = hasAttributes.GetReflectionAttribute<TAttribute>()) != null;
+		}
 		public static TAttribute GetReflectionAttribute<TAttribute>(this IHasAttributes hasAttributes, bool throwExceptionIfNotFound = false) where TAttribute : Attribute {
 			return (TAttribute)hasAttributes.GetAttribute<TAttribute>(throwExceptionIfNotFound)?.Reflection;
+		}
+
+		public static bool TryGetAttribute<TAttribute>(this IHasAttributes hasAttributes, out CommonAttribute foundCommonAttribute) where TAttribute : Attribute {
+			return (foundCommonAttribute = hasAttributes.GetAttribute<TAttribute>()) != null;
+		}
+		public static bool TryGetAttribute(this IHasAttributes hasAttributes, Type attributeType, out CommonAttribute foundCommonAttribute) {
+			return (foundCommonAttribute = hasAttributes.GetAttribute(attributeType)) != null;
+		}
+		public static bool TryGetAttribute(this IHasAttributes hasAttributes, IHasType attributeHasType, out CommonAttribute foundCommonAttribute) {
+			return (foundCommonAttribute = hasAttributes.GetAttribute(attributeHasType)) != null;
+		}
+		public static bool TryGetAttribute(this IHasAttributes hasAttributes, string attributeTypeFullName, out CommonAttribute foundCommonAttribute) {
+			return (foundCommonAttribute = hasAttributes.GetAttribute(attributeTypeFullName)) != null;
 		}
 
 		public static CommonAttribute GetAttribute<TAttribute>(this IHasAttributes hasAttributes, bool throwExceptionIfNotFound = false) where TAttribute : Attribute {

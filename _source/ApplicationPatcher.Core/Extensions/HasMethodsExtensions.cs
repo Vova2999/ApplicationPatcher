@@ -9,6 +9,19 @@ using ApplicationPatcher.Core.Types.Interfaces;
 
 namespace ApplicationPatcher.Core.Extensions {
 	public static class HasMethodsExtensions {
+		public static bool TryGetMethod(this IHasMethods hasMethods, string methodName, out CommonMethod foundCommonMethod) {
+			return (foundCommonMethod = hasMethods.GetMethod(methodName)) != null;
+		}
+		public static bool TryGetMethod(this IHasMethods hasMethods, string methodName, Type[] methodParameterTypes, out CommonMethod foundCommonMethod) {
+			return (foundCommonMethod = hasMethods.GetMethod(methodName, methodParameterTypes)) != null;
+		}
+		public static bool TryGetMethod(this IHasMethods hasMethods, string methodName, IHasType[] methodParameterHasTypes, out CommonMethod foundCommonMethod) {
+			return (foundCommonMethod = hasMethods.GetMethod(methodName, methodParameterHasTypes)) != null;
+		}
+		public static bool TryGetMethod(this IHasMethods hasMethods, string methodName, string[] methodParameterTypeFullNames, out CommonMethod foundCommonMethod) {
+			return (foundCommonMethod = hasMethods.GetMethod(methodName, methodParameterTypeFullNames)) != null;
+		}
+
 		public static CommonMethod GetMethod(this IHasMethods hasMethods, string methodName, bool throwExceptionIfNotFound = false) {
 			return hasMethods.GetMethod(methodName, Type.EmptyTypes, throwExceptionIfNotFound);
 		}

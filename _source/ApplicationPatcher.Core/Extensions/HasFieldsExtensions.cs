@@ -8,6 +8,9 @@ using ApplicationPatcher.Core.Types.Interfaces;
 
 namespace ApplicationPatcher.Core.Extensions {
 	public static class HasFieldsExtensions {
+		public static bool TryGetField(this IHasFields hasFields, string fieldName, out CommonField foundCommonField) {
+			return (foundCommonField = hasFields.GetField(fieldName)) != null;
+		}
 		public static CommonField GetField(this IHasFields hasFields, string fieldName, bool throwExceptionIfNotFound = false) {
 			return hasFields.Fields.CheckLoaded().SingleOrDefault(field => field.Name == fieldName, throwExceptionIfNotFound, fieldName);
 		}

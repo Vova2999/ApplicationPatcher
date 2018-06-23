@@ -9,6 +9,19 @@ using ApplicationPatcher.Core.Types.Interfaces;
 
 namespace ApplicationPatcher.Core.Extensions {
 	public static class HasConstructorsExtensions {
+		public static bool TryGetConstructor(this IHasConstructors hasConstructors, out CommonConstructor foundCommonConstructor) {
+			return (foundCommonConstructor = hasConstructors.GetConstructor()) != null;
+		}
+		public static bool TryGetConstructor(this IHasConstructors hasConstructors, Type[] constructorParameterTypes, out CommonConstructor foundCommonConstructor) {
+			return (foundCommonConstructor = hasConstructors.GetConstructor(constructorParameterTypes)) != null;
+		}
+		public static bool TryGetConstructor(this IHasConstructors hasConstructors, IHasType[] constructorParameterHasTypes, out CommonConstructor foundCommonConstructor) {
+			return (foundCommonConstructor = hasConstructors.GetConstructor(constructorParameterHasTypes)) != null;
+		}
+		public static bool TryGetConstructor(this IHasConstructors hasConstructors, string[] constructorParameterTypeFullNames, out CommonConstructor foundCommonConstructor) {
+			return (foundCommonConstructor = hasConstructors.GetConstructor(constructorParameterTypeFullNames)) != null;
+		}
+
 		public static CommonConstructor GetConstructor(this IHasConstructors hasConstructors, bool throwExceptionIfNotFound = false) {
 			return hasConstructors.GetConstructor(Type.EmptyTypes, throwExceptionIfNotFound);
 		}

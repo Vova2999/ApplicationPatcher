@@ -8,6 +8,9 @@ using ApplicationPatcher.Core.Types.Interfaces;
 
 namespace ApplicationPatcher.Core.Extensions {
 	public static class HasPropertiesExtensions {
+		public static bool TryGetProperty(this IHasProperties hasProperties, string propertyName, out CommonProperty foundCommonProperty) {
+			return (foundCommonProperty = hasProperties.GetProperty(propertyName)) != null;
+		}
 		public static CommonProperty GetProperty(this IHasProperties hasProperties, string propertyName, bool throwExceptionIfNotFound = false) {
 			return hasProperties.Properties.CheckLoaded().SingleOrDefault(property => property.Name == propertyName, throwExceptionIfNotFound, propertyName);
 		}
