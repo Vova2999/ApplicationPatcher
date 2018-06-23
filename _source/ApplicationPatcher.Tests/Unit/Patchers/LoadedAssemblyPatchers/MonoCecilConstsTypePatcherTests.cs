@@ -26,7 +26,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilConstsTypePatcherTest_HaveConstsType() {
+		public void HaveConstsType() {
 			var constsType = FakeCommonTypeBuilder.Create("Consts").AddField("PublicKey", typeof(string)).Build();
 
 			Patch(constsType, new byte[] { 1, 2, 3, 202 });
@@ -35,7 +35,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilConstsTypePatcherTest_NotHaveConstsType() {
+		public void NotHaveConstsType() {
 			Patch(null, null);
 		}
 

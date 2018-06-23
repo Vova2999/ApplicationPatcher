@@ -37,7 +37,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilSelectedTypesPatcherTest_HaveSelectedTypes_WithEmptyConstructor() {
+		public void HaveSelectedTypes_WithEmptyConstructor() {
 			var typeWithoutEmptyConstructor = FakeCommonTypeBuilder.Create("TypeWithConstructor").AddConstructor(null).Build();
 
 			Patch(typeWithoutEmptyConstructor);
@@ -45,7 +45,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilSelectedTypesPatcherTest_HaveSelectedTypes_WithoutEmptyConstructor() {
+		public void HaveSelectedTypes_WithoutEmptyConstructor() {
 			var typeWithoutEmptyConstructor = FakeCommonTypeBuilder.Create("TypeWithoutConstructor").Build();
 			FakeCommonTypeBuilder.GetMockFor(typeWithoutEmptyConstructor.MonoCecil).Setup(type => type.Methods).Returns(new Collection<MethodDefinition>());
 
@@ -54,7 +54,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilSelectedTypesPatcherTest_HaveSelectedTypes_WithProperties() {
+		public void HaveSelectedTypes_WithProperties() {
 			var typeWithProperties = FakeCommonTypeBuilder.Create("TypeWithProperties")
 				.AddProperty("FirstProperty", typeof(int), PropertyMethods.HasGetAndSet)
 				.AddProperty("SecondProperty", typeof(bool), PropertyMethods.HasGetOnly)
@@ -67,7 +67,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilSelectedTypesPatcherTest_HaveSelectedTypes_WithMethods() {
+		public void HaveSelectedTypes_WithMethods() {
 			var typeWithMethods = FakeCommonTypeBuilder.Create("TypeWithMethods")
 				.AddMethod("FirstMethod", null, null)
 				.AddMethod("SecondMethod", null, null)
@@ -79,7 +79,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilSelectedTypesPatcherTest_HaveSelectedTypes_WithoutEmptyConstructor_WithProperties_WithMethods() {
+		public void HaveSelectedTypes_WithoutEmptyConstructor_WithProperties_WithMethods() {
 			var myType = FakeCommonTypeBuilder.Create("MyType")
 				.AddProperty("FirstProperty", typeof(int), PropertyMethods.HasGetAndSet)
 				.AddProperty("SecondProperty", typeof(bool), PropertyMethods.HasGetOnly)
@@ -99,7 +99,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilSelectedTypesPatcherTest_NotHaveSelectedTypes() {
+		public void NotHaveSelectedTypes() {
 			Patch(null);
 		}
 

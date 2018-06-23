@@ -9,12 +9,12 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.NotLoadedAssemblyPatchers {
 	[TestFixture]
 	public class CheckAssemblyPublicKeyPatcherTests : PatcherTestsBase {
 		[Test]
-		public void CheckAssemblyPublicKeyPatcherTest_EqualPublicKeyTokens() {
+		public void EqualPublicKeyTokens() {
 			CheckPublicKeyTokens(new byte[] { 1, 2, 3 }, new byte[] { 1, 2, 3 }, PatchResult.Cancel);
 		}
 
 		[Test]
-		public void CheckAssemblyPublicKeyPatcherTest_NotEqualPublicKeyTokens() {
+		public void NotEqualPublicKeyTokens() {
 			CheckPublicKeyTokens(new byte[] { 1, 2, 3 }, new byte[] { 1, 3, 2 }, PatchResult.Continue);
 		}
 

@@ -34,7 +34,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilPublicKeysPatcherTest_RewriteMainAssemblyPublicKey() {
+		public void RewriteMainAssemblyPublicKey() {
 			applicationPatcherSelfConfiguration.MonoCecilNewPublicKey = new byte[] { 1, 2, 3 };
 			applicationPatcherSelfConfiguration.MonoCecilNewPublicKeyToken = new byte[] { 3, 2, 1 };
 
@@ -44,7 +44,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilPublicKeysPatcherTest_RewriteSelectedAssemblyReferencesPublicKey() {
+		public void RewriteSelectedAssemblyReferencesPublicKey() {
 			const int usedAssemblyReferencesCount = 3, notUsedAssemblyReferencesCount = 2;
 			var usedAssemblyReferences = CreateAssemblyReferences("Used", usedAssemblyReferencesCount);
 			var notUsedAssemblyReferences = CreateAssemblyReferences("NotUsed", notUsedAssemblyReferencesCount);
@@ -72,7 +72,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		}
 
 		[Test]
-		public void MonoCecilPublicKeysPatcherTest_RewriteOrCreateInternalVisibleToAttributes() {
+		public void RewriteOrCreateInternalVisibleToAttributes() {
 			var usedInternalsVisibleToAttributes = new[] {
 				CreateCommonInternalsVisibleToAttribute("Mono.Cecil1"),
 				CreateCommonInternalsVisibleToAttribute("Mono.Cecil2, PublicKey=000000"),
