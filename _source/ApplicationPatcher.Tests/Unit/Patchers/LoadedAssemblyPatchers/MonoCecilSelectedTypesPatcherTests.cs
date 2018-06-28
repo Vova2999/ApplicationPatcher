@@ -69,8 +69,8 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 		[Test]
 		public void HaveSelectedTypes_WithMethods() {
 			var typeWithMethods = FakeCommonTypeBuilder.Create("TypeWithMethods")
-				.AddMethod("FirstMethod", null, null)
-				.AddMethod("SecondMethod", null, null)
+				.AddMethod("FirstMethod", typeof(void), null)
+				.AddMethod("SecondMethod", typeof(void), null)
 				.Build();
 
 			Patch(typeWithMethods);
@@ -83,8 +83,8 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
 			var myType = FakeCommonTypeBuilder.Create("MyType")
 				.AddProperty("FirstProperty", typeof(int), PropertyMethods.HasGetAndSet)
 				.AddProperty("SecondProperty", typeof(bool), PropertyMethods.HasGetOnly)
-				.AddMethod("FirstMethod", null, null)
-				.AddMethod("SecondMethod", null, null)
+				.AddMethod("FirstMethod", typeof(void), null)
+				.AddMethod("SecondMethod", typeof(void), null)
 				.Build();
 
 			FakeCommonTypeBuilder.GetMockFor(myType.MonoCecil).Setup(type => type.Methods).Returns(new Collection<MethodDefinition>());

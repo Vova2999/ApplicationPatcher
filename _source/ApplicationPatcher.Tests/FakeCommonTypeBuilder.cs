@@ -100,6 +100,15 @@ namespace ApplicationPatcher.Tests {
 			return this;
 		}
 
+		public FakeCommonTypeBuilder AddMethod(string name, Type returnType, FakeParameter[] parameters) {
+			return AddMethod(name, new FakeType(returnType), parameters, (FakeAttribute[])null);
+		}
+		public FakeCommonTypeBuilder AddMethod(string name, Type returnType, FakeParameter[] parameters, params Attribute[] methodAttributes) {
+			return AddMethod(name, new FakeType(returnType), parameters, methodAttributes.Select(attribute => new FakeAttribute(attribute)).ToArray());
+		}
+		public FakeCommonTypeBuilder AddMethod(string name, Type returnType, FakeParameter[] parameters, params FakeAttribute[] methodFakeAttributes) {
+			return AddMethod(name, new FakeType(returnType), parameters, methodFakeAttributes);
+		}
 		public FakeCommonTypeBuilder AddMethod(string name, FakeType returnType, FakeParameter[] parameters) {
 			return AddMethod(name, returnType, parameters, (FakeAttribute[])null);
 		}
@@ -258,6 +267,7 @@ namespace ApplicationPatcher.Tests {
 			var commonMethod = CreateMockFor<CommonMethod>(CreateMockFor<MethodInfo>().Object, monoCecilMethod.Object);
 			commonMethod.Setup(method => method.Attributes).Returns(() => commonAttributes);
 			commonMethod.Setup(method => method.Parameters).Returns(() => commonParameters);
+			commonMethod.Setup(method => method.ReturnType).Returns(() => fakeMethod.ReturnType.Type);
 			commonMethod.Setup(method => method.ParameterTypes).Returns(() => commonParameters.Select(parameter => parameter.Type).ToArray());
 			commonMethod.Setup(method => method.LoadInternal());
 

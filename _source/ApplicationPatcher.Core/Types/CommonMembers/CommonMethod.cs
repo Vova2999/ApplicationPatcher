@@ -16,6 +16,9 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public virtual CommonParameter[] Parameters { get; private set; }
 
 		[UsedImplicitly]
+		public virtual Type ReturnType => GetOrCreate(() => Reflection.ReturnType);
+
+		[UsedImplicitly]
 		public virtual Type[] ParameterTypes => GetOrCreate(() => Reflection.GetParameters().Select(parameter => parameter.ParameterType).ToArray());
 
 		public CommonMethod(MethodInfo reflectionMethod, MethodDefinition monoCecilMethod) : base(reflectionMethod, monoCecilMethod) {
