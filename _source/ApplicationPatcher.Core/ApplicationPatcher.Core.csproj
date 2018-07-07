@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -68,9 +69,7 @@
     <Compile Include="ApplicationPatcherProcessor.cs" />
     <Compile Include="ConfigurationFile.cs" />
     <Compile Include="Extensions\BytesExtensions.cs" />
-    <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Extensions\CommonAssemblyExtensions.cs" />
-    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\HasTypesExtensions.cs" />
     <Compile Include="Extensions\CommonBaseExtensions.cs" />
     <Compile Include="Extensions\CommonTypeExtensions.cs" />
