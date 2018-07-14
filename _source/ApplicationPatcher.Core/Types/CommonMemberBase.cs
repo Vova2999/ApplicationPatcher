@@ -5,7 +5,8 @@ using System.Diagnostics;
 // ReSharper disable UnusedMemberInSuper.Global
 
 namespace ApplicationPatcher.Core.Types {
-	public abstract class CommonMemberBase<TCommon, TReflection, TMonoCecil> where TCommon : CommonMemberBase<TCommon, TReflection, TMonoCecil> {
+	public abstract class CommonMemberBase<TCommonMember, TReflection, TMonoCecil> : ICommonMember<TCommonMember>
+		where TCommonMember : CommonMemberBase<TCommonMember, TReflection, TMonoCecil> {
 		public abstract string Name { get; }
 		public abstract string FullName { get; }
 
@@ -20,8 +21,8 @@ namespace ApplicationPatcher.Core.Types {
 			MonoCecil = monoCecil;
 		}
 
-		public TCommon Load() {
-			var common = (TCommon)this;
+		public TCommonMember Load() {
+			var common = (TCommonMember)this;
 
 			if (isLoaded)
 				return common;

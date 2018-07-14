@@ -10,7 +10,7 @@ using ApplicationPatcher.Core.Types.Interfaces;
 namespace ApplicationPatcher.Core.Extensions {
 	public static class HasTypesExtensions {
 		public static IEnumerable<CommonType> GetInheritanceCommonTypes(this IHasTypes hasTypes, Type baseType) {
-			return hasTypes.Types.CheckLoaded().Where(type => type.IsInheritedFrom(baseType));
+			return hasTypes.Load().Types.Where(type => type.IsInheritedFrom(baseType));
 		}
 		public static IEnumerable<CommonType> GetInheritanceCommonTypes(this IHasTypes hasTypes, IHasType hasType) {
 			return hasTypes.GetInheritanceCommonTypes(hasType.Type);
@@ -24,10 +24,10 @@ namespace ApplicationPatcher.Core.Extensions {
 		}
 
 		public static CommonType GetCommonType(this IHasTypes hasTypes, Type type, bool throwExceptionIfNotFound = false) {
-			return hasTypes.Types.CheckLoaded().SingleOrDefault(commonType => commonType.Is(type), throwExceptionIfNotFound, type.FullName);
+			return hasTypes.Load().Types.SingleOrDefault(commonType => commonType.Is(type), throwExceptionIfNotFound, type.FullName);
 		}
 		public static CommonType GetCommonType(this IHasTypes hasTypes, string typeFullName, bool throwExceptionIfNotFound = false) {
-			return hasTypes.Types.CheckLoaded().SingleOrDefault(commonType => commonType.Is(typeFullName), throwExceptionIfNotFound, typeFullName);
+			return hasTypes.Load().Types.SingleOrDefault(commonType => commonType.Is(typeFullName), throwExceptionIfNotFound, typeFullName);
 		}
 	}
 }

@@ -4,7 +4,7 @@ using ApplicationPatcher.Core.Types.CommonMembers;
 // ReSharper disable UnusedMemberInSuper.Global
 
 namespace ApplicationPatcher.Core.Types.Interfaces {
-	public interface IHasFields {
+	public interface IHasFields : ICommonMember<IHasFields> {
 		CommonField[] Fields { get; }
 	}
 }

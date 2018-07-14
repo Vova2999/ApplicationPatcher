@@ -4,7 +4,7 @@
 // ReSharper disable UnusedMemberInSuper.Global
 
 namespace ApplicationPatcher.Core.Types.Interfaces {
-	public interface IHasType {
+	public interface IHasType : ICommonMember<IHasType> {
 		Type Type { get; }
 	}
 }

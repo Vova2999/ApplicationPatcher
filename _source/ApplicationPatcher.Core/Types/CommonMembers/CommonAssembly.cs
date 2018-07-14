@@ -17,7 +17,7 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public virtual CommonType[] Types { get; private set; }
 
 		[UsedImplicitly]
-		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.CheckLoaded().WhereFrom(this).ToArray());
+		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Load().Types.WhereFrom(this).ToArray());
 
 		public virtual Assembly[] ReferencedReflectionAssemblies { get; }
 		public virtual AssemblyDefinition[] ReferencedMonoCecilAssemblies { get; }
@@ -32,6 +32,13 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 			ReferencedReflectionAssemblies = referencedReflectionAssemblies;
 			ReferencedMonoCecilAssemblies = referencedMonoCecilAssemblies;
 			HaveSymbolStore = haveSymbolStore;
+		}
+
+		IHasAttributes ICommonMember<IHasAttributes>.Load() {
+			return Load();
+		}
+		IHasTypes ICommonMember<IHasTypes>.Load() {
+			return Load();
 		}
 
 		internal override void LoadInternal() {

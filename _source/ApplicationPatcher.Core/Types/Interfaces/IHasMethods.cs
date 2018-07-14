@@ -4,7 +4,7 @@ using ApplicationPatcher.Core.Types.CommonMembers;
 // ReSharper disable UnusedMemberInSuper.Global
 
 namespace ApplicationPatcher.Core.Types.Interfaces {
-	public interface IHasMethods {
+	public interface IHasMethods : ICommonMember<IHasMethods> {
 		CommonMethod[] Methods { get; }
 	}
 }

@@ -321,6 +321,8 @@ namespace ApplicationPatcher.Tests {
 			var commonProperty = CreateMockFor<CommonProperty>(reflectionProperty.Object, monoCecilProperty.Object);
 			commonProperty.Setup(property => property.Type).Returns(() => reflectionType);
 			commonProperty.Setup(property => property.Attributes).Returns(() => commonAttributes);
+			commonProperty.Setup(property => property.GetMethod).Returns(() => propertyGetMethod);
+			commonProperty.Setup(property => property.SetMethod).Returns(() => propertySetMethod);
 			commonProperty.Setup(property => property.LoadInternal());
 
 			return commonProperty.Object;

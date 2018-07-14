@@ -24,6 +24,13 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public CommonMethod(MethodInfo reflectionMethod, MethodDefinition monoCecilMethod) : base(reflectionMethod, monoCecilMethod) {
 		}
 
+		IHasAttributes ICommonMember<IHasAttributes>.Load() {
+			return Load();
+		}
+		IHasParameters ICommonMember<IHasParameters>.Load() {
+			return Load();
+		}
+
 		internal override void LoadInternal() {
 			base.LoadInternal();
 			Attributes = CommonHelper.JoinAttributes(Reflection.GetCustomAttributesData(), MonoCecil.CustomAttributes);

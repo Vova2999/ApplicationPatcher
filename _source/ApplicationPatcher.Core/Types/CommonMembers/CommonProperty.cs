@@ -2,6 +2,7 @@
 using System.Reflection;
 using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Types.Interfaces;
+using JetBrains.Annotations;
 using Mono.Cecil;
 
 // ReSharper disable ClassWithVirtualMembersNeverInherited.Global
@@ -13,7 +14,20 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 		public virtual CommonAttribute[] Attributes { get; private set; }
 
+		[UsedImplicitly]
+		public virtual CommonMethod GetMethod => GetOrCreate(() => Reflection.GetMethod == null ? null : new CommonMethod(Reflection.GetMethod, MonoCecil.GetMethod));
+
+		[UsedImplicitly]
+		public virtual CommonMethod SetMethod => GetOrCreate(() => Reflection.SetMethod == null ? null : new CommonMethod(Reflection.SetMethod, MonoCecil.SetMethod));
+
 		public CommonProperty(PropertyInfo reflectionProperty, PropertyDefinition monoCecilProperty) : base(reflectionProperty, monoCecilProperty) {
+		}
+
+		IHasAttributes ICommonMember<IHasAttributes>.Load() {
+			return Load();
+		}
+		IHasType ICommonMember<IHasType>.Load() {
+			return Load();
 		}
 
 		internal override void LoadInternal() {

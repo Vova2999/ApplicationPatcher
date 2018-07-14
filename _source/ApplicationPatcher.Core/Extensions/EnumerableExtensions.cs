@@ -13,6 +13,11 @@ namespace ApplicationPatcher.Core.Extensions {
 				actionOnValue(value);
 		}
 
+		public static void ForEach<TValue, TResult>(this IEnumerable<TValue> values, Func<TValue, TResult> actionOnValue) {
+			foreach (var value in values)
+				actionOnValue(value);
+		}
+
 		public static TValue SingleOrDefault<TValue>(this IEnumerable<TValue> values, Func<TValue, bool> predicate, bool throwExceptionIfNotFound, string valueFullName) {
 			var count = 0;
 			var tempValue = default(TValue);

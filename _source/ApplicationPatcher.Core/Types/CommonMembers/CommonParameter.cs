@@ -13,5 +13,9 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 
 		public CommonParameter(ParameterInfo reflectionParameter, ParameterDefinition monoCecilParameter) : base(reflectionParameter, monoCecilParameter) {
 		}
+
+		IHasType ICommonMember<IHasType>.Load() {
+			return Load();
+		}
 	}
 }

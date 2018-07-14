@@ -16,6 +16,13 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public CommonField(FieldInfo reflectionField, FieldDefinition monoCecilField) : base(reflectionField, monoCecilField) {
 		}
 
+		IHasAttributes ICommonMember<IHasAttributes>.Load() {
+			return Load();
+		}
+		IHasType ICommonMember<IHasType>.Load() {
+			return Load();
+		}
+
 		internal override void LoadInternal() {
 			base.LoadInternal();
 			Attributes = CommonHelper.JoinAttributes(Reflection.GetCustomAttributesData(), MonoCecil.CustomAttributes);

@@ -71,7 +71,6 @@
     <Compile Include="Extensions\BytesExtensions.cs" />
     <Compile Include="Extensions\CommonAssemblyExtensions.cs" />
     <Compile Include="Extensions\HasTypesExtensions.cs" />
-    <Compile Include="Extensions\CommonBaseExtensions.cs" />
     <Compile Include="Extensions\CommonTypeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\HasAttributesExtensions.cs" />
@@ -94,6 +93,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\XmlSerializerHelper.cs" />
     <Compile Include="Types\CommonMemberBase.cs" />
+    <Compile Include="Types\ICommonMember.cs" />
     <Compile Include="Types\Interfaces\IHasConstructors.cs" />
     <Compile Include="Types\Interfaces\IHasFields.cs" />
     <Compile Include="Types\Interfaces\IHasMethods.cs" />

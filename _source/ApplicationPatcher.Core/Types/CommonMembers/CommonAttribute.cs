@@ -12,5 +12,9 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 
 		public CommonAttribute(Attribute reflectionAttribute, CustomAttribute monoCecilAttribute) : base(reflectionAttribute, monoCecilAttribute) {
 		}
+
+		IHasType ICommonMember<IHasType>.Load() {
+			return Load();
+		}
 	}
 }

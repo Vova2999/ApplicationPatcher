@@ -21,6 +21,13 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public CommonConstructor(ConstructorInfo reflectionConstructor, MethodDefinition monoCecilConstructor) : base(reflectionConstructor, monoCecilConstructor) {
 		}
 
+		IHasAttributes ICommonMember<IHasAttributes>.Load() {
+			return Load();
+		}
+		IHasParameters ICommonMember<IHasParameters>.Load() {
+			return Load();
+		}
+
 		internal override void LoadInternal() {
 			base.LoadInternal();
 			Attributes = CommonHelper.JoinAttributes(Reflection.GetCustomAttributesData(), MonoCecil.CustomAttributes);

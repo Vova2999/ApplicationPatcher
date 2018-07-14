@@ -20,6 +20,25 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public CommonType(Type reflectionType, TypeDefinition monoCecilType) : base(reflectionType, monoCecilType) {
 		}
 
+		IHasAttributes ICommonMember<IHasAttributes>.Load() {
+			return Load();
+		}
+		IHasConstructors ICommonMember<IHasConstructors>.Load() {
+			return Load();
+		}
+		IHasFields ICommonMember<IHasFields>.Load() {
+			return Load();
+		}
+		IHasMethods ICommonMember<IHasMethods>.Load() {
+			return Load();
+		}
+		IHasProperties ICommonMember<IHasProperties>.Load() {
+			return Load();
+		}
+		IHasType ICommonMember<IHasType>.Load() {
+			return Load();
+		}
+
 		internal override void LoadInternal() {
 			base.LoadInternal();
 
