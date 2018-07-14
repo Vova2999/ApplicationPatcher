@@ -3,7 +3,7 @@ using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Types.CommonMembers;
 using ApplicationPatcher.Self;
-using ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers;
+using ApplicationPatcher.Self.Patchers.OnLoadedAssembly;
 using ApplicationPatcher.Tests.FakeTypes;
 using FluentAssertions;
 using Mono.Cecil;
@@ -11,7 +11,7 @@ using Mono.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 
-namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
+namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 	[TestFixture]
 	public class MonoCecilSelectedTypesPatcherTests : PatcherTestsBase {
 		private FakeCommonAssemblyBuilder assembly;

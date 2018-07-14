@@ -83,10 +83,10 @@
     <Compile Include="ApplicationPatcherSelfConfiguration.cs" />
     <Compile Include="ApplicationPatcherSelfNinjectModule.cs" />
     <Compile Include="ApplicationPatcherSelfProcessor.cs" />
-    <Compile Include="Patchers\LoadedAssemblyPatchers\MonoCecilConstsTypePatcher.cs" />
-    <Compile Include="Patchers\LoadedAssemblyPatchers\MonoCecilPublicKeysPatcher.cs" />
-    <Compile Include="Patchers\NotLoadedAssemblyPatchers\CheckAssemblyPublicKeyPatcher.cs" />
-    <Compile Include="Patchers\LoadedAssemblyPatchers\MonoCecilSelectedTypesPatcher.cs" />
+    <Compile Include="Patchers\OnLoadedAssembly\MonoCecilConstsTypePatcher.cs" />
+    <Compile Include="Patchers\OnLoadedAssembly\MonoCecilPublicKeysPatcher.cs" />
+    <Compile Include="Patchers\OnNotLoadedAssembly\CheckAssemblyPublicKeyPatcher.cs" />
+    <Compile Include="Patchers\OnLoadedAssembly\MonoCecilSelectedTypesPatcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

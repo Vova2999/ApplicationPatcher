@@ -9,13 +9,13 @@ using ApplicationPatcher.Core.Logs;
 
 namespace ApplicationPatcher.Self {
 	public class ApplicationPatcherSelfProcessor {
-		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly ApplicationPatcherProcessor applicationPatcherProcessor;
+		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly ILog log;
 
-		public ApplicationPatcherSelfProcessor(ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration, ApplicationPatcherProcessor applicationPatcherProcessor) {
-			this.applicationPatcherSelfConfiguration = applicationPatcherSelfConfiguration;
+		public ApplicationPatcherSelfProcessor(ApplicationPatcherProcessor applicationPatcherProcessor, ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration) {
 			this.applicationPatcherProcessor = applicationPatcherProcessor;
+			this.applicationPatcherSelfConfiguration = applicationPatcherSelfConfiguration;
 			log = Log.For(this);
 		}
 

@@ -4,8 +4,8 @@ using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
 using ApplicationPatcher.Core.Types.CommonMembers;
 
-namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
-	public class MonoCecilConstsTypePatcher : Patcher {
+namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
+	public class MonoCecilConstsTypePatcher : PatcherOnLoadedApplication {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly ILog log;
 
@@ -25,7 +25,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 				return PatchResult.Continue;
 			}
 
-			constsType.Load().GetField("PublicKey").MonoCecil.Constant = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey.ToHexString();
+			constsType.GetField("PublicKey").MonoCecil.Constant = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey.ToHexString();
 
 			log.Info($"'{constsTypeFullName}' type was patched");
 			return PatchResult.Continue;

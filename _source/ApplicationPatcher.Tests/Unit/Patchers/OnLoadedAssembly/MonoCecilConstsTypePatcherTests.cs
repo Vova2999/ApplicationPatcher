@@ -2,11 +2,11 @@
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Types.CommonMembers;
 using ApplicationPatcher.Self;
-using ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers;
+using ApplicationPatcher.Self.Patchers.OnLoadedAssembly;
 using Moq;
 using NUnit.Framework;
 
-namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
+namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 	[TestFixture]
 	public class MonoCecilConstsTypePatcherTests : PatcherTestsBase {
 		private FakeCommonAssemblyBuilder assembly;

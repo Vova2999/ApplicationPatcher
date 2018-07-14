@@ -86,8 +86,9 @@
     <Compile Include="Logs\ILog.cs" />
     <Compile Include="Logs\Log.cs" />
     <Compile Include="Helpers\CommonHelper.cs" />
-    <Compile Include="Patchers\Patcher.cs" />
-    <Compile Include="Patchers\NotLoadedPatcher.cs" />
+    <Compile Include="Patchers\PatcherOnPatchedApplication.cs" />
+    <Compile Include="Patchers\PatcherOnLoadedApplication.cs" />
+    <Compile Include="Patchers\PatcherOnNotLoadedApplication.cs" />
     <Compile Include="IPatcher.cs" />
     <Compile Include="PatchResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

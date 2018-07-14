@@ -1,11 +1,11 @@
 ﻿using ApplicationPatcher.Core;
 using ApplicationPatcher.Self;
-using ApplicationPatcher.Self.Patchers.NotLoadedAssemblyPatchers;
+using ApplicationPatcher.Self.Patchers.OnNotLoadedAssembly;
 using FluentAssertions;
 using Mono.Cecil;
 using NUnit.Framework;
 
-namespace ApplicationPatcher.Tests.Unit.Patchers.NotLoadedAssemblyPatchers {
+namespace ApplicationPatcher.Tests.Unit.Patchers.OnNotLoadedAssembly {
 	[TestFixture]
 	public class CheckAssemblyPublicKeyPatcherTests : PatcherTestsBase {
 		[Test]

@@ -104,10 +104,10 @@
     <Compile Include="FakeTypes\FakeProperty.cs" />
     <Compile Include="FakeTypes\FakeType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit\Patchers\LoadedAssemblyPatchers\MonoCecilConstsTypePatcherTests.cs" />
-    <Compile Include="Unit\Patchers\LoadedAssemblyPatchers\MonoCecilPublicKeysPatcherTests.cs" />
-    <Compile Include="Unit\Patchers\LoadedAssemblyPatchers\MonoCecilSelectedTypesPatcherTests.cs" />
-    <Compile Include="Unit\Patchers\NotLoadedAssemblyPatchers\CheckAssemblyPublicKeyPatcherTests.cs" />
+    <Compile Include="Unit\Patchers\OnLoadedAssembly\MonoCecilConstsTypePatcherTests.cs" />
+    <Compile Include="Unit\Patchers\OnLoadedAssembly\MonoCecilPublicKeysPatcherTests.cs" />
+    <Compile Include="Unit\Patchers\OnLoadedAssembly\MonoCecilSelectedTypesPatcherTests.cs" />
+    <Compile Include="Unit\Patchers\OnNotLoadedAssembly\CheckAssemblyPublicKeyPatcherTests.cs" />
     <Compile Include="Unit\Patchers\PatcherTestsBase.cs" />
   </ItemGroup>
   <ItemGroup>

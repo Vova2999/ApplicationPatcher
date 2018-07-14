@@ -2,14 +2,14 @@
 using System.Runtime.CompilerServices;
 using ApplicationPatcher.Core.Types.CommonMembers;
 using ApplicationPatcher.Self;
-using ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers;
+using ApplicationPatcher.Self.Patchers.OnLoadedAssembly;
 using FluentAssertions;
 using Mono.Cecil;
 using Mono.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 
-namespace ApplicationPatcher.Tests.Unit.Patchers.LoadedAssemblyPatchers {
+namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 	[TestFixture]
 	public class MonoCecilPublicKeysPatcherTests : PatcherTestsBase {
 		private FakeCommonAssemblyBuilder assembly;

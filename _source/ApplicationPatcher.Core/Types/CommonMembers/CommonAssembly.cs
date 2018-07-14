@@ -17,7 +17,7 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public virtual CommonType[] Types { get; private set; }
 
 		[UsedImplicitly]
-		public CommonType[] TypesFromThisAssembly => GetOrCreate(() => Load().Types.WhereFrom(this).ToArray());
+		public virtual CommonType[] TypesFromThisAssembly => GetOrCreate(() => Load().Types.WhereFrom(this).ToArray());
 
 		public virtual Assembly[] ReferencedReflectionAssemblies { get; }
 		public virtual AssemblyDefinition[] ReferencedMonoCecilAssemblies { get; }

@@ -9,8 +9,8 @@ using ApplicationPatcher.Core.Types.Interfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
-namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
-	public class MonoCecilSelectedTypesPatcher : Patcher {
+namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
+	public class MonoCecilSelectedTypesPatcher : PatcherOnLoadedApplication {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly ILog log;
 
@@ -48,7 +48,7 @@ namespace ApplicationPatcher.Self.Patchers.LoadedAssemblyPatchers {
 				log.Info($"Type '{type.FullName}' was patched");
 			}
 
-			foundSelectedPatchingTypes.ForEach(type => type.Load().MonoCecil.IsSealed = false);
+			foundSelectedPatchingTypes.ForEach(type => type.MonoCecil.IsSealed = false);
 			log.Info("Selected types was patched");
 			return PatchResult.Continue;
 		}

@@ -2,7 +2,7 @@
 using ApplicationPatcher.Core.Types.CommonMembers;
 
 namespace ApplicationPatcher.Core.Patchers {
-	public abstract class Patcher : IPatcher {
+	public abstract class PatcherOnNotLoadedApplication : IPatcher {
 		[AddLogOffset]
 		public abstract PatchResult Patch(CommonAssembly assembly);
 	}

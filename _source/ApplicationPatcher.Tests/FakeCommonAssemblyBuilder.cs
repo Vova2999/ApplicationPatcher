@@ -18,6 +18,7 @@ namespace ApplicationPatcher.Tests {
 		public AssemblyDefinition MainMonoCecilAssembly => MainMonoCecilAssemblyMock.Object;
 
 		private readonly List<CommonType> commonTypes = new List<CommonType>();
+		private readonly List<CommonType> commonTypesFromThisAssembly = new List<CommonType>();
 
 		private FakeCommonAssemblyBuilder(Mock<CommonAssembly> commonAssemblyMock, Mock<ModuleDefinition> mainMonoCecilModuleMock, Mock<AssemblyDefinition> mainMonoCecilAssemblyMock) {
 			CommonAssemblyMock = commonAssemblyMock;
@@ -25,6 +26,8 @@ namespace ApplicationPatcher.Tests {
 			MainMonoCecilAssemblyMock = mainMonoCecilAssemblyMock;
 
 			commonAssemblyMock.Setup(assembly => assembly.Types).Returns(() => commonTypes.ToArray());
+			commonAssemblyMock.Setup(assembly => assembly.TypesFromThisAssembly).Returns(() => commonTypesFromThisAssembly.ToArray());
+			commonAssemblyMock.Setup(assembly => assembly.LoadInternal());
 		}
 
 		public static FakeCommonAssemblyBuilder Create() {
@@ -41,8 +44,10 @@ namespace ApplicationPatcher.Tests {
 			return types.Aggregate(this, (typeBuilder, type) => typeBuilder.AddCommonType(type, fromThisAssembly));
 		}
 		public FakeCommonAssemblyBuilder AddCommonType(CommonType commonType, bool fromThisAssembly = true) {
-			if (fromThisAssembly)
+			if (fromThisAssembly) {
+				commonTypesFromThisAssembly.Add(commonType);
 				FakeCommonTypeBuilder.GetMockFor(commonType.MonoCecil).Setup(type => type.Module).Returns(() => MainMonoCecilModule);
+			}
 
 			commonTypes.Add(commonType);
 			return this;

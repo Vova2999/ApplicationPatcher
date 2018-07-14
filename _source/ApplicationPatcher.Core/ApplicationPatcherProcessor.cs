@@ -13,14 +13,19 @@ namespace ApplicationPatcher.Core {
 	public class ApplicationPatcherProcessor {
 		private static readonly string[] availableExtensions = { ".exe", ".dll" };
 		private readonly CommonAssemblyFactory commonAssemblyFactory;
-		private readonly NotLoadedPatcher[] notLoadedPatchers;
-		private readonly Patcher[] patchers;
+		private readonly PatcherOnLoadedApplication[] patchersOnLoadedApplication;
+		private readonly PatcherOnPatchedApplication[] patchersOnPatchedApplication;
+		private readonly PatcherOnNotLoadedApplication[] patchersOnNotLoadedApplication;
 		private readonly ILog log;
 
-		public ApplicationPatcherProcessor(CommonAssemblyFactory commonAssemblyFactory, NotLoadedPatcher[] notLoadedPatchers, Patcher[] patchers) {
+		public ApplicationPatcherProcessor(CommonAssemblyFactory commonAssemblyFactory,
+										   PatcherOnLoadedApplication[] patchersOnLoadedApplication,
+										   PatcherOnPatchedApplication[] patchersOnPatchedApplication,
+										   PatcherOnNotLoadedApplication[] patchersOnNotLoadedApplication) {
 			this.commonAssemblyFactory = commonAssemblyFactory;
-			this.notLoadedPatchers = notLoadedPatchers;
-			this.patchers = patchers;
+			this.patchersOnLoadedApplication = patchersOnLoadedApplication;
+			this.patchersOnPatchedApplication = patchersOnPatchedApplication;
+			this.patchersOnNotLoadedApplication = patchersOnNotLoadedApplication;
 			log = Log.For(this);
 		}
 
@@ -31,8 +36,7 @@ namespace ApplicationPatcher.Core {
 			var assembly = commonAssemblyFactory.Create(applicationPath);
 			log.Info("Assembly was readed");
 
-			var notLoadedAssemblyPatchResult = PatchHelper.PatchApplication(notLoadedPatchers, patcher => patcher.Patch(assembly), log);
-			if (notLoadedAssemblyPatchResult == PatchResult.Cancel)
+			if (PatchHelper.PatchApplication(patchersOnNotLoadedApplication, patcher => patcher.Patch(assembly), log) == PatchResult.Cancel)
 				return;
 
 			log.Info("Loading assembly...");
@@ -44,8 +48,10 @@ namespace ApplicationPatcher.Core {
 			else
 				log.Debug("Types from this assembly not found");
 
-			var loadedAssemblyPatchResult = PatchHelper.PatchApplication(patchers, patcher => patcher.Patch(assembly), log);
-			if (loadedAssemblyPatchResult == PatchResult.Cancel)
+			if (PatchHelper.PatchApplication(patchersOnLoadedApplication, patcher => patcher.Patch(assembly), log) == PatchResult.Cancel)
+				return;
+
+			if (PatchHelper.PatchApplication(patchersOnPatchedApplication, patcher => patcher.Patch(assembly), log) == PatchResult.Cancel)
 				return;
 
 			log.Info("Application was patched");

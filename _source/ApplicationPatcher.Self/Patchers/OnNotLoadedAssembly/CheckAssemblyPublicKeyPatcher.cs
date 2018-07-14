@@ -3,8 +3,8 @@ using ApplicationPatcher.Core;
 using ApplicationPatcher.Core.Patchers;
 using ApplicationPatcher.Core.Types.CommonMembers;
 
-namespace ApplicationPatcher.Self.Patchers.NotLoadedAssemblyPatchers {
-	public class CheckAssemblyPublicKeyPatcher : NotLoadedPatcher {
+namespace ApplicationPatcher.Self.Patchers.OnNotLoadedAssembly {
+	public class CheckAssemblyPublicKeyPatcher : PatcherOnNotLoadedApplication {
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 
 		public CheckAssemblyPublicKeyPatcher(ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration) {
