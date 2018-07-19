@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Helpers;
@@ -15,6 +17,9 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 		public virtual CommonAttribute[] Attributes { get; private set; }
 		public virtual CommonType[] Types { get; private set; }
+
+		public virtual Dictionary<string, CommonType[]> TypeFullNameToType { get; private set; }
+		public virtual Dictionary<Type, CommonType[]> TypeReflectionToType { get; private set; }
 
 		[UsedImplicitly]
 		public virtual CommonType[] TypesFromThisAssembly => GetOrCreate(() => Load().Types.WhereFrom(this).ToArray());
@@ -47,6 +52,9 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 			Types = CommonHelper.JoinTypes(
 				new[] { Reflection }.Concat(ReferencedReflectionAssemblies).SelectMany(a => a.GetTypes()),
 				new[] { MonoCecil }.Concat(ReferencedMonoCecilAssemblies).SelectMany(a => a.MainModule.Types));
+
+			TypeFullNameToType = Types.GroupBy(type => type.FullName).ToDictionary(group => group.Key, group => group.ToArray());
+			TypeReflectionToType = Types.GroupBy(type => type.Reflection).ToDictionary(group => group.Key, group => group.ToArray());
 		}
 	}
 }

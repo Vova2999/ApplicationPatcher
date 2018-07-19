@@ -24,10 +24,10 @@ namespace ApplicationPatcher.Core.Extensions {
 		}
 
 		public static CommonType GetCommonType(this IHasTypes hasTypes, Type type, bool throwExceptionIfNotFound = false) {
-			return hasTypes.Load().Types.SingleOrDefault(commonType => commonType.Is(type), throwExceptionIfNotFound, type.FullName);
+			return (hasTypes.Load().TypeReflectionToType.TryGetValue(type, out var commonTypes) ? commonTypes : Enumerable.Empty<CommonType>()).SingleOrDefault(throwExceptionIfNotFound, type.FullName);
 		}
 		public static CommonType GetCommonType(this IHasTypes hasTypes, string typeFullName, bool throwExceptionIfNotFound = false) {
-			return hasTypes.Load().Types.SingleOrDefault(commonType => commonType.Is(typeFullName), throwExceptionIfNotFound, typeFullName);
+			return (hasTypes.Load().TypeFullNameToType.TryGetValue(typeFullName, out var commonTypes) ? commonTypes : Enumerable.Empty<CommonType>()).SingleOrDefault(throwExceptionIfNotFound, typeFullName);
 		}
 	}
 }

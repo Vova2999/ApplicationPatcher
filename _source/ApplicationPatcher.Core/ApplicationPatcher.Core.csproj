@@ -79,6 +79,7 @@
     <Compile Include="Extensions\HasMethodsExtensions.cs" />
     <Compile Include="Extensions\HasPropertiesExtensions.cs" />
     <Compile Include="Extensions\HasTypeExtensions.cs" />
+    <Compile Include="Extensions\MethodReferenceExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\CommonAssemblyFactory.cs" />
     <Compile Include="Helpers\CurrentDirectoryHelper.cs" />

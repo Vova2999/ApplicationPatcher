@@ -18,7 +18,7 @@ using TypeAttributes = System.Reflection.TypeAttributes;
 
 namespace ApplicationPatcher.Tests {
 	public class FakeCommonTypeBuilder {
-		private static readonly IDictionary<object, object> savedMocks = new ConcurrentDictionary<object, object>();
+		private static IDictionary<object, object> savedMocks = new ConcurrentDictionary<object, object>();
 		private static ModuleBuilder moduleBuilder;
 
 		private Type currentType;
@@ -54,6 +54,7 @@ namespace ApplicationPatcher.Tests {
 
 		public static void ClearCreatedTypes() {
 			moduleBuilder = null;
+			savedMocks = new ConcurrentDictionary<object, object>();
 		}
 
 		public static Mock<TObject> GetMockFor<TObject>(TObject obj) where TObject : class {

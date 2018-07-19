@@ -21,8 +21,9 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 
 		public override PatchResult Patch(CommonAssembly assembly) {
 			log.Info("Patching selected types...");
-			var foundSelectedPatchingTypes = assembly.TypesFromThisAssembly
-				.Where(type => applicationPatcherSelfConfiguration.MonoCecilSelectedPatchingTypeFullNames.Contains(type.FullName))
+			var foundSelectedPatchingTypes = applicationPatcherSelfConfiguration.MonoCecilSelectedPatchingTypeFullNames
+				.Select(typeFullName => assembly.GetCommonTypeFromThisAssembly(typeFullName))
+				.Where(type => type != null)
 				.ToArray();
 
 			if (!foundSelectedPatchingTypes.Any()) {

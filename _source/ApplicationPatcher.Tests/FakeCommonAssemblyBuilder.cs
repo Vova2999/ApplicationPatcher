@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ApplicationPatcher.Core.Types.CommonMembers;
+using ApplicationPatcher.Core.Types.Interfaces;
 using Mono.Cecil;
 using Moq;
 
@@ -25,6 +26,8 @@ namespace ApplicationPatcher.Tests {
 			MainMonoCecilModuleMock = mainMonoCecilModuleMock;
 			MainMonoCecilAssemblyMock = mainMonoCecilAssemblyMock;
 
+			commonAssemblyMock.Setup(assembly => assembly.TypeFullNameToType).Returns(() => commonTypes.GroupBy(type => type.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonAssemblyMock.Setup(assembly => assembly.TypeReflectionToType).Returns(() => commonTypes.GroupBy(type => type.Reflection).ToDictionary(group => group.Key, group => group.ToArray()));
 			commonAssemblyMock.Setup(assembly => assembly.Types).Returns(() => commonTypes.ToArray());
 			commonAssemblyMock.Setup(assembly => assembly.TypesFromThisAssembly).Returns(() => commonTypesFromThisAssembly.ToArray());
 			commonAssemblyMock.Setup(assembly => assembly.LoadInternal());

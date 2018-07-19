@@ -18,12 +18,19 @@ namespace ApplicationPatcher.Core.Extensions {
 				actionOnValue(value);
 		}
 
+		public static TValue SingleOrDefault<TValue>(this IEnumerable<TValue> values, bool throwExceptionIfNotFound, string valueFullName) {
+			return SingleOrDefault(values, value => true, throwExceptionIfNotFound, valueFullName);
+		}
+
 		public static TValue SingleOrDefault<TValue>(this IEnumerable<TValue> values, Func<TValue, bool> predicate, bool throwExceptionIfNotFound, string valueFullName) {
 			var count = 0;
 			var tempValue = default(TValue);
 			foreach (var value in values.Where(predicate)) {
 				tempValue = value;
 				count++;
+
+				if (count > 1)
+					break;
 			}
 
 			switch (count) {
