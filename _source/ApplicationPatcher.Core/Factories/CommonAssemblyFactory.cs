@@ -12,6 +12,14 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Factories {
 	public class CommonAssemblyFactory {
+		private const string codeBasePrefix = "file:///";
+
+		private readonly string[] additionalLoadAssemblyNames;
+
+		public CommonAssemblyFactory(params string[] additionalLoadAssemblyNames) {
+			this.additionalLoadAssemblyNames = additionalLoadAssemblyNames;
+		}
+
 		public virtual CommonAssembly Create(string assemblyPath) {
 			using (CurrentDirectoryHelper.From(Path.GetDirectoryName(Path.GetFullPath(assemblyPath)))) {
 				var assemblyName = Path.GetFileName(assemblyPath);
@@ -30,7 +38,6 @@ namespace ApplicationPatcher.Core.Factories {
 				var mainReflectionAssembly = ReadMainReflectionAssembly(assemblyName, symbolStorePath, haveSymbolStore);
 				var referencedReflectionAssemblies = ReadReferencedReflectionAssemblies(mainReflectionAssembly, foundAssemblyFiles);
 
-				const string codeBasePrefix = "file:///";
 				referencedReflectionAssemblies
 					.Select(assembly => new { assembly.GetName().Name, assembly.CodeBase })
 					.Where(assembly => !foundAssemblyFiles.ContainsKey(assembly.Name))
@@ -62,11 +69,24 @@ namespace ApplicationPatcher.Core.Factories {
 			return mainAssembly;
 		}
 
-		private static Assembly[] ReadReferencedReflectionAssemblies(Assembly mainReflectionAssembly, IDictionary<string, string> foundAssemblyFiles) {
+		private Assembly[] ReadReferencedReflectionAssemblies(Assembly mainReflectionAssembly, IDictionary<string, string> foundAssemblyFiles) {
 			AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => FindLoadedAssembly(new AssemblyName(args.Name).Name) ??
 				(foundAssemblyFiles.TryGetValue(new AssemblyName(args.Name).Name, out var assemblyFile) ? Assembly.Load(File.ReadAllBytes(assemblyFile)) : null);
 
-			return mainReflectionAssembly.GetReferencedAssemblies().Select(Assembly.Load).ToArray();
+			var referencedReflectionAssemblies = mainReflectionAssembly.GetReferencedAssemblies().Select(Assembly.Load).ToList();
+
+			foreach (var assemblyName in additionalLoadAssemblyNames.Where(assemblyName => referencedReflectionAssemblies.All(assembly => assembly.GetName().Name != assemblyName))) {
+				var readedAssembly = foundAssemblyFiles.TryGetValue(assemblyName, out var assemblyFile)
+					? Assembly.Load(File.ReadAllBytes(assemblyFile))
+					: throw new InvalidOperationException($"Not found additional assembly '{assemblyName}' for reflection reader");
+
+				foreach (var referencedAssembly in readedAssembly.GetReferencedAssemblies().Select(Assembly.Load).Where(assembly => !foundAssemblyFiles.ContainsKey(assembly.GetName().Name)))
+					foundAssemblyFiles[referencedAssembly.GetName().Name] = referencedAssembly.CodeBase.Substring(codeBasePrefix.Length);
+
+				referencedReflectionAssemblies.Add(readedAssembly);
+			}
+
+			return referencedReflectionAssemblies.ToArray();
 		}
 
 		private static Assembly FindLoadedAssembly(string assemblyName) {
@@ -77,12 +97,20 @@ namespace ApplicationPatcher.Core.Factories {
 			return AssemblyDefinition.ReadAssembly(assemblyName, new ReaderParameters { ReadSymbols = haveSymbolStore, InMemory = true });
 		}
 
-		private static AssemblyDefinition[] ReadReferencedMonoCecilAssemblies(AssemblyDefinition mainMonoCecilAssembly, IDictionary<string, string> foundAssemblyFiles) {
-			return mainMonoCecilAssembly.MainModule.AssemblyReferences
+		private AssemblyDefinition[] ReadReferencedMonoCecilAssemblies(AssemblyDefinition mainMonoCecilAssembly, IDictionary<string, string> foundAssemblyFiles) {
+			var referencedMonoCecilAssemblies = mainMonoCecilAssembly.MainModule.AssemblyReferences
 				.Select(assembly => foundAssemblyFiles.TryGetValue(assembly.Name, out var assemblyFile)
 					? AssemblyDefinition.ReadAssembly(assemblyFile)
-					: throw new Exception($"Not found assembly {assembly.Name} for mono cecil reader"))
-				.ToArray();
+					: throw new InvalidOperationException($"Not found assembly '{assembly.Name}' for mono cecil reader"))
+				.ToList();
+
+			referencedMonoCecilAssemblies.AddRange(additionalLoadAssemblyNames
+				.Except(referencedMonoCecilAssemblies.Select(assembly => assembly.Name.Name))
+				.Select(assemblyName => foundAssemblyFiles.TryGetValue(assemblyName, out var assemblyFile)
+					? AssemblyDefinition.ReadAssembly(assemblyFile)
+					: throw new InvalidOperationException($"Not found additional assembly '{assemblyName}' for mono cecil reader")));
+
+			return referencedMonoCecilAssemblies.ToArray();
 		}
 
 		public virtual void Save(CommonAssembly commonAssembly, string assemblyPath, string signaturePath = null) {

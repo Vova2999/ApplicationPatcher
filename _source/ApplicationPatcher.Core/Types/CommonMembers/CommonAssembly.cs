@@ -13,7 +13,7 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.CommonMembers {
 	public class CommonAssembly : CommonMemberBase<CommonAssembly, Assembly, AssemblyDefinition>, IHasAttributes, IHasTypes {
-		public override string Name => GetOrCreate(() => MonoCecil.FullName);
+		public override string Name => GetOrCreate(() => MonoCecil.Name.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 		public virtual CommonAttribute[] Attributes { get; private set; }
 		public virtual CommonType[] Types { get; private set; }
