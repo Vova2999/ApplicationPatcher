@@ -168,6 +168,12 @@ namespace ApplicationPatcher.Tests {
 			commonType.Setup(type => type.Properties).Returns(() => commonProperties);
 			commonType.Setup(type => type.LoadInternal());
 
+			commonType.Setup(type => type.FieldNameToField).Returns(() => commonFields.GroupBy(field => field.Name).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonType.Setup(type => type.MethodNameToMethod).Returns(() => commonMethods.GroupBy(method => method.Name).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonType.Setup(type => type.PropertyNameToProperty).Returns(() => commonProperties.GroupBy(property => property.Name).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonType.Setup(type => type.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonType.Setup(type => type.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
+
 			return commonType.Object;
 		}
 		private static Type CreateReflectionType(FakeType fakeType) {
@@ -221,6 +227,9 @@ namespace ApplicationPatcher.Tests {
 			commonConstructor.Setup(constructor => constructor.ParameterTypes).Returns(() => commonParameters.Select(parameter => parameter.Type).ToArray());
 			commonConstructor.Setup(constructor => constructor.LoadInternal());
 
+			commonConstructor.Setup(constructor => constructor.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonConstructor.Setup(constructor => constructor.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
+
 			return commonConstructor.Object;
 		}
 
@@ -241,6 +250,9 @@ namespace ApplicationPatcher.Tests {
 			commonField.Setup(field => field.Type).Returns(() => CreateReflectionType(fakeField.FieldType));
 			commonField.Setup(field => field.Attributes).Returns(() => commonAttributes);
 			commonField.Setup(field => field.LoadInternal());
+
+			commonField.Setup(field => field.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonField.Setup(field => field.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
 
 			return commonField.Object;
 		}
@@ -271,6 +283,9 @@ namespace ApplicationPatcher.Tests {
 			commonMethod.Setup(method => method.ReturnType).Returns(() => fakeMethod.ReturnType.Type);
 			commonMethod.Setup(method => method.ParameterTypes).Returns(() => commonParameters.Select(parameter => parameter.Type).ToArray());
 			commonMethod.Setup(method => method.LoadInternal());
+
+			commonMethod.Setup(method => method.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonMethod.Setup(method => method.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
 
 			return commonMethod.Object;
 		}
@@ -325,6 +340,9 @@ namespace ApplicationPatcher.Tests {
 			commonProperty.Setup(property => property.GetMethod).Returns(() => propertyGetMethod);
 			commonProperty.Setup(property => property.SetMethod).Returns(() => propertySetMethod);
 			commonProperty.Setup(property => property.LoadInternal());
+
+			commonProperty.Setup(property => property.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonProperty.Setup(property => property.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
 
 			return commonProperty.Object;
 		}

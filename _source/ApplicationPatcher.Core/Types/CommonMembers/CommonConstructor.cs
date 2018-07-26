@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Helpers;
@@ -14,6 +15,12 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 		public virtual CommonAttribute[] Attributes { get; private set; }
 		public virtual CommonParameter[] Parameters { get; private set; }
+
+		internal virtual Dictionary<Type, CommonAttribute[]> TypeTypeToAttribute { get; private set; }
+		Dictionary<Type, CommonAttribute[]> IHasAttributes.TypeTypeToAttribute => TypeTypeToAttribute;
+
+		internal virtual Dictionary<string, CommonAttribute[]> TypeFullNameToAttribute { get; private set; }
+		Dictionary<string, CommonAttribute[]> IHasAttributes.TypeFullNameToAttribute => TypeFullNameToAttribute;
 
 		[UsedImplicitly]
 		public virtual Type[] ParameterTypes => GetOrCreate(() => Reflection.GetParameters().Select(parameter => parameter.ParameterType).ToArray());
@@ -32,6 +39,9 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 			base.LoadInternal();
 			Attributes = CommonHelper.JoinAttributes(Reflection.GetCustomAttributesData(), MonoCecil.CustomAttributes);
 			Parameters = CommonHelper.JoinParameters(Reflection.GetParameters(), MonoCecil.Parameters);
+
+			TypeTypeToAttribute = Attributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray());
+			TypeFullNameToAttribute = Attributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray());
 		}
 	}
 }

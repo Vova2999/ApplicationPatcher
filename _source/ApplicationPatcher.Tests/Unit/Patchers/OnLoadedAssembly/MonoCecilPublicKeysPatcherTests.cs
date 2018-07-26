@@ -85,6 +85,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 			};
 
 			var commonAttributes = usedInternalsVisibleToAttributes.Concat(notUsedInternalsVisibleToAttributes).ToArray();
+			assembly.AddCommonAttributes(commonAttributes);
 			assembly.CommonAssemblyMock.Setup(commonAssembly => commonAssembly.Attributes).Returns(commonAttributes);
 			assembly.MainMonoCecilAssemblyMock.Setup(a => a.CustomAttributes).Returns(new Collection<CustomAttribute>(commonAttributes.Select(attribute => attribute.MonoCecil).ToArray()));
 
@@ -125,7 +126,11 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 			var customAttributeArgument = new CustomAttributeArgument(CreateMockFor<TypeReference>().Object, internalsVisibleToAssemblyName);
 			customAttribute.Setup(attribute => attribute.ConstructorArguments).Returns(new Collection<CustomAttributeArgument>(new[] { customAttributeArgument }));
 
-			return CreateMockFor<CommonAttribute>(internalsVisibleToAttribute, customAttribute.Object).Object;
+			var commonAttribute = CreateMockFor<CommonAttribute>(internalsVisibleToAttribute, customAttribute.Object);
+			commonAttribute.Setup(attribute => attribute.Type).Returns(() => typeof(InternalsVisibleToAttribute));
+			commonAttribute.Setup(attribute => attribute.FullName).Returns(() => typeof(InternalsVisibleToAttribute).FullName);
+
+			return commonAttribute.Object;
 		}
 	}
 }

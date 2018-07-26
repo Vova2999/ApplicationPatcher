@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Types.Interfaces;
@@ -16,6 +18,21 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public virtual CommonField[] Fields { get; private set; }
 		public virtual CommonMethod[] Methods { get; private set; }
 		public virtual CommonProperty[] Properties { get; private set; }
+
+		internal virtual Dictionary<string, CommonField[]> FieldNameToField { get; private set; }
+		Dictionary<string, CommonField[]> IHasFields.FieldNameToField => FieldNameToField;
+
+		internal virtual Dictionary<string, CommonMethod[]> MethodNameToMethod { get; private set; }
+		Dictionary<string, CommonMethod[]> IHasMethods.MethodNameToMethod => MethodNameToMethod;
+
+		internal virtual Dictionary<string, CommonProperty[]> PropertyNameToProperty { get; private set; }
+		Dictionary<string, CommonProperty[]> IHasProperties.PropertyNameToProperty => PropertyNameToProperty;
+
+		internal virtual Dictionary<Type, CommonAttribute[]> TypeTypeToAttribute { get; private set; }
+		Dictionary<Type, CommonAttribute[]> IHasAttributes.TypeTypeToAttribute => TypeTypeToAttribute;
+
+		internal virtual Dictionary<string, CommonAttribute[]> TypeFullNameToAttribute { get; private set; }
+		Dictionary<string, CommonAttribute[]> IHasAttributes.TypeFullNameToAttribute => TypeFullNameToAttribute;
 
 		public CommonType(Type reflectionType, TypeDefinition monoCecilType) : base(reflectionType, monoCecilType) {
 		}
@@ -49,6 +66,12 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 			Fields = CommonHelper.JoinFields(Reflection.GetFields(bindingFlags), MonoCecil.Fields);
 			Methods = CommonHelper.JoinMethods(Reflection.GetMethods(bindingFlags), MonoCecil.Methods);
 			Properties = CommonHelper.JoinProperties(Reflection.GetProperties(bindingFlags), MonoCecil.Properties);
+
+			FieldNameToField = Fields.GroupBy(field => field.Name).ToDictionary(group => group.Key, group => group.ToArray());
+			MethodNameToMethod = Methods.GroupBy(method => method.Name).ToDictionary(group => group.Key, group => group.ToArray());
+			PropertyNameToProperty = Properties.GroupBy(property => property.Name).ToDictionary(group => group.Key, group => group.ToArray());
+			TypeTypeToAttribute = Attributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray());
+			TypeFullNameToAttribute = Attributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray());
 		}
 	}
 }

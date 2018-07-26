@@ -64,7 +64,7 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 				log.Info("Constructor without parameters already created");
 			}
 			else {
-				const MethodAttributes emptyConstructorMethodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
+				const MethodAttributes emptyConstructorMethodAttributes = MethodAttributes.Assembly | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
 				var objectEmptyConstructorMethod = assembly.MonoCecil.MainModule.ImportReference(typeof(object).GetConstructor(Type.EmptyTypes));
 
 				var emptyConstructorMethod = new MethodDefinition(".ctor", emptyConstructorMethodAttributes, assembly.MonoCecil.MainModule.TypeSystem.Void);

@@ -18,8 +18,17 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public virtual CommonAttribute[] Attributes { get; private set; }
 		public virtual CommonType[] Types { get; private set; }
 
-		public virtual Dictionary<string, CommonType[]> TypeFullNameToType { get; private set; }
-		public virtual Dictionary<Type, CommonType[]> TypeReflectionToType { get; private set; }
+		internal virtual Dictionary<Type, CommonAttribute[]> TypeTypeToAttribute { get; private set; }
+		Dictionary<Type, CommonAttribute[]> IHasAttributes.TypeTypeToAttribute => TypeTypeToAttribute;
+
+		internal virtual Dictionary<string, CommonAttribute[]> TypeFullNameToAttribute { get; private set; }
+		Dictionary<string, CommonAttribute[]> IHasAttributes.TypeFullNameToAttribute => TypeFullNameToAttribute;
+
+		internal virtual Dictionary<Type, CommonType[]> TypeTypeToType { get; private set; }
+		Dictionary<Type, CommonType[]> IHasTypes.TypeTypeToType => TypeTypeToType;
+
+		internal virtual Dictionary<string, CommonType[]> TypeFullNameToType { get; private set; }
+		Dictionary<string, CommonType[]> IHasTypes.TypeFullNameToType => TypeFullNameToType;
 
 		[UsedImplicitly]
 		public virtual CommonType[] TypesFromThisAssembly => GetOrCreate(() => Load().Types.WhereFrom(this).ToArray());
@@ -53,8 +62,11 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 				new[] { Reflection }.Concat(ReferencedReflectionAssemblies).SelectMany(a => a.GetTypes()),
 				new[] { MonoCecil }.Concat(ReferencedMonoCecilAssemblies).SelectMany(a => a.MainModule.Types));
 
+			TypeTypeToAttribute = Attributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray());
+			TypeFullNameToAttribute = Attributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray());
+
+			TypeTypeToType = Types.GroupBy(type => type.Type).ToDictionary(group => group.Key, group => group.ToArray());
 			TypeFullNameToType = Types.GroupBy(type => type.FullName).ToDictionary(group => group.Key, group => group.ToArray());
-			TypeReflectionToType = Types.GroupBy(type => type.Reflection).ToDictionary(group => group.Key, group => group.ToArray());
 		}
 	}
 }

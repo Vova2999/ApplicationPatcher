@@ -9,7 +9,7 @@ namespace ApplicationPatcher.Core.Types.Interfaces {
 	public interface IHasTypes : ICommonMember<IHasTypes> {
 		CommonType[] Types { get; }
 
+		Dictionary<Type, CommonType[]> TypeTypeToType { get; }
 		Dictionary<string, CommonType[]> TypeFullNameToType { get; }
-		Dictionary<Type, CommonType[]> TypeReflectionToType { get; }
 	}
 }

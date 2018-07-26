@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ApplicationPatcher.Core.Types.CommonMembers;
-using ApplicationPatcher.Core.Types.Interfaces;
 using Mono.Cecil;
 using Moq;
 
@@ -20,17 +19,21 @@ namespace ApplicationPatcher.Tests {
 
 		private readonly List<CommonType> commonTypes = new List<CommonType>();
 		private readonly List<CommonType> commonTypesFromThisAssembly = new List<CommonType>();
+		private readonly List<CommonAttribute> commonAttributes = new List<CommonAttribute>();
 
 		private FakeCommonAssemblyBuilder(Mock<CommonAssembly> commonAssemblyMock, Mock<ModuleDefinition> mainMonoCecilModuleMock, Mock<AssemblyDefinition> mainMonoCecilAssemblyMock) {
 			CommonAssemblyMock = commonAssemblyMock;
 			MainMonoCecilModuleMock = mainMonoCecilModuleMock;
 			MainMonoCecilAssemblyMock = mainMonoCecilAssemblyMock;
 
-			commonAssemblyMock.Setup(assembly => assembly.TypeFullNameToType).Returns(() => commonTypes.GroupBy(type => type.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
-			commonAssemblyMock.Setup(assembly => assembly.TypeReflectionToType).Returns(() => commonTypes.GroupBy(type => type.Reflection).ToDictionary(group => group.Key, group => group.ToArray()));
 			commonAssemblyMock.Setup(assembly => assembly.Types).Returns(() => commonTypes.ToArray());
 			commonAssemblyMock.Setup(assembly => assembly.TypesFromThisAssembly).Returns(() => commonTypesFromThisAssembly.ToArray());
 			commonAssemblyMock.Setup(assembly => assembly.LoadInternal());
+
+			commonAssemblyMock.Setup(assembly => assembly.TypeTypeToType).Returns(() => commonTypes.GroupBy(type => type.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonAssemblyMock.Setup(assembly => assembly.TypeFullNameToType).Returns(() => commonTypes.GroupBy(type => type.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonAssemblyMock.Setup(assembly => assembly.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonAssemblyMock.Setup(assembly => assembly.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
 		}
 
 		public static FakeCommonAssemblyBuilder Create() {
@@ -41,6 +44,15 @@ namespace ApplicationPatcher.Tests {
 
 			var commonAssembly = new Mock<CommonAssembly>(null, null, monoCecilAssembly.Object, null, false) { CallBase = true };
 			return new FakeCommonAssemblyBuilder(commonAssembly, monoCecilModule, monoCecilAssembly);
+		}
+
+		public FakeCommonAssemblyBuilder AddCommonAttributes(IEnumerable<CommonAttribute> attributes) {
+			commonAttributes.AddRange(attributes);
+			return this;
+		}
+		public FakeCommonAssemblyBuilder AddCommonAttribute(CommonAttribute attribute) {
+			commonAttributes.Add(attribute);
+			return this;
 		}
 
 		public FakeCommonAssemblyBuilder AddCommonTypes(IEnumerable<CommonType> types, bool fromThisAssembly = true) {

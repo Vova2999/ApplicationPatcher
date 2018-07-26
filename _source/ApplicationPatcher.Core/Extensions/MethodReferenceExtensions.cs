@@ -1,6 +1,8 @@
 ﻿using Mono.Cecil;
 using Mono.Cecil.Rocks;
 
+// ReSharper disable UnusedMember.Global
+
 namespace ApplicationPatcher.Core.Extensions {
 	public static class MethodReferenceExtensions {
 		public static MethodReference MakeHostInstanceGeneric(this MethodReference methodReference, params TypeReference[] typeReferences) {
