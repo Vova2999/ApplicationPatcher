@@ -15,7 +15,26 @@ namespace ApplicationPatcher.Core.Helpers {
 				reflectionAttribute => $"{reflectionAttribute.AttributeType.FullName}({reflectionAttribute.ConstructorArguments.Select(argument => $"{argument.ArgumentType.FullName}: {argument.Value}").JoinToString(", ")})",
 				monoCecilAttribute => $"{monoCecilAttribute.AttributeType.FullName}({monoCecilAttribute.ConstructorArguments.Select(argument => $"{argument.Type.FullName}: {argument.Value}").JoinToString(", ")})",
 				attributeFullName => true,
-				(reflectionAttribute, monoCecilAttribute) => new CommonAttribute((Attribute)reflectionAttribute.Constructor.Invoke(reflectionAttribute.ConstructorArguments.Select(argument => argument.Value).ToArray()), monoCecilAttribute));
+				(reflectionAttribute, monoCecilAttribute) => {
+					var attribute = (Attribute)reflectionAttribute.Constructor.Invoke(reflectionAttribute.ConstructorArguments.Select(argument => argument.Value).ToArray());
+
+					if (reflectionAttribute.NamedArguments == null)
+						return new CommonAttribute(attribute, monoCecilAttribute);
+
+					foreach (var namedArgument in reflectionAttribute.NamedArguments) {
+						switch (namedArgument.MemberInfo) {
+							case FieldInfo fieldInfo:
+								fieldInfo.SetValue(attribute, namedArgument.TypedValue.Value);
+								break;
+
+							case PropertyInfo propertyInfo:
+								propertyInfo.SetValue(attribute, namedArgument.TypedValue.Value, null);
+								break;
+						}
+					}
+
+					return new CommonAttribute(attribute, monoCecilAttribute);
+				});
 		}
 
 		internal static CommonConstructor[] JoinConstructors(IEnumerable<ConstructorInfo> reflectionConstructors, IEnumerable<MethodDefinition> monoCecilConstructors) {
