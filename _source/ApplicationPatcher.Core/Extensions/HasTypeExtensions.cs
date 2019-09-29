@@ -59,7 +59,7 @@ namespace ApplicationPatcher.Core.Extensions {
 			return hasType.ContainsReflectionAttribute(typeof(TAttribute));
 		}
 		public static bool ContainsReflectionAttribute(this IHasType hasType, Type attributeType) {
-			return hasType.Type.GetCustomAttributes(attributeType).Any();
+			return hasType.Type.GetCustomAttributes(attributeType, false).Any();
 		}
 		public static bool ContainsReflectionAttribute(this IHasType hasType, IHasType attributeHasType) {
 			return hasType.ContainsReflectionAttribute(attributeHasType.Type);

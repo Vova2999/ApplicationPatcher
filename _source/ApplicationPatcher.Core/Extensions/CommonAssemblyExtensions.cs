@@ -34,5 +34,38 @@ namespace ApplicationPatcher.Core.Extensions {
 		public static IEnumerable<ICommonType> GetInheritanceCommonTypesFromThisAssembly(this ICommonAssembly commonAssembly, IHasType baseHasType) {
 			return commonAssembly.GetInheritanceCommonTypesFromThisAssembly(baseHasType.Type);
 		}
+
+		public static IEnumerable<TAttribute> GetReflectionAttributes<TAttribute>(this ICommonAssembly commonAssembly) where TAttribute : Attribute {
+			return commonAssembly.Reflection.GetCustomAttributes(typeof(TAttribute), false).Select(attribute => (TAttribute)attribute);
+		}
+		public static bool TryGetReflectionAttribute<TAttribute>(this ICommonAssembly commonAssembly, out TAttribute foundAttribute) where TAttribute : Attribute {
+			return (foundAttribute = commonAssembly.GetReflectionAttribute<TAttribute>()) != null;
+		}
+		public static TAttribute GetReflectionAttribute<TAttribute>(this ICommonAssembly commonAssembly, bool throwExceptionIfNotFound = false) where TAttribute : Attribute {
+			return (TAttribute)commonAssembly.GetReflectionAttribute(typeof(TAttribute), throwExceptionIfNotFound);
+		}
+		public static Attribute GetReflectionAttribute(this ICommonAssembly commonAssembly, Type attributeType, bool throwExceptionIfNotFound = false) {
+			return (Attribute)commonAssembly.Reflection.GetCustomAttributes(attributeType, false).SingleOrDefault(throwExceptionIfNotFound, attributeType.FullName);
+		}
+
+		public static bool ContainsReflectionAttribute<TAttribute>(this ICommonAssembly commonAssembly) where TAttribute : Attribute {
+			return commonAssembly.ContainsReflectionAttribute(typeof(TAttribute));
+		}
+		public static bool ContainsReflectionAttribute(this ICommonAssembly commonAssembly, Type attributeType) {
+			return commonAssembly.Reflection.GetCustomAttributes(attributeType, false).Any();
+		}
+		public static bool ContainsReflectionAttribute(this ICommonAssembly commonAssembly, IHasType attributeHasType) {
+			return commonAssembly.ContainsReflectionAttribute(attributeHasType.Type);
+		}
+
+		public static bool NotContainsReflectionAttribute<TAttribute>(this ICommonAssembly commonAssembly) where TAttribute : Attribute {
+			return !commonAssembly.ContainsReflectionAttribute<TAttribute>();
+		}
+		public static bool NotContainsReflectionAttribute(this ICommonAssembly commonAssembly, Type attributeType) {
+			return !commonAssembly.ContainsReflectionAttribute(attributeType);
+		}
+		public static bool NotContainsReflectionAttribute(this ICommonAssembly commonAssembly, IHasType attributeHasType) {
+			return !commonAssembly.ContainsReflectionAttribute(attributeHasType);
+		}
 	}
 }

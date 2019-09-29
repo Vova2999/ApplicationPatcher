@@ -70,6 +70,8 @@
     <Compile Include="ConfigurationFile.cs" />
     <Compile Include="Extensions\BytesExtensions.cs" />
     <Compile Include="Extensions\CommonAssemblyExtensions.cs" />
+    <Compile Include="Extensions\CommonConstructorExtensions.cs" />
+    <Compile Include="Extensions\CommonMethodExtensions.cs" />
     <Compile Include="Extensions\HasTypesExtensions.cs" />
     <Compile Include="Extensions\CommonTypeExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
