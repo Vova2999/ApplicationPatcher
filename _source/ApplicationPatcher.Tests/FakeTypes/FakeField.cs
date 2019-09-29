@@ -1,8 +1,8 @@
 using System;
-
-// ReSharper disable UnusedMember.Global
+using JetBrains.Annotations;
 
 namespace ApplicationPatcher.Tests.FakeTypes {
+	[PublicAPI]
 	public class FakeField {
 		public readonly string Name;
 		public readonly FakeType FieldType;

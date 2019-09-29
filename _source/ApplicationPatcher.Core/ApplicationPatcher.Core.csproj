@@ -66,7 +66,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationPatcherProcessor.cs" />
+    <Compile Include="ApplicationPatcherCore.cs" />
     <Compile Include="ConfigurationFile.cs" />
     <Compile Include="Extensions\BytesExtensions.cs" />
     <Compile Include="Extensions\CommonAssemblyExtensions.cs" />
@@ -82,8 +82,10 @@
     <Compile Include="Extensions\MethodReferenceExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Factories\CommonAssemblyFactory.cs" />
-    <Compile Include="Helpers\CurrentDirectoryHelper.cs" />
-    <Compile Include="Helpers\PatchHelper.cs" />
+    <Compile Include="Factories\ICommonAssemblyFactory.cs" />
+    <Compile Include="Logs\AddLogOffsetAttribute.cs" />
+    <Compile Include="Services\CurrentDirectoryService.cs" />
+    <Compile Include="Extensions\PatchExtensions.cs" />
     <Compile Include="Logs\ILog.cs" />
     <Compile Include="Logs\Log.cs" />
     <Compile Include="Helpers\CommonHelper.cs" />
@@ -94,15 +96,23 @@
     <Compile Include="PatchResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\XmlSerializerHelper.cs" />
-    <Compile Include="Types\CommonMemberBase.cs" />
+    <Compile Include="Types\CommonInterfaces\ICommonAssembly.cs" />
+    <Compile Include="Types\CommonInterfaces\ICommonAttribute.cs" />
+    <Compile Include="Types\CommonInterfaces\ICommonConstructor.cs" />
+    <Compile Include="Types\CommonInterfaces\ICommonField.cs" />
+    <Compile Include="Types\CommonInterfaces\ICommonMethod.cs" />
+    <Compile Include="Types\CommonInterfaces\ICommonParameter.cs" />
+    <Compile Include="Types\CommonInterfaces\ICommonProperty.cs" />
+    <Compile Include="Types\CommonInterfaces\ICommonType.cs" />
+    <Compile Include="Types\CommonMember.cs" />
     <Compile Include="Types\ICommonMember.cs" />
-    <Compile Include="Types\Interfaces\IHasConstructors.cs" />
-    <Compile Include="Types\Interfaces\IHasFields.cs" />
-    <Compile Include="Types\Interfaces\IHasMethods.cs" />
-    <Compile Include="Types\Interfaces\IHasParameters.cs" />
-    <Compile Include="Types\Interfaces\IHasProperties.cs" />
-    <Compile Include="Types\Interfaces\IHasType.cs" />
-    <Compile Include="Types\Interfaces\IHasTypes.cs" />
+    <Compile Include="Types\BaseInterfaces\IHasConstructors.cs" />
+    <Compile Include="Types\BaseInterfaces\IHasFields.cs" />
+    <Compile Include="Types\BaseInterfaces\IHasMethods.cs" />
+    <Compile Include="Types\BaseInterfaces\IHasParameters.cs" />
+    <Compile Include="Types\BaseInterfaces\IHasProperties.cs" />
+    <Compile Include="Types\BaseInterfaces\IHasType.cs" />
+    <Compile Include="Types\BaseInterfaces\IHasTypes.cs" />
     <Compile Include="Types\CommonMembers\CommonAssembly.cs" />
     <Compile Include="Types\CommonMembers\CommonAttribute.cs" />
     <Compile Include="Types\CommonMembers\CommonConstructor.cs" />
@@ -111,7 +121,7 @@
     <Compile Include="Types\CommonMembers\CommonParameter.cs" />
     <Compile Include="Types\CommonMembers\CommonProperty.cs" />
     <Compile Include="Types\CommonMembers\CommonType.cs" />
-    <Compile Include="Types\Interfaces\IHasAttributes.cs" />
+    <Compile Include="Types\BaseInterfaces\IHasAttributes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -3,25 +3,23 @@ using System.IO;
 using System.Linq;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Factories;
-using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
 
-// ReSharper disable ClassNeverInstantiated.Global
-
 namespace ApplicationPatcher.Core {
-	public class ApplicationPatcherProcessor {
-		private static readonly string[] availableExtensions = { ".exe", ".dll" };
-		private readonly CommonAssemblyFactory commonAssemblyFactory;
+	public class ApplicationPatcherCore {
+		private static readonly string[] AvailableExtensions = { ".exe", ".dll" };
+
+		private readonly ICommonAssemblyFactory commonAssemblyFactory;
 		private readonly PatcherOnLoadedApplication[] patchersOnLoadedApplication;
 		private readonly PatcherOnPatchedApplication[] patchersOnPatchedApplication;
 		private readonly PatcherOnNotLoadedApplication[] patchersOnNotLoadedApplication;
 		private readonly ILog log;
 
-		public ApplicationPatcherProcessor(CommonAssemblyFactory commonAssemblyFactory,
-										   PatcherOnLoadedApplication[] patchersOnLoadedApplication,
-										   PatcherOnPatchedApplication[] patchersOnPatchedApplication,
-										   PatcherOnNotLoadedApplication[] patchersOnNotLoadedApplication) {
+		public ApplicationPatcherCore(ICommonAssemblyFactory commonAssemblyFactory,
+									  PatcherOnLoadedApplication[] patchersOnLoadedApplication,
+									  PatcherOnPatchedApplication[] patchersOnPatchedApplication,
+									  PatcherOnNotLoadedApplication[] patchersOnNotLoadedApplication) {
 			this.commonAssemblyFactory = commonAssemblyFactory;
 			this.patchersOnLoadedApplication = patchersOnLoadedApplication;
 			this.patchersOnPatchedApplication = patchersOnPatchedApplication;
@@ -36,7 +34,7 @@ namespace ApplicationPatcher.Core {
 			var assembly = commonAssemblyFactory.Create(applicationPath);
 			log.Info("Assembly was readed");
 
-			if (PatchHelper.PatchApplication(patchersOnNotLoadedApplication, patcher => patcher.Patch(assembly), log) == PatchResult.Cancel)
+			if (patchersOnNotLoadedApplication.PatchApplication(assembly, log) == PatchResult.Cancel)
 				return;
 
 			log.Info("Loading assembly...");
@@ -48,10 +46,10 @@ namespace ApplicationPatcher.Core {
 			else
 				log.Debug("Types from this assembly not found");
 
-			if (PatchHelper.PatchApplication(patchersOnLoadedApplication, patcher => patcher.Patch(assembly), log) == PatchResult.Cancel)
+			if (patchersOnLoadedApplication.PatchApplication(assembly, log) == PatchResult.Cancel)
 				return;
 
-			if (PatchHelper.PatchApplication(patchersOnPatchedApplication, patcher => patcher.Patch(assembly), log) == PatchResult.Cancel)
+			if (patchersOnPatchedApplication.PatchApplication(assembly, log) == PatchResult.Cancel)
 				return;
 
 			log.Info("Application was patched");
@@ -70,9 +68,9 @@ namespace ApplicationPatcher.Core {
 				throw new FileNotFoundException($"Not found application: {applicationFullPath}");
 
 			var applicationExtension = Path.GetExtension(applicationPath);
-			if (!availableExtensions.Any(availableExtension => string.Equals(availableExtension, applicationExtension, StringComparison.InvariantCultureIgnoreCase)))
+			if (!AvailableExtensions.Any(availableExtension => string.Equals(availableExtension, applicationExtension, StringComparison.OrdinalIgnoreCase)))
 				throw new FileLoadException($"Extension of application can not be '{applicationExtension}'. " +
-					$"Available extensions: {availableExtensions.Select(availableExtension => $"'{availableExtension}'").JoinToString(", ")}");
+					$"Available extensions: {AvailableExtensions.Select(availableExtension => $"'{availableExtension}'").JoinToString(", ")}");
 
 			log.Info($"Application was found: '{applicationFullPath}'");
 		}

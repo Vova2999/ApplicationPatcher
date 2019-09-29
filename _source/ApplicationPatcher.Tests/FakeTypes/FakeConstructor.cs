@@ -1,4 +1,7 @@
-﻿namespace ApplicationPatcher.Tests.FakeTypes {
+﻿using JetBrains.Annotations;
+
+namespace ApplicationPatcher.Tests.FakeTypes {
+	[PublicAPI]
 	public class FakeConstructor {
 		public readonly FakeParameter[] Parameters;
 		public readonly FakeAttribute[] Attributes;

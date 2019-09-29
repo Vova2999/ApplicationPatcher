@@ -82,7 +82,7 @@
   <ItemGroup>
     <Compile Include="ApplicationPatcherSelfConfiguration.cs" />
     <Compile Include="ApplicationPatcherSelfNinjectModule.cs" />
-    <Compile Include="ApplicationPatcherSelfProcessor.cs" />
+    <Compile Include="ApplicationPatcherSelf.cs" />
     <Compile Include="Patchers\OnLoadedAssembly\MonoCecilConstsTypePatcher.cs" />
     <Compile Include="Patchers\OnLoadedAssembly\MonoCecilPublicKeysPatcher.cs" />
     <Compile Include="Patchers\OnNotLoadedAssembly\CheckAssemblyPublicKeyPatcher.cs" />

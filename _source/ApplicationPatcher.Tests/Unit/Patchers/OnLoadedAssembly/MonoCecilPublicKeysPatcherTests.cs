@@ -1,6 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using ApplicationPatcher.Core.Types.CommonMembers;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 using ApplicationPatcher.Self;
 using ApplicationPatcher.Self.Patchers.OnLoadedAssembly;
 using FluentAssertions;
@@ -14,12 +15,12 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 	public class MonoCecilPublicKeysPatcherTests : PatcherTestsBase {
 		private FakeCommonAssemblyBuilder assembly;
 		private Mock<AssemblyNameDefinition> assemblyName;
-		private CommonAttribute[] applicationCommonAttributes;
+		private ICommonAttribute[] applicationCommonAttributes;
 		private ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 
 		[SetUp]
 		public void SetUp() {
-			applicationCommonAttributes = new CommonAttribute[0];
+			applicationCommonAttributes = new ICommonAttribute[0];
 			assemblyName = CreateMockFor<AssemblyNameDefinition>();
 
 			assembly = FakeCommonAssemblyBuilder.Create();
@@ -79,6 +80,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 				CreateCommonInternalsVisibleToAttribute("Mono.Cecil3"),
 				CreateCommonInternalsVisibleToAttribute("Mono.Cecil4, PublicKey=123123")
 			};
+
 			var notUsedInternalsVisibleToAttributes = new[] {
 				CreateCommonInternalsVisibleToAttribute("Mono.Cecil5"),
 				CreateCommonInternalsVisibleToAttribute("Mono.Cecil6, PublicKey=343434")
@@ -96,7 +98,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 
 			assembly.MainMonoCecilAssembly.CustomAttributes.Should()
 				.HaveCount(7)
-				.And.Contain(attribute => attribute.ConstructorArguments.Count == 1 && (attribute.ConstructorArguments.First().Value as string).StartsWith("DynamicProxyGenAssembly2"))
+				.And.Contain(attribute => attribute.ConstructorArguments.Count == 1 && (attribute.ConstructorArguments.First().Value as string).StartsWith("DynamicProxyGenAssembly2", StringComparison.Ordinal))
 				.And.Contain(attribute => attribute.ConstructorArguments.Count == 1 && attribute.ConstructorArguments.First().Value as string == "Mono.Cecil1, PublicKey=010203")
 				.And.Contain(attribute => attribute.ConstructorArguments.Count == 1 && attribute.ConstructorArguments.First().Value as string == "Mono.Cecil2, PublicKey=010203")
 				.And.Contain(attribute => attribute.ConstructorArguments.Count == 1 && attribute.ConstructorArguments.First().Value as string == "Mono.Cecil3, PublicKey=010203")
@@ -119,14 +121,16 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 				.ToArray();
 		}
 
-		private static CommonAttribute CreateCommonInternalsVisibleToAttribute(string internalsVisibleToAssemblyName) {
+		private static ICommonAttribute CreateCommonInternalsVisibleToAttribute(string internalsVisibleToAssemblyName) {
 			var internalsVisibleToAttribute = new InternalsVisibleToAttribute(internalsVisibleToAssemblyName);
 
 			var customAttribute = CreateMockFor<CustomAttribute>();
 			var customAttributeArgument = new CustomAttributeArgument(CreateMockFor<TypeReference>().Object, internalsVisibleToAssemblyName);
 			customAttribute.Setup(attribute => attribute.ConstructorArguments).Returns(new Collection<CustomAttributeArgument>(new[] { customAttributeArgument }));
 
-			var commonAttribute = CreateMockFor<CommonAttribute>(internalsVisibleToAttribute, customAttribute.Object);
+			var commonAttribute = CreateMockFor<ICommonAttribute>();
+			commonAttribute.Setup(attribute => attribute.MonoCecil).Returns(() => customAttribute.Object);
+			commonAttribute.Setup(attribute => attribute.Reflection).Returns(() => internalsVisibleToAttribute);
 			commonAttribute.Setup(attribute => attribute.Type).Returns(() => typeof(InternalsVisibleToAttribute));
 			commonAttribute.Setup(attribute => attribute.FullName).Returns(() => typeof(InternalsVisibleToAttribute).FullName);
 

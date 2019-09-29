@@ -1,16 +1,17 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using ApplicationPatcher.Core;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
-using ApplicationPatcher.Core.Types.CommonMembers;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 	public class MonoCecilPublicKeysPatcher : PatcherOnLoadedApplication {
-		private const string moqAssemblyName = "DynamicProxyGenAssembly2";
-		private const string moqAssemblyPublicKey = "0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7";
+		private const string MoqAssemblyName = "DynamicProxyGenAssembly2";
+		private const string MoqAssemblyPublicKey = "0024000004800000940000000602000000240000525341310004000001000100c547cac37abd99c8db225ef2f6c8a3602f3b3606cc9891605d02baa56104f4cfc0734aa39b93bf7852f7d9266654753cc297e7d2edfe0bac1cdcf9f717241550e0a7b191195b7667bb4f64bcb8e2121380fd1d9d46ad2d92d2d15605093924cceaf74c4861eff62abf69b9291ed0a340e113be11e6a7d3113e92484cf7045cc7";
 
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly ILog log;
@@ -20,7 +21,7 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 			log = Log.For(this);
 		}
 
-		public override PatchResult Patch(CommonAssembly assembly) {
+		public override PatchResult Patch(ICommonAssembly assembly) {
 			RewriteMainAssemblyPublicKey(assembly);
 			RewriteSelectedAssemblyReferencesPublicKey(assembly);
 			RewriteOrCreateInternalVisibleToAttributes(assembly);
@@ -28,7 +29,7 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 			return PatchResult.Continue;
 		}
 
-		private void RewriteMainAssemblyPublicKey(CommonAssembly assembly) {
+		private void RewriteMainAssemblyPublicKey(ICommonAssembly assembly) {
 			log.Info("Rewrite assembly public key...");
 
 			assembly.MonoCecil.Name.PublicKey = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey;
@@ -37,7 +38,7 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 			log.Info("Assembly public key was rewrited");
 		}
 
-		private void RewriteSelectedAssemblyReferencesPublicKey(CommonAssembly assembly) {
+		private void RewriteSelectedAssemblyReferencesPublicKey(ICommonAssembly assembly) {
 			log.Info("Rewrite selected assembly references public key...");
 
 			var assemblyReferences = assembly.MonoCecil.MainModule.AssemblyReferences
@@ -59,8 +60,8 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 			log.Info("Selected assembly references public key was rewrited");
 		}
 
-		private void RewriteOrCreateInternalVisibleToAttributes(CommonAssembly assembly) {
-			log.Info($"Create InternalsVisibleToAttribute for '{moqAssemblyName}'...");
+		private void RewriteOrCreateInternalVisibleToAttributes(ICommonAssembly assembly) {
+			log.Info($"Create InternalsVisibleToAttribute for '{MoqAssemblyName}'...");
 
 			var internalsVisibleToAttributes = assembly.GetAttributes<InternalsVisibleToAttribute>()
 				.Select(commonAttribute => {
@@ -71,15 +72,15 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 				})
 				.ToArray();
 
-			if (internalsVisibleToAttributes.Any(attribute => attribute.AssemblyName == moqAssemblyName)) {
-				log.Info($"InternalsVisibleToAttribute for '{moqAssemblyName}' already created");
+			if (internalsVisibleToAttributes.Any(attribute => attribute.AssemblyName == MoqAssemblyName)) {
+				log.Info($"InternalsVisibleToAttribute for '{MoqAssemblyName}' already created");
 			}
 			else {
 				var internalsVisibleToAttribute = new CustomAttribute(assembly.MonoCecil.MainModule.ImportReference(typeof(InternalsVisibleToAttribute).GetConstructor(new[] { typeof(string) })));
-				internalsVisibleToAttribute.ConstructorArguments.Add(new CustomAttributeArgument(assembly.MonoCecil.MainModule.TypeSystem.String, $"{moqAssemblyName}, PublicKey={moqAssemblyPublicKey}"));
+				internalsVisibleToAttribute.ConstructorArguments.Add(new CustomAttributeArgument(assembly.MonoCecil.MainModule.TypeSystem.String, $"{MoqAssemblyName}, PublicKey={MoqAssemblyPublicKey}"));
 				assembly.MonoCecil.CustomAttributes.Add(internalsVisibleToAttribute);
 
-				log.Info($"InternalsVisibleToAttribute for '{moqAssemblyName}' was created");
+				log.Info($"InternalsVisibleToAttribute for '{MoqAssemblyName}' was created");
 			}
 
 			log.Info("Rewrite public keys from selected InternalsVisibleToAttributes...");
@@ -95,7 +96,7 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 
 			foreach (var selectedInternalsVisibleToAttribute in selectedInternalsVisibleToAttributes) {
 				var attributeParams = selectedInternalsVisibleToAttribute.AttributeParams
-					.Where(attributeParam => !attributeParam.StartsWith("PublicKey"))
+					.Where(attributeParam => !attributeParam.StartsWith("PublicKey", StringComparison.OrdinalIgnoreCase))
 					.Concat(new[] { $"PublicKey={applicationPatcherSelfConfiguration.MonoCecilNewPublicKey.ToHexString()}" })
 					.ToArray();
 

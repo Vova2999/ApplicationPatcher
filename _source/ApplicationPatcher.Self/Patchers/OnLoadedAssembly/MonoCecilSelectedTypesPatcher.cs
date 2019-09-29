@@ -4,8 +4,8 @@ using ApplicationPatcher.Core;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
-using ApplicationPatcher.Core.Types.CommonMembers;
-using ApplicationPatcher.Core.Types.Interfaces;
+using ApplicationPatcher.Core.Types.BaseInterfaces;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 
@@ -19,7 +19,7 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 			log = Log.For(this);
 		}
 
-		public override PatchResult Patch(CommonAssembly assembly) {
+		public override PatchResult Patch(ICommonAssembly assembly) {
 			log.Info("Patching selected types...");
 			var foundSelectedPatchingTypes = applicationPatcherSelfConfiguration.MonoCecilSelectedPatchingTypeFullNames
 				.Select(typeFullName => assembly.GetCommonTypeFromThisAssembly(typeFullName))
@@ -55,7 +55,7 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 		}
 
 		[AddLogOffset]
-		private void CreateEmptyInternalConstructor(CommonAssembly assembly, CommonType type) {
+		private void CreateEmptyInternalConstructor(ICommonAssembly assembly, ICommonType type) {
 			log.Info("Create constructor without parameters...");
 
 			var emptyConstructor = type.GetConstructor();

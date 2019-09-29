@@ -1,15 +1,12 @@
-﻿using Mono.Cecil;
+﻿using JetBrains.Annotations;
+using Mono.Cecil;
 using Mono.Cecil.Rocks;
 
-// ReSharper disable UnusedMember.Global
-
 namespace ApplicationPatcher.Core.Extensions {
+	[PublicAPI]
 	public static class MethodReferenceExtensions {
 		public static MethodReference MakeHostInstanceGeneric(this MethodReference methodReference, params TypeReference[] typeReferences) {
-			var reference = new MethodReference(
-				methodReference.Name,
-				methodReference.ReturnType,
-				methodReference.DeclaringType.MakeGenericInstanceType(typeReferences)) {
+			var reference = new MethodReference(methodReference.Name, methodReference.ReturnType, methodReference.DeclaringType.MakeGenericInstanceType(typeReferences)) {
 				HasThis = methodReference.HasThis,
 				ExplicitThis = methodReference.ExplicitThis,
 				CallingConvention = methodReference.CallingConvention

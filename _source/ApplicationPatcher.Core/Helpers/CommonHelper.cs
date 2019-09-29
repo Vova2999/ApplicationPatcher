@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 using ApplicationPatcher.Core.Types.CommonMembers;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Helpers {
 	internal static class CommonHelper {
-		internal static CommonAttribute[] JoinAttributes(IEnumerable<CustomAttributeData> reflectionAttributes, IEnumerable<CustomAttribute> monoCecilAttributes) {
+		internal static ICommonAttribute[] JoinAttributes(IEnumerable<CustomAttributeData> reflectionAttributes, IEnumerable<CustomAttribute> monoCecilAttributes) {
 			return Join(
-				reflectionAttributes,
 				monoCecilAttributes,
-				reflectionAttribute => $"{reflectionAttribute.AttributeType.FullName}({reflectionAttribute.ConstructorArguments.Select(argument => $"{argument.ArgumentType.FullName}: {argument.Value}").JoinToString(", ")})",
+				reflectionAttributes,
 				monoCecilAttribute => $"{monoCecilAttribute.AttributeType.FullName}({monoCecilAttribute.ConstructorArguments.Select(argument => $"{argument.Type.FullName}: {argument.Value}").JoinToString(", ")})",
+				reflectionAttribute => $"{reflectionAttribute.AttributeType.FullName}({reflectionAttribute.ConstructorArguments.Select(argument => $"{argument.ArgumentType.FullName}: {argument.Value}").JoinToString(", ")})",
 				attributeFullName => true,
 				(reflectionAttribute, monoCecilAttribute) => {
 					var attribute = (Attribute)reflectionAttribute.Constructor.Invoke(reflectionAttribute.ConstructorArguments.Select(argument => argument.Value).ToArray());
 
 					if (reflectionAttribute.NamedArguments == null)
-						return new CommonAttribute(attribute, monoCecilAttribute);
+						return new CommonAttribute(monoCecilAttribute, attribute);
 
 					foreach (var namedArgument in reflectionAttribute.NamedArguments) {
 						switch (namedArgument.MemberInfo) {
@@ -33,81 +34,81 @@ namespace ApplicationPatcher.Core.Helpers {
 						}
 					}
 
-					return new CommonAttribute(attribute, monoCecilAttribute);
+					return (ICommonAttribute)new CommonAttribute(monoCecilAttribute, attribute);
 				});
 		}
 
-		internal static CommonConstructor[] JoinConstructors(IEnumerable<ConstructorInfo> reflectionConstructors, IEnumerable<MethodDefinition> monoCecilConstructors) {
+		internal static ICommonConstructor[] JoinConstructors(IEnumerable<ConstructorInfo> reflectionConstructors, IEnumerable<MethodDefinition> monoCecilConstructors) {
 			return Join(
-				reflectionConstructors,
 				monoCecilConstructors,
-				reflectionConstructor => $"{reflectionConstructor.Name}({reflectionConstructor.GetParameters().Select(parameter => parameter.ParameterType.Name).JoinToString(", ")})",
+				reflectionConstructors,
 				monoCecilConstructor => $"{monoCecilConstructor.Name}({monoCecilConstructor.Parameters.Select(parameter => parameter.ParameterType.Name).JoinToString(", ")})",
-				constructorName => constructorName.StartsWith(".ctor"),
-				(reflectionConstructor, monoCecilConstructor) => new CommonConstructor(reflectionConstructor, monoCecilConstructor));
+				reflectionConstructor => $"{reflectionConstructor.Name}({reflectionConstructor.GetParameters().Select(parameter => parameter.ParameterType.Name).JoinToString(", ")})",
+				constructorName => constructorName.StartsWith(".ctor", StringComparison.OrdinalIgnoreCase),
+				(reflectionConstructor, monoCecilConstructor) => (ICommonConstructor)new CommonConstructor(monoCecilConstructor, reflectionConstructor));
 		}
 
-		internal static CommonField[] JoinFields(IEnumerable<FieldInfo> reflectionFields, IEnumerable<FieldDefinition> monoCecilFields) {
+		internal static ICommonField[] JoinFields(IEnumerable<FieldInfo> reflectionFields, IEnumerable<FieldDefinition> monoCecilFields) {
 			return Join(
-				reflectionFields,
 				monoCecilFields,
-				reflectionField => reflectionField.Name,
+				reflectionFields,
 				monoCecilField => monoCecilField.Name,
+				reflectionField => reflectionField.Name,
 				fieldName => true,
-				(reflectionField, monoCecilField) => new CommonField(reflectionField, monoCecilField));
+				(reflectionField, monoCecilField) => (ICommonField)new CommonField(monoCecilField, reflectionField));
 		}
 
-		internal static CommonMethod[] JoinMethods(IEnumerable<MethodInfo> reflectionMethods, IEnumerable<MethodDefinition> monoCecilMethods) {
+		internal static ICommonMethod[] JoinMethods(IEnumerable<MethodInfo> reflectionMethods, IEnumerable<MethodDefinition> monoCecilMethods) {
 			return Join(
-				reflectionMethods,
 				monoCecilMethods,
-				reflectionMethod => $"{reflectionMethod.Name}({reflectionMethod.GetParameters().Select(parameter => parameter.ParameterType.Name).JoinToString(", ")})",
+				reflectionMethods,
 				monoCecilMethod => $"{monoCecilMethod.Name}({monoCecilMethod.Parameters.Select(parameter => parameter.ParameterType.Name).JoinToString(", ")})",
-				methodName => !methodName.StartsWith("get_") && !methodName.StartsWith("set_"),
-				(reflectionMethod, monoCecilMethod) => new CommonMethod(reflectionMethod, monoCecilMethod));
+				reflectionMethod => $"{reflectionMethod.Name}({reflectionMethod.GetParameters().Select(parameter => parameter.ParameterType.Name).JoinToString(", ")})",
+				methodName => !methodName.StartsWith("get_", StringComparison.OrdinalIgnoreCase) && !methodName.StartsWith("set_", StringComparison.OrdinalIgnoreCase),
+				(reflectionMethod, monoCecilMethod) => (ICommonMethod)new CommonMethod(monoCecilMethod, reflectionMethod));
 		}
 
-		internal static CommonParameter[] JoinParameters(IEnumerable<ParameterInfo> reflectionParameters, IEnumerable<ParameterDefinition> monoCecilParameters) {
+		internal static ICommonParameter[] JoinParameters(IEnumerable<ParameterInfo> reflectionParameters, IEnumerable<ParameterDefinition> monoCecilParameters) {
 			return Join(
-				reflectionParameters,
 				monoCecilParameters,
-				reflectionParameter => $"{reflectionParameter.Name}:{reflectionParameter.ParameterType.Name}",
+				reflectionParameters,
 				monoCecilParameter => $"{monoCecilParameter.Name}:{monoCecilParameter.ParameterType.Name}",
+				reflectionParameter => $"{reflectionParameter.Name}:{reflectionParameter.ParameterType.Name}",
 				parameterName => true,
-				(reflectionParameter, monoCecilParameter) => new CommonParameter(reflectionParameter, monoCecilParameter));
+				(reflectionParameter, monoCecilParameter) => (ICommonParameter)new CommonParameter(monoCecilParameter, reflectionParameter));
 		}
 
-		internal static CommonProperty[] JoinProperties(IEnumerable<PropertyInfo> reflectionProperties, IEnumerable<PropertyDefinition> monoCecilProperties) {
+		internal static ICommonProperty[] JoinProperties(IEnumerable<PropertyInfo> reflectionProperties, IEnumerable<PropertyDefinition> monoCecilProperties) {
 			return Join(
-				reflectionProperties,
 				monoCecilProperties,
-				reflectionProperty => reflectionProperty.Name,
+				reflectionProperties,
 				monoCecilProperty => monoCecilProperty.Name,
+				reflectionProperty => reflectionProperty.Name,
 				propertyName => true,
-				(reflectionProperty, monoCecilProperty) => new CommonProperty(reflectionProperty, monoCecilProperty));
+				(reflectionProperty, monoCecilProperty) => (ICommonProperty)new CommonProperty(monoCecilProperty, reflectionProperty));
 		}
 
-		internal static CommonType[] JoinTypes(IEnumerable<Type> reflectionTypes, IEnumerable<TypeDefinition> monoCecilTypes) {
+		internal static ICommonType[] JoinTypes(IEnumerable<Type> reflectionTypes, IEnumerable<TypeDefinition> monoCecilTypes) {
 			return Join(
-				reflectionTypes,
 				monoCecilTypes,
-				reflectionType => reflectionType.AssemblyQualifiedName,
+				reflectionTypes,
 				monoCecilType => $"{monoCecilType.FullName}, {monoCecilType.Module.Assembly.FullName}",
+				reflectionType => reflectionType.AssemblyQualifiedName,
 				typeFullName => true,
-				(reflectionType, monoCecilType) => new CommonType(reflectionType, monoCecilType));
+				(reflectionType, monoCecilType) => (ICommonType)new CommonType(monoCecilType, reflectionType));
 		}
 
-		private static TCommon[] Join<TCommon, TReflection, TMonoCecil>(IEnumerable<TReflection> reflections,
-																		IEnumerable<TMonoCecil> monoCecils,
-																		Func<TReflection, string> getReflectionName,
+		private static TCommon[] Join<TCommon, TMonoCecil, TReflection>(IEnumerable<TMonoCecil> monoCecils,
+																		IEnumerable<TReflection> reflections,
 																		Func<TMonoCecil, string> getMonoCecilName,
+																		Func<TReflection, string> getReflectionName,
 																		Func<string, bool> isSatisfyForSelection,
 																		Func<TReflection, TMonoCecil, TCommon> createCommon) {
-			var reflectionAttributesDictionary = reflections.ToDictionary(getReflectionName);
 			var monoCecilAttributesDictionary = monoCecils.ToDictionary(getMonoCecilName);
+			var reflectionAttributesDictionary = reflections.ToDictionary(getReflectionName);
 
-			return reflectionAttributesDictionary.Keys
-				.Intersect(monoCecilAttributesDictionary.Keys)
+			return monoCecilAttributesDictionary.Keys
+				.Intersect(reflectionAttributesDictionary.Keys)
 				.Where(isSatisfyForSelection)
 				.Select(key => createCommon(reflectionAttributesDictionary[key], monoCecilAttributesDictionary[key]))
 				.ToArray();

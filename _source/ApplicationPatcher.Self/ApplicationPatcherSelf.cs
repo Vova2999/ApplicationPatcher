@@ -2,19 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using ApplicationPatcher.Core;
-using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Logs;
-
-// ReSharper disable ClassNeverInstantiated.Global
+using ApplicationPatcher.Core.Services;
 
 namespace ApplicationPatcher.Self {
-	public class ApplicationPatcherSelfProcessor {
-		private readonly ApplicationPatcherProcessor applicationPatcherProcessor;
+	public class ApplicationPatcherSelf {
+		private readonly ApplicationPatcherCore applicationPatcherCore;
 		private readonly ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration;
 		private readonly ILog log;
 
-		public ApplicationPatcherSelfProcessor(ApplicationPatcherProcessor applicationPatcherProcessor, ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration) {
-			this.applicationPatcherProcessor = applicationPatcherProcessor;
+		public ApplicationPatcherSelf(ApplicationPatcherCore applicationPatcherCore, ApplicationPatcherSelfConfiguration applicationPatcherSelfConfiguration) {
+			this.applicationPatcherCore = applicationPatcherCore;
 			this.applicationPatcherSelfConfiguration = applicationPatcherSelfConfiguration;
 			log = Log.For(this);
 		}
@@ -22,12 +20,12 @@ namespace ApplicationPatcher.Self {
 		public void PatchSelfApplication() {
 			log.Info("Patching all mono cecil applications...");
 
-			using (CurrentDirectoryHelper.FromExecutingAssembly()) {
+			using (CurrentDirectoryService.FromExecutingAssembly()) {
 				var monoCecilApplicationResultNames = ShiftMonoCecilApplications(applicationPatcherSelfConfiguration.MonoCecilApplicationFileNames, applicationPatcherSelfConfiguration.MonoCecilResultDirectoryName, false);
 
 				foreach (var monoCecilResultApplicationName in monoCecilApplicationResultNames) {
 					log.Info($"Patching '{monoCecilResultApplicationName}' application...");
-					PatchApplication(applicationPatcherProcessor, monoCecilResultApplicationName, applicationPatcherSelfConfiguration.MonoCecilSignatureFileName);
+					PatchApplication(applicationPatcherCore, monoCecilResultApplicationName, applicationPatcherSelfConfiguration.MonoCecilSignatureFileName);
 					log.Info($"Application '{monoCecilResultApplicationName}' was patched");
 				}
 
@@ -63,8 +61,8 @@ namespace ApplicationPatcher.Self {
 		}
 
 		[AddLogOffset]
-		private static void PatchApplication(ApplicationPatcherProcessor applicationPatcherProcessor, string applicationPath, string signaturePath) {
-			applicationPatcherProcessor.PatchApplication(applicationPath, signaturePath);
+		private static void PatchApplication(ApplicationPatcherCore applicationPatcherCore, string applicationPath, string signaturePath) {
+			applicationPatcherCore.PatchApplication(applicationPath, signaturePath);
 		}
 	}
 }

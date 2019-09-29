@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
-using ApplicationPatcher.Core.Types.CommonMembers;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 using ApplicationPatcher.Self;
 using ApplicationPatcher.Self.Patchers.OnLoadedAssembly;
 using ApplicationPatcher.Tests.FakeTypes;
@@ -15,7 +15,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 	[TestFixture]
 	public class MonoCecilSelectedTypesPatcherTests : PatcherTestsBase {
 		private FakeCommonAssemblyBuilder assembly;
-		private CommonType[] otherTypes;
+		private ICommonType[] otherTypes;
 
 		[SetUp]
 		public void SetUp() {
@@ -33,7 +33,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 
 		[TearDown]
 		public void CheckOtherTypes() {
-			otherTypes.Select(FakeCommonTypeBuilder.GetMockFor).ForEach(otherTypeMock => otherTypeMock.Verify(mock => mock.LoadInternal(), Times.Never));
+			otherTypes.Select(FakeCommonTypeBuilder.GetMockFor).ForEach(otherTypeMock => otherTypeMock.Verify(mock => mock.Load(), Times.Never));
 		}
 
 		[Test]
@@ -103,7 +103,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 			Patch(null);
 		}
 
-		private void Patch(CommonType type) {
+		private void Patch(ICommonType type) {
 			if (type != null)
 				assembly.AddCommonType(type);
 

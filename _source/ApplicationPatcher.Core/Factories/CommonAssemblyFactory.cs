@@ -4,15 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
-using ApplicationPatcher.Core.Helpers;
+using ApplicationPatcher.Core.Services;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 using ApplicationPatcher.Core.Types.CommonMembers;
 using Mono.Cecil;
 
-// ReSharper disable ClassNeverInstantiated.Global
-
 namespace ApplicationPatcher.Core.Factories {
-	public class CommonAssemblyFactory {
-		private const string codeBasePrefix = "file:///";
+	public class CommonAssemblyFactory : ICommonAssemblyFactory {
+		private const string CodeBasePrefix = "file:///";
 
 		private readonly string[] additionalLoadAssemblyNames;
 
@@ -20,8 +19,8 @@ namespace ApplicationPatcher.Core.Factories {
 			this.additionalLoadAssemblyNames = additionalLoadAssemblyNames;
 		}
 
-		public virtual CommonAssembly Create(string assemblyPath) {
-			using (CurrentDirectoryHelper.From(Path.GetDirectoryName(Path.GetFullPath(assemblyPath)))) {
+		public ICommonAssembly Create(string assemblyPath) {
+			using (CurrentDirectoryService.From(Path.GetDirectoryName(Path.GetFullPath(assemblyPath)))) {
 				var assemblyName = Path.GetFileName(assemblyPath);
 
 				var symbolStorePath = Path.ChangeExtension(assemblyName, "pdb");
@@ -41,12 +40,12 @@ namespace ApplicationPatcher.Core.Factories {
 				referencedReflectionAssemblies
 					.Select(assembly => new { assembly.GetName().Name, assembly.CodeBase })
 					.Where(assembly => !foundAssemblyFiles.ContainsKey(assembly.Name))
-					.ForEach(assembly => foundAssemblyFiles[assembly.Name] = assembly.CodeBase.Substring(codeBasePrefix.Length));
+					.ForEach(assembly => foundAssemblyFiles[assembly.Name] = assembly.CodeBase.Substring(CodeBasePrefix.Length));
 
 				var mainMonoCecilAssembly = ReadMainMonoCecilAssembly(assemblyName, haveSymbolStore);
 				var referencedMonoCecilAssemblies = ReadReferencedMonoCecilAssemblies(mainMonoCecilAssembly, foundAssemblyFiles);
 
-				return new CommonAssembly(mainReflectionAssembly, referencedReflectionAssemblies, mainMonoCecilAssembly, referencedMonoCecilAssemblies, haveSymbolStore);
+				return new CommonAssembly(mainMonoCecilAssembly, referencedMonoCecilAssemblies, mainReflectionAssembly, referencedReflectionAssemblies, haveSymbolStore);
 			}
 		}
 
@@ -81,7 +80,7 @@ namespace ApplicationPatcher.Core.Factories {
 					: throw new InvalidOperationException($"Not found additional assembly '{assemblyName}' for reflection reader");
 
 				foreach (var referencedAssembly in readedAssembly.GetReferencedAssemblies().Select(Assembly.Load).Where(assembly => !foundAssemblyFiles.ContainsKey(assembly.GetName().Name)))
-					foundAssemblyFiles[referencedAssembly.GetName().Name] = referencedAssembly.CodeBase.Substring(codeBasePrefix.Length);
+					foundAssemblyFiles[referencedAssembly.GetName().Name] = referencedAssembly.CodeBase.Substring(CodeBasePrefix.Length);
 
 				referencedReflectionAssemblies.Add(readedAssembly);
 			}
@@ -113,7 +112,7 @@ namespace ApplicationPatcher.Core.Factories {
 			return referencedMonoCecilAssemblies.ToArray();
 		}
 
-		public virtual void Save(CommonAssembly commonAssembly, string assemblyPath, string signaturePath = null) {
+		public void Save(ICommonAssembly commonAssembly, string assemblyPath, string signaturePath = null) {
 			var strongNameKeyPair = signaturePath.IsNullOrEmpty() ? null : new StrongNameKeyPair(File.ReadAllBytes(signaturePath));
 			commonAssembly.MonoCecil.Write(assemblyPath, new WriterParameters { WriteSymbols = commonAssembly.HaveSymbolStore, StrongNameKeyPair = strongNameKeyPair });
 		}

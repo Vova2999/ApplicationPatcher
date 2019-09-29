@@ -15,8 +15,8 @@ namespace ApplicationPatcher.Tests.Unit.Patchers {
 			FakeCommonTypeBuilder.ClearCreatedTypes();
 		}
 
-		protected static Mock<TObject> CreateMockFor<TObject>(params object[] constructorParametes) where TObject : class {
-			return new Mock<TObject>(constructorParametes) { CallBase = true };
+		protected static Mock<TObject> CreateMockFor<TObject>() where TObject : class {
+			return new Mock<TObject>();
 		}
 	}
 }

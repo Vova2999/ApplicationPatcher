@@ -1,4 +1,7 @@
+using JetBrains.Annotations;
+
 namespace ApplicationPatcher.Tests.FakeTypes {
+	[PublicAPI]
 	public class FakeMethod {
 		public readonly string Name;
 		public readonly FakeType ReturnType;

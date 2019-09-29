@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
-// ReSharper disable UnusedMember.Global
+using JetBrains.Annotations;
 
 namespace ApplicationPatcher.Core.Logs {
+	[PublicAPI]
 	public interface ILog : log4net.ILog {
 		void Debug(Exception exception);
 		void Debug(object message, IEnumerable<object> messages);

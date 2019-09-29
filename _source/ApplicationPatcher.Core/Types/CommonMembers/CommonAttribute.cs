@@ -1,20 +1,18 @@
 ﻿using System;
-using ApplicationPatcher.Core.Types.Interfaces;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 using Mono.Cecil;
 
-// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
-
 namespace ApplicationPatcher.Core.Types.CommonMembers {
-	public class CommonAttribute : CommonMemberBase<CommonAttribute, Attribute, CustomAttribute>, IHasType {
-		public virtual Type Type => GetOrCreate(() => Reflection.GetType());
+	public class CommonAttribute : CommonMember<ICommonAttribute, CustomAttribute, Attribute>, ICommonAttribute {
 		public override string Name => GetOrCreate(() => MonoCecil.AttributeType.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.AttributeType.FullName);
 
-		public CommonAttribute(Attribute reflectionAttribute, CustomAttribute monoCecilAttribute) : base(reflectionAttribute, monoCecilAttribute) {
+		public Type Type => GetOrCreate(() => Reflection.GetType());
+
+		public CommonAttribute(CustomAttribute monoCecilAttribute, Attribute reflectionAttribute) : base(monoCecilAttribute, reflectionAttribute) {
 		}
 
-		IHasType ICommonMember<IHasType>.Load() {
-			return Load();
+		protected override void LoadInternal() {
 		}
 	}
 }

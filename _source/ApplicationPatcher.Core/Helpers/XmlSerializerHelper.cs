@@ -7,28 +7,28 @@ using System.Xml.Serialization;
 
 namespace ApplicationPatcher.Core.Helpers {
 	internal static class XmlSerializerHelper {
-		private static readonly XmlWriterSettings settings;
-		private static readonly XmlSerializerNamespaces emptyNamespaces;
-		private static readonly ConcurrentDictionary<Type, XmlSerializer> xmlSerializers;
+		private static readonly XmlWriterSettings Settings;
+		private static readonly XmlSerializerNamespaces EmptyNamespaces;
+		private static readonly ConcurrentDictionary<Type, XmlSerializer> XmlSerializers;
 
 		static XmlSerializerHelper() {
-			settings = new XmlWriterSettings {
+			Settings = new XmlWriterSettings {
 				Indent = true,
 				IndentChars = "\t",
 				OmitXmlDeclaration = false,
 				Encoding = Encoding.UTF8
 			};
 
-			emptyNamespaces = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
-			xmlSerializers = new ConcurrentDictionary<Type, XmlSerializer>();
+			EmptyNamespaces = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
+			XmlSerializers = new ConcurrentDictionary<Type, XmlSerializer>();
 		}
 
 		internal static byte[] Serializing(object obj) {
 			var xmlSerializer = GetXmlSerializer(obj.GetType());
 
 			using (var memoryStream = new MemoryStream())
-			using (var xmlWriter = XmlWriter.Create(memoryStream, settings)) {
-				xmlSerializer.Serialize(xmlWriter, obj, emptyNamespaces);
+			using (var xmlWriter = XmlWriter.Create(memoryStream, Settings)) {
+				xmlSerializer.Serialize(xmlWriter, obj, EmptyNamespaces);
 				return memoryStream.ToArray();
 			}
 		}
@@ -41,7 +41,7 @@ namespace ApplicationPatcher.Core.Helpers {
 		}
 
 		private static XmlSerializer GetXmlSerializer(Type currentType) {
-			return xmlSerializers.GetOrAdd(currentType, type => new XmlSerializer(type));
+			return XmlSerializers.GetOrAdd(currentType, type => new XmlSerializer(type));
 		}
 	}
 }

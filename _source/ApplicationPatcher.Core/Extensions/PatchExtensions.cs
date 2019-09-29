@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using ApplicationPatcher.Core.Logs;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 
-namespace ApplicationPatcher.Core.Helpers {
-	public static class PatchHelper {
-		public static PatchResult PatchApplication<TPatcher>(IEnumerable<TPatcher> patchers, Func<TPatcher, PatchResult> patch, ILog log) {
+namespace ApplicationPatcher.Core.Extensions {
+	internal static class PatchExtensions {
+		internal static PatchResult PatchApplication(this IEnumerable<IPatcher> patchers, ICommonAssembly assembly, ILog log) {
 			if (patchers == null)
 				return PatchResult.Continue;
 
 			foreach (var patcher in patchers) {
 				log.Info($"Apply '{patcher.GetType().FullName}' patcher...");
-				var patchResult = patch(patcher);
+				var patchResult = patcher.Patch(assembly);
 				log.Info($"Patcher '{patcher.GetType().FullName}' was applied with result: {patchResult}");
 
 				switch (patchResult) {

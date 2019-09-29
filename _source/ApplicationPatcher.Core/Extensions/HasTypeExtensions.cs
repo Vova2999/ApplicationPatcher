@@ -1,10 +1,9 @@
 ﻿using System;
-using ApplicationPatcher.Core.Types.Interfaces;
-
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedMember.Global
+using ApplicationPatcher.Core.Types.BaseInterfaces;
+using JetBrains.Annotations;
 
 namespace ApplicationPatcher.Core.Extensions {
+	[PublicAPI]
 	public static class HasTypeExtensions {
 		public static bool Is(this IHasType hasType, Type type) {
 			return hasType.Type == type;

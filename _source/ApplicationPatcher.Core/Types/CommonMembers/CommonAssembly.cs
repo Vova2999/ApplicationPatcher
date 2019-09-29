@@ -4,69 +4,52 @@ using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Helpers;
-using ApplicationPatcher.Core.Types.Interfaces;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 using JetBrains.Annotations;
 using Mono.Cecil;
 
-// ReSharper disable ClassWithVirtualMembersNeverInherited.Global
-// ReSharper disable MemberCanBeProtected.Global
-
 namespace ApplicationPatcher.Core.Types.CommonMembers {
-	public class CommonAssembly : CommonMemberBase<CommonAssembly, Assembly, AssemblyDefinition>, IHasAttributes, IHasTypes {
+	[PublicAPI]
+	public class CommonAssembly : CommonMember<ICommonAssembly, AssemblyDefinition, Assembly>, ICommonAssembly {
+		// todo: remove GetOrCreate?
 		public override string Name => GetOrCreate(() => MonoCecil.Name.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
-		public virtual CommonAttribute[] Attributes { get; private set; }
-		public virtual CommonType[] Types { get; private set; }
 
-		internal virtual Dictionary<Type, CommonAttribute[]> TypeTypeToAttribute { get; private set; }
-		Dictionary<Type, CommonAttribute[]> IHasAttributes.TypeTypeToAttribute => TypeTypeToAttribute;
+		public ICommonType[] Types { get; private set; }
+		public ICommonAttribute[] Attributes { get; private set; }
+		public IDictionary<Type, ICommonType[]> TypeTypeToTypes { get; private set; }
+		public IDictionary<string, ICommonType[]> TypeFullNameToTypes { get; private set; }
+		public IDictionary<Type, ICommonAttribute[]> TypeTypeToAttributes { get; private set; }
+		public IDictionary<string, ICommonAttribute[]> TypeFullNameToAttributes { get; private set; }
 
-		internal virtual Dictionary<string, CommonAttribute[]> TypeFullNameToAttribute { get; private set; }
-		Dictionary<string, CommonAttribute[]> IHasAttributes.TypeFullNameToAttribute => TypeFullNameToAttribute;
+		public ICommonType[] TypesFromThisAssembly => GetOrCreate(() => Load().Types.WhereFrom(this).ToArray());
 
-		internal virtual Dictionary<Type, CommonType[]> TypeTypeToType { get; private set; }
-		Dictionary<Type, CommonType[]> IHasTypes.TypeTypeToType => TypeTypeToType;
+		public bool HaveSymbolStore { get; }
+		public Assembly[] ReferencedReflectionAssemblies { get; }
+		public AssemblyDefinition[] ReferencedMonoCecilAssemblies { get; }
 
-		internal virtual Dictionary<string, CommonType[]> TypeFullNameToType { get; private set; }
-		Dictionary<string, CommonType[]> IHasTypes.TypeFullNameToType => TypeFullNameToType;
-
-		[UsedImplicitly]
-		public virtual CommonType[] TypesFromThisAssembly => GetOrCreate(() => Load().Types.WhereFrom(this).ToArray());
-
-		public virtual Assembly[] ReferencedReflectionAssemblies { get; }
-		public virtual AssemblyDefinition[] ReferencedMonoCecilAssemblies { get; }
-
-		public readonly bool HaveSymbolStore;
-
-		public CommonAssembly(Assembly mainReflectionAssembly,
-							  Assembly[] referencedReflectionAssemblies,
-							  AssemblyDefinition mainMonoCecilAssembly,
+		public CommonAssembly(AssemblyDefinition mainMonoCecilAssembly,
 							  AssemblyDefinition[] referencedMonoCecilAssemblies,
-							  bool haveSymbolStore) : base(mainReflectionAssembly, mainMonoCecilAssembly) {
-			ReferencedReflectionAssemblies = referencedReflectionAssemblies;
+							  Assembly mainReflectionAssembly,
+							  Assembly[] referencedReflectionAssemblies,
+							  bool haveSymbolStore) : base(mainMonoCecilAssembly, mainReflectionAssembly) {
 			ReferencedMonoCecilAssemblies = referencedMonoCecilAssemblies;
+			ReferencedReflectionAssemblies = referencedReflectionAssemblies;
 			HaveSymbolStore = haveSymbolStore;
 		}
 
-		IHasAttributes ICommonMember<IHasAttributes>.Load() {
-			return Load();
-		}
-		IHasTypes ICommonMember<IHasTypes>.Load() {
-			return Load();
-		}
-
-		internal override void LoadInternal() {
-			base.LoadInternal();
-			Attributes = CommonHelper.JoinAttributes(Reflection.GetCustomAttributesData(), MonoCecil.CustomAttributes);
+		protected override void LoadInternal() {
 			Types = CommonHelper.JoinTypes(
 				new[] { Reflection }.Concat(ReferencedReflectionAssemblies).SelectMany(a => a.GetTypes()),
 				new[] { MonoCecil }.Concat(ReferencedMonoCecilAssemblies).SelectMany(a => a.MainModule.Types));
 
-			TypeTypeToAttribute = Attributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray());
-			TypeFullNameToAttribute = Attributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray());
+			Attributes = CommonHelper.JoinAttributes(Reflection.GetCustomAttributesData(), MonoCecil.CustomAttributes);
 
-			TypeTypeToType = Types.GroupBy(type => type.Type).ToDictionary(group => group.Key, group => group.ToArray());
-			TypeFullNameToType = Types.GroupBy(type => type.FullName).ToDictionary(group => group.Key, group => group.ToArray());
+			TypeTypeToTypes = Types.GroupBy(type => type.Type).ToDictionary(group => group.Key, group => group.ToArray());
+			TypeFullNameToTypes = Types.GroupBy(type => type.FullName).ToDictionary(group => group.Key, group => group.ToArray());
+
+			TypeTypeToAttributes = Attributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray());
+			TypeFullNameToAttributes = Attributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray());
 		}
 	}
 }

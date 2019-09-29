@@ -4,14 +4,23 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using ApplicationPatcher.Core.Extensions;
-using JetBrains.Annotations;
 using log4net;
 using log4net.Config;
 using log4net.Core;
 
 namespace ApplicationPatcher.Core.Logs {
 	public class Log : ILog {
-		[UsedImplicitly]
+		static Log() {
+			XmlConfigurator.Configure();
+		}
+
+		public static ILog For<TObject>(TObject _) {
+			return For(typeof(TObject));
+		}
+		public static ILog For(Type type) {
+			return new Log(LoggerManager.GetLogger(Assembly.GetExecutingAssembly(), type));
+		}
+
 		public static int DefaultOffset { get; set; }
 
 		public bool IsDebugEnabled => Logger.IsEnabledFor(Logger.Repository.LevelMap.LookupWithDefault(Level.Debug));
@@ -31,23 +40,14 @@ namespace ApplicationPatcher.Core.Logs {
 			Logger = logger;
 		}
 
-		static Log() {
-			XmlConfigurator.Configure();
-		}
-
-		[UsedImplicitly]
-		public static ILog For<TObject>(TObject obj) {
-			return new Log(LoggerManager.GetLogger(Assembly.GetExecutingAssembly(), typeof(TObject)));
-		}
-
 		public void Debug(object message) {
-			SetOffsetAndExecuteLog(Level.Debug, () => ConvertMultiline(message));
+			SetOffsetAndExecuteLog(Level.Debug, () => FixMultiline(message));
 		}
 		public void Debug(Exception exception) {
 			SetOffsetAndExecuteLog(Level.Debug, () => null, exception);
 		}
 		public void Debug(object message, Exception exception) {
-			SetOffsetAndExecuteLog(Level.Debug, () => ConvertMultiline(message), exception);
+			SetOffsetAndExecuteLog(Level.Debug, () => FixMultiline(message), exception);
 		}
 		public void Debug(object message, IEnumerable<object> messages) {
 			SetOffsetAndExecuteLog(Level.Debug, () => JoinMultiline(message, messages));
@@ -69,13 +69,13 @@ namespace ApplicationPatcher.Core.Logs {
 		}
 
 		public void Info(object message) {
-			SetOffsetAndExecuteLog(Level.Info, () => ConvertMultiline(message));
+			SetOffsetAndExecuteLog(Level.Info, () => FixMultiline(message));
 		}
 		public void Info(Exception exception) {
 			SetOffsetAndExecuteLog(Level.Info, () => null, exception);
 		}
 		public void Info(object message, Exception exception) {
-			SetOffsetAndExecuteLog(Level.Info, () => ConvertMultiline(message), exception);
+			SetOffsetAndExecuteLog(Level.Info, () => FixMultiline(message), exception);
 		}
 		public void Info(object message, IEnumerable<object> messages) {
 			SetOffsetAndExecuteLog(Level.Info, () => JoinMultiline(message, messages));
@@ -97,13 +97,13 @@ namespace ApplicationPatcher.Core.Logs {
 		}
 
 		public void Warn(object message) {
-			SetOffsetAndExecuteLog(Level.Warn, () => ConvertMultiline(message));
+			SetOffsetAndExecuteLog(Level.Warn, () => FixMultiline(message));
 		}
 		public void Warn(Exception exception) {
 			SetOffsetAndExecuteLog(Level.Warn, () => null, exception);
 		}
 		public void Warn(object message, Exception exception) {
-			SetOffsetAndExecuteLog(Level.Warn, () => ConvertMultiline(message), exception);
+			SetOffsetAndExecuteLog(Level.Warn, () => FixMultiline(message), exception);
 		}
 		public void Warn(object message, IEnumerable<object> messages) {
 			SetOffsetAndExecuteLog(Level.Warn, () => JoinMultiline(message, messages));
@@ -125,13 +125,13 @@ namespace ApplicationPatcher.Core.Logs {
 		}
 
 		public void Error(object message) {
-			SetOffsetAndExecuteLog(Level.Error, () => ConvertMultiline(message));
+			SetOffsetAndExecuteLog(Level.Error, () => FixMultiline(message));
 		}
 		public void Error(Exception exception) {
 			SetOffsetAndExecuteLog(Level.Error, () => null, exception);
 		}
 		public void Error(object message, Exception exception) {
-			SetOffsetAndExecuteLog(Level.Error, () => ConvertMultiline(message), exception);
+			SetOffsetAndExecuteLog(Level.Error, () => FixMultiline(message), exception);
 		}
 		public void Error(object message, IEnumerable<object> messages) {
 			SetOffsetAndExecuteLog(Level.Error, () => JoinMultiline(message, messages));
@@ -153,13 +153,13 @@ namespace ApplicationPatcher.Core.Logs {
 		}
 
 		public void Fatal(object message) {
-			SetOffsetAndExecuteLog(Level.Fatal, () => ConvertMultiline(message));
+			SetOffsetAndExecuteLog(Level.Fatal, () => FixMultiline(message));
 		}
 		public void Fatal(Exception exception) {
 			SetOffsetAndExecuteLog(Level.Fatal, () => null, exception);
 		}
 		public void Fatal(object message, Exception exception) {
-			SetOffsetAndExecuteLog(Level.Fatal, () => ConvertMultiline(message), exception);
+			SetOffsetAndExecuteLog(Level.Fatal, () => FixMultiline(message), exception);
 		}
 		public void Fatal(object message, IEnumerable<object> messages) {
 			SetOffsetAndExecuteLog(Level.Fatal, () => JoinMultiline(message, messages));
@@ -187,30 +187,26 @@ namespace ApplicationPatcher.Core.Logs {
 			OffsetString = new string('\t', Math.Max(offset + DefaultOffset, 0));
 			Logger.Log(stackMethods.First().DeclaringType, level, message?.Invoke(), exception);
 		}
-		private static string ConvertMultiline(object message) {
+		private static string FixMultiline(object message) {
 			return message.ToString().Replace("\n", $"\r\n{OffsetString}");
 		}
 		private static string JoinMultiline(object message, IEnumerable<object> messages) {
-			return ConvertMultiline(new[] { message }.Concat(messages?.Select((m, i) => $"  {i + 1}) {m}") ?? Enumerable.Empty<string>()).JoinToString("\n"));
+			return FixMultiline(new[] { message }.Concat(messages?.Select((m, i) => $"  {i + 1}) {m}") ?? Enumerable.Empty<string>()).JoinToString("\n"));
 		}
 		private static string FormatMultiline(string format, params object[] args) {
-			return string.Format(ConvertMultiline(format), args);
+			return string.Format(FixMultiline(format), args);
 		}
 		private static string FormatMultiline(string format, object arg0) {
-			return string.Format(ConvertMultiline(format), arg0);
+			return string.Format(FixMultiline(format), arg0);
 		}
 		private static string FormatMultiline(string format, object arg0, object arg1) {
-			return string.Format(ConvertMultiline(format), arg0, arg1);
+			return string.Format(FixMultiline(format), arg0, arg1);
 		}
 		private static string FormatMultiline(string format, object arg0, object arg1, object arg2) {
-			return string.Format(ConvertMultiline(format), arg0, arg1, arg2);
+			return string.Format(FixMultiline(format), arg0, arg1, arg2);
 		}
 		private static string FormatMultiline(IFormatProvider provider, string format, params object[] args) {
-			return string.Format(provider, ConvertMultiline(format), args);
+			return string.Format(provider, FixMultiline(format), args);
 		}
-	}
-
-	[AttributeUsage(AttributeTargets.Method)]
-	public class AddLogOffsetAttribute : Attribute {
 	}
 }

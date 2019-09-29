@@ -5,21 +5,20 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using ApplicationPatcher.Core.Extensions;
-using ApplicationPatcher.Core.Types.CommonMembers;
-using ApplicationPatcher.Core.Types.Interfaces;
+using ApplicationPatcher.Core.Types.BaseInterfaces;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 using ApplicationPatcher.Tests.FakeTypes;
+using JetBrains.Annotations;
 using Mono.Cecil;
 using Mono.Collections.Generic;
 using Moq;
 using TypeAttributes = System.Reflection.TypeAttributes;
 
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedMember.Global
-
 namespace ApplicationPatcher.Tests {
+	[PublicAPI]
 	public class FakeCommonTypeBuilder {
-		private static IDictionary<object, object> savedMocks = new ConcurrentDictionary<object, object>();
-		private static ModuleBuilder moduleBuilder;
+		private static IDictionary<object, object> SavedMocks = new ConcurrentDictionary<object, object>();
+		private static ModuleBuilder ModuleBuilder;
 
 		private Type currentType;
 		private readonly Type baseType;
@@ -53,16 +52,17 @@ namespace ApplicationPatcher.Tests {
 		}
 
 		public static void ClearCreatedTypes() {
-			moduleBuilder = null;
-			savedMocks = new ConcurrentDictionary<object, object>();
+			ModuleBuilder = null;
+			SavedMocks = new ConcurrentDictionary<object, object>();
 		}
 
 		public static Mock<TObject> GetMockFor<TObject>(TObject obj) where TObject : class {
-			return (Mock<TObject>)savedMocks[obj];
+			return (Mock<TObject>)SavedMocks[obj];
 		}
-		private static Mock<TObject> CreateMockFor<TObject>(params object[] constructorParameters) where TObject : class {
-			var savedMock = new Mock<TObject>(constructorParameters) { CallBase = true };
-			return (Mock<TObject>)(savedMocks[savedMock.Object] = savedMock);
+		private static Mock<TObject> CreateMockFor<TObject>() where TObject : class {
+			var savedMock = new Mock<TObject>();
+			SavedMocks[savedMock.Object] = savedMock;
+			return savedMock;
 		}
 
 		public FakeCommonTypeBuilder AddAttribute(Attribute typeAttribute) {
@@ -138,7 +138,7 @@ namespace ApplicationPatcher.Tests {
 			return this;
 		}
 
-		public CommonType Build() {
+		public ICommonType Build() {
 			if (currentType == null)
 				currentType = CreateReflectionType(typeFullName, baseType);
 
@@ -157,22 +157,24 @@ namespace ApplicationPatcher.Tests {
 			monoCecilType.Setup(type => type.Methods).Returns(() => new Collection<MethodDefinition>(commonMethods.Select(method => method.MonoCecil).Concat(commonConstructors.Select(constructor => constructor.MonoCecil)).ToArray()));
 			monoCecilType.Setup(type => type.Properties).Returns(() => new Collection<PropertyDefinition>(commonProperties.Select(property => property.MonoCecil).ToArray()));
 
-			var commonType = CreateMockFor<CommonType>(currentType, monoCecilType.Object);
-			commonType.Setup(type => type.Type).Returns(() => currentType);
+			var commonType = CreateMockFor<ICommonType>();
 			commonType.Setup(type => type.Name).Returns(() => typeName);
 			commonType.Setup(type => type.FullName).Returns(() => typeFullName);
+			commonType.Setup(type => type.MonoCecil).Returns(() => monoCecilType.Object);
+			commonType.Setup(type => type.Reflection).Returns(() => currentType);
+			commonType.Setup(type => type.Type).Returns(() => currentType);
 			commonType.Setup(type => type.Attributes).Returns(() => commonAttributes);
 			commonType.Setup(type => type.Constructors).Returns(() => commonConstructors);
 			commonType.Setup(type => type.Fields).Returns(() => commonFields);
 			commonType.Setup(type => type.Methods).Returns(() => commonMethods);
 			commonType.Setup(type => type.Properties).Returns(() => commonProperties);
-			commonType.Setup(type => type.LoadInternal());
+			commonType.Setup(type => type.Load());
 
-			commonType.Setup(type => type.FieldNameToField).Returns(() => commonFields.GroupBy(field => field.Name).ToDictionary(group => group.Key, group => group.ToArray()));
-			commonType.Setup(type => type.MethodNameToMethod).Returns(() => commonMethods.GroupBy(method => method.Name).ToDictionary(group => group.Key, group => group.ToArray()));
-			commonType.Setup(type => type.PropertyNameToProperty).Returns(() => commonProperties.GroupBy(property => property.Name).ToDictionary(group => group.Key, group => group.ToArray()));
-			commonType.Setup(type => type.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
-			commonType.Setup(type => type.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonType.Setup(type => type.FieldNameToFields).Returns(() => commonFields.GroupBy(field => field.Name).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonType.Setup(type => type.MethodNameToMethods).Returns(() => commonMethods.GroupBy(method => method.Name).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonType.Setup(type => type.PropertyNameToProperties).Returns(() => commonProperties.GroupBy(property => property.Name).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonType.Setup(type => type.TypeTypeToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonType.Setup(type => type.TypeFullNameToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
 
 			return commonType.Object;
 		}
@@ -180,36 +182,40 @@ namespace ApplicationPatcher.Tests {
 			return fakeType.Type ?? CreateReflectionType(fakeType.FullName, fakeType.BaseType);
 		}
 		private static Type CreateReflectionType(string typeFullName, Type baseType) {
-			if (moduleBuilder == null) {
+			if (ModuleBuilder == null) {
 				var assemblyName = new AssemblyName("DynamicAssembly");
 				var assemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-				moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName.Name);
+				ModuleBuilder = assemblyBuilder.DefineDynamicModule(assemblyName.Name);
 			}
 
-			var typeBuilder = moduleBuilder.DefineType(typeFullName, TypeAttributes.Public);
+			var typeBuilder = ModuleBuilder.DefineType(typeFullName, TypeAttributes.Public);
 			typeBuilder.SetParent(baseType);
 			return typeBuilder.CreateType();
 		}
 
-		private static CommonAttribute[] CreateCommonAttributes(IEnumerable<FakeAttribute> fakeAttributes) {
-			return fakeAttributes?.Select(CreateCommonAttribute).ToArray() ?? new CommonAttribute[0];
+		private static ICommonAttribute[] CreateCommonAttributes(IEnumerable<FakeAttribute> fakeAttributes) {
+			return fakeAttributes?.Select(CreateCommonAttribute).ToArray() ?? new ICommonAttribute[0];
 		}
-		private static CommonAttribute CreateCommonAttribute(FakeAttribute fakeAttribute) {
+		private static ICommonAttribute CreateCommonAttribute(FakeAttribute fakeAttribute) {
 			var monoCecilAttribute = CreateMockFor<CustomAttribute>();
 			var typeReference = CreateTypeReference(new FakeType(fakeAttribute.AttributeType));
 			monoCecilAttribute.Setup(attribute => attribute.AttributeType).Returns(() => typeReference);
 
-			var commonAttribute = CreateMockFor<CommonAttribute>(fakeAttribute.AttributeInstance, monoCecilAttribute.Object);
+			var commonAttribute = CreateMockFor<ICommonAttribute>();
+			commonAttribute.Setup(attribute => attribute.Name).Returns(() => typeReference.Name);
+			commonAttribute.Setup(attribute => attribute.FullName).Returns(() => typeReference.FullName);
+			commonAttribute.Setup(attribute => attribute.MonoCecil).Returns(() => monoCecilAttribute.Object);
+			commonAttribute.Setup(attribute => attribute.Reflection).Returns(() => fakeAttribute.AttributeInstance);
 			commonAttribute.Setup(attribute => attribute.Type).Returns(() => fakeAttribute.AttributeType);
-			commonAttribute.Setup(attribute => attribute.LoadInternal());
+			commonAttribute.Setup(attribute => attribute.Load());
 
 			return commonAttribute.Object;
 		}
 
-		private static CommonConstructor[] CreateCommonConstructors(IEnumerable<FakeConstructor> fakeConstructors, string typeFullName) {
-			return fakeConstructors?.Select(constructor => CreateCommonConstructor(constructor, typeFullName)).ToArray() ?? new CommonConstructor[0];
+		private static ICommonConstructor[] CreateCommonConstructors(IEnumerable<FakeConstructor> fakeConstructors, string typeFullName) {
+			return fakeConstructors?.Select(constructor => CreateCommonConstructor(constructor, typeFullName)).ToArray() ?? new ICommonConstructor[0];
 		}
-		private static CommonConstructor CreateCommonConstructor(FakeConstructor fakeConstructor, string typeFullName) {
+		private static ICommonConstructor CreateCommonConstructor(FakeConstructor fakeConstructor, string typeFullName) {
 			const string constructorName = ".ctor";
 			var constructorFullName = $"{typeFullName}::{constructorName}({fakeConstructor.Parameters?.Select(parameter => parameter.ParameterType.FullName).JoinToString(",")})";
 			var commonAttributes = CreateCommonAttributes(fakeConstructor.Attributes);
@@ -221,22 +227,26 @@ namespace ApplicationPatcher.Tests {
 			monoCecilConstructor.Setup(constructor => constructor.CustomAttributes).Returns(() => new Collection<CustomAttribute>(commonAttributes.Select(attribute => attribute.MonoCecil).ToArray()));
 			monoCecilConstructor.Setup(constructor => constructor.Parameters).Returns(() => new Collection<ParameterDefinition>(commonParameters.Select(parameter => parameter.MonoCecil).ToArray()));
 
-			var commonConstructor = CreateMockFor<CommonConstructor>(CreateMockFor<ConstructorInfo>().Object, monoCecilConstructor.Object);
+			var commonConstructor = CreateMockFor<ICommonConstructor>();
+			commonConstructor.Setup(constructor => constructor.Name).Returns(() => constructorName);
+			commonConstructor.Setup(constructor => constructor.FullName).Returns(() => constructorFullName);
+			commonConstructor.Setup(constructor => constructor.MonoCecil).Returns(() => monoCecilConstructor.Object);
+			commonConstructor.Setup(constructor => constructor.Reflection).Returns(() => CreateMockFor<ConstructorInfo>().Object);
 			commonConstructor.Setup(constructor => constructor.Attributes).Returns(() => commonAttributes);
 			commonConstructor.Setup(constructor => constructor.Parameters).Returns(() => commonParameters);
 			commonConstructor.Setup(constructor => constructor.ParameterTypes).Returns(() => commonParameters.Select(parameter => parameter.Type).ToArray());
-			commonConstructor.Setup(constructor => constructor.LoadInternal());
+			commonConstructor.Setup(constructor => constructor.Load());
 
-			commonConstructor.Setup(constructor => constructor.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
-			commonConstructor.Setup(constructor => constructor.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonConstructor.Setup(constructor => constructor.TypeTypeToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonConstructor.Setup(constructor => constructor.TypeFullNameToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
 
 			return commonConstructor.Object;
 		}
 
-		private static CommonField[] CreateCommonFields(IEnumerable<FakeField> fakeFields, string typeFullName) {
-			return fakeFields?.Select(fakeField => CreateCommonField(fakeField, typeFullName)).ToArray() ?? new CommonField[0];
+		private static ICommonField[] CreateCommonFields(IEnumerable<FakeField> fakeFields, string typeFullName) {
+			return fakeFields?.Select(fakeField => CreateCommonField(fakeField, typeFullName)).ToArray() ?? new ICommonField[0];
 		}
-		private static CommonField CreateCommonField(FakeField fakeField, string typeFullName) {
+		private static ICommonField CreateCommonField(FakeField fakeField, string typeFullName) {
 			var fieldName = fakeField.Name;
 			var fieldFullName = $"{fakeField.FieldType.FullName} {typeFullName}::{fieldName}()";
 			var commonAttributes = CreateCommonAttributes(fakeField.Attributes);
@@ -246,21 +256,25 @@ namespace ApplicationPatcher.Tests {
 			monoCecilField.Setup(field => field.FullName).Returns(() => fieldFullName);
 			monoCecilField.Setup(field => field.CustomAttributes).Returns(() => new Collection<CustomAttribute>(commonAttributes.Select(attribute => attribute.MonoCecil).ToArray()));
 
-			var commonField = CreateMockFor<CommonField>(CreateMockFor<FieldInfo>().Object, monoCecilField.Object);
+			var commonField = CreateMockFor<ICommonField>();
+			commonField.Setup(field => field.Name).Returns(() => fieldName);
+			commonField.Setup(field => field.FullName).Returns(() => fieldFullName);
+			commonField.Setup(field => field.MonoCecil).Returns(() => monoCecilField.Object);
+			commonField.Setup(field => field.Reflection).Returns(() => CreateMockFor<FieldInfo>().Object);
 			commonField.Setup(field => field.Type).Returns(() => CreateReflectionType(fakeField.FieldType));
 			commonField.Setup(field => field.Attributes).Returns(() => commonAttributes);
-			commonField.Setup(field => field.LoadInternal());
+			commonField.Setup(field => field.Load());
 
-			commonField.Setup(field => field.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
-			commonField.Setup(field => field.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonField.Setup(field => field.TypeTypeToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonField.Setup(field => field.TypeFullNameToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
 
 			return commonField.Object;
 		}
 
-		private static CommonMethod[] CreateCommonMethods(IEnumerable<FakeMethod> fakeMethods, string typeFullName) {
-			return fakeMethods?.Select(method => CreateCommonMethod(method, typeFullName)).ToArray() ?? new CommonMethod[0];
+		private static ICommonMethod[] CreateCommonMethods(IEnumerable<FakeMethod> fakeMethods, string typeFullName) {
+			return fakeMethods?.Select(method => CreateCommonMethod(method, typeFullName)).ToArray() ?? new ICommonMethod[0];
 		}
-		private static CommonMethod CreateCommonMethod(FakeMethod fakeMethod, string typeFullName, bool canBeNull = false) {
+		private static ICommonMethod CreateCommonMethod(FakeMethod fakeMethod, string typeFullName, bool canBeNull = false) {
 			if (canBeNull && fakeMethod == null)
 				return null;
 
@@ -277,23 +291,27 @@ namespace ApplicationPatcher.Tests {
 			monoCecilMethod.Setup(method => method.CustomAttributes).Returns(() => new Collection<CustomAttribute>(commonAttributes.Select(attribute => attribute.MonoCecil).ToArray()));
 			monoCecilMethod.Setup(method => method.Parameters).Returns(() => new Collection<ParameterDefinition>(commonParameters.Select(parameter => parameter.MonoCecil).ToArray()));
 
-			var commonMethod = CreateMockFor<CommonMethod>(CreateMockFor<MethodInfo>().Object, monoCecilMethod.Object);
+			var commonMethod = CreateMockFor<ICommonMethod>();
+			commonMethod.Setup(method => method.Name).Returns(() => methodName);
+			commonMethod.Setup(method => method.FullName).Returns(() => methodFullName);
+			commonMethod.Setup(method => method.MonoCecil).Returns(() => monoCecilMethod.Object);
+			commonMethod.Setup(method => method.Reflection).Returns(() => CreateMockFor<MethodInfo>().Object);
 			commonMethod.Setup(method => method.Attributes).Returns(() => commonAttributes);
 			commonMethod.Setup(method => method.Parameters).Returns(() => commonParameters);
 			commonMethod.Setup(method => method.ReturnType).Returns(() => fakeMethod.ReturnType.Type);
 			commonMethod.Setup(method => method.ParameterTypes).Returns(() => commonParameters.Select(parameter => parameter.Type).ToArray());
-			commonMethod.Setup(method => method.LoadInternal());
+			commonMethod.Setup(method => method.Load());
 
-			commonMethod.Setup(method => method.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
-			commonMethod.Setup(method => method.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonMethod.Setup(method => method.TypeTypeToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonMethod.Setup(method => method.TypeFullNameToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
 
 			return commonMethod.Object;
 		}
 
-		private static CommonParameter[] CreateCommonParameters(IEnumerable<FakeParameter> fakeParameters) {
-			return fakeParameters?.Select(CreateCommonParameter).ToArray() ?? new CommonParameter[0];
+		private static ICommonParameter[] CreateCommonParameters(IEnumerable<FakeParameter> fakeParameters) {
+			return fakeParameters?.Select(CreateCommonParameter).ToArray() ?? new ICommonParameter[0];
 		}
-		private static CommonParameter CreateCommonParameter(FakeParameter fakeParameter) {
+		private static ICommonParameter CreateCommonParameter(FakeParameter fakeParameter) {
 			var reflectionParameter = CreateMockFor<ParameterInfo>();
 			reflectionParameter.Setup(parameter => parameter.ParameterType).Returns(() => CreateReflectionType(fakeParameter.ParameterType));
 
@@ -302,17 +320,21 @@ namespace ApplicationPatcher.Tests {
 			monoCecilParameter.Setup(parameter => parameter.Name).Returns(() => fakeParameter.Name);
 			monoCecilParameter.Setup(parameter => parameter.ParameterType).Returns(() => typeReference);
 
-			var commonParameter = CreateMockFor<CommonParameter>(reflectionParameter.Object, monoCecilParameter.Object);
+			var commonParameter = CreateMockFor<ICommonParameter>();
+			commonParameter.Setup(parameter => parameter.Name).Returns(() => fakeParameter.Name);
+			commonParameter.Setup(parameter => parameter.FullName).Returns(() => fakeParameter.Name);
+			commonParameter.Setup(parameter => parameter.MonoCecil).Returns(() => monoCecilParameter.Object);
+			commonParameter.Setup(parameter => parameter.Reflection).Returns(() => reflectionParameter.Object);
 			commonParameter.Setup(parameter => parameter.Type).Returns(() => CreateReflectionType(fakeParameter.ParameterType));
-			commonParameter.Setup(parameter => parameter.LoadInternal());
+			commonParameter.Setup(parameter => parameter.Load());
 
 			return commonParameter.Object;
 		}
 
-		private static CommonProperty[] CreateCommonProperties(IEnumerable<FakeProperty> fakeProperties, string typeFullName) {
-			return fakeProperties?.Select(property => CreateCommonProperty(property, typeFullName)).ToArray() ?? new CommonProperty[0];
+		private static ICommonProperty[] CreateCommonProperties(IEnumerable<FakeProperty> fakeProperties, string typeFullName) {
+			return fakeProperties?.Select(property => CreateCommonProperty(property, typeFullName)).ToArray() ?? new ICommonProperty[0];
 		}
-		private static CommonProperty CreateCommonProperty(FakeProperty fakeProperty, string typeFullName) {
+		private static ICommonProperty CreateCommonProperty(FakeProperty fakeProperty, string typeFullName) {
 			var propertyName = fakeProperty.Name;
 			var propertyFullName = $"{typeFullName}.{propertyName}";
 			var typeReference = CreateTypeReference(fakeProperty.PropertyType);
@@ -334,15 +356,19 @@ namespace ApplicationPatcher.Tests {
 			monoCecilProperty.Setup(property => property.PropertyType).Returns(() => typeReference);
 			monoCecilProperty.Setup(property => property.CustomAttributes).Returns(() => new Collection<CustomAttribute>(commonAttributes.Select(attribute => attribute.MonoCecil).ToArray()));
 
-			var commonProperty = CreateMockFor<CommonProperty>(reflectionProperty.Object, monoCecilProperty.Object);
+			var commonProperty = CreateMockFor<ICommonProperty>();
+			commonProperty.Setup(property => property.Name).Returns(() => propertyName);
+			commonProperty.Setup(property => property.FullName).Returns(() => propertyFullName);
+			commonProperty.Setup(property => property.MonoCecil).Returns(() => monoCecilProperty.Object);
+			commonProperty.Setup(property => property.Reflection).Returns(() => reflectionProperty.Object);
 			commonProperty.Setup(property => property.Type).Returns(() => reflectionType);
 			commonProperty.Setup(property => property.Attributes).Returns(() => commonAttributes);
 			commonProperty.Setup(property => property.GetMethod).Returns(() => propertyGetMethod);
 			commonProperty.Setup(property => property.SetMethod).Returns(() => propertySetMethod);
-			commonProperty.Setup(property => property.LoadInternal());
+			commonProperty.Setup(property => property.Load());
 
-			commonProperty.Setup(property => property.TypeTypeToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
-			commonProperty.Setup(property => property.TypeFullNameToAttribute).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonProperty.Setup(property => property.TypeTypeToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
+			commonProperty.Setup(property => property.TypeFullNameToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
 
 			return commonProperty.Object;
 		}

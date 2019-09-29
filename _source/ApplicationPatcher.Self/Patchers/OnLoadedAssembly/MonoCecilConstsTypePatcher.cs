@@ -2,7 +2,7 @@
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
-using ApplicationPatcher.Core.Types.CommonMembers;
+using ApplicationPatcher.Core.Types.CommonInterfaces;
 
 namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 	public class MonoCecilConstsTypePatcher : PatcherOnLoadedApplication {
@@ -14,7 +14,7 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 			log = Log.For(this);
 		}
 
-		public override PatchResult Patch(CommonAssembly assembly) {
+		public override PatchResult Patch(ICommonAssembly assembly) {
 			const string constsTypeFullName = "Consts";
 			log.Info($"Patching '{constsTypeFullName}' type...");
 

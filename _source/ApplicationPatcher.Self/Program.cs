@@ -5,14 +5,14 @@ using Ninject;
 
 namespace ApplicationPatcher.Self {
 	public static class Program {
-		private static readonly ILog log = Log.For(typeof(Program));
+		private static readonly ILog Log = Core.Logs.Log.For(typeof(Program));
 
 		public static void Main() {
 			try {
 				Run();
 			}
 			catch (Exception exception) {
-				log.Fatal(exception);
+				Log.Fatal(exception);
 				throw;
 			}
 		}
@@ -20,7 +20,7 @@ namespace ApplicationPatcher.Self {
 		[UsedImplicitly]
 		public static void Run() {
 			var container = new StandardKernel(new ApplicationPatcherSelfNinjectModule());
-			container.Get<ApplicationPatcherSelfProcessor>().PatchSelfApplication();
+			container.Get<ApplicationPatcherSelf>().PatchSelfApplication();
 		}
 	}
 }

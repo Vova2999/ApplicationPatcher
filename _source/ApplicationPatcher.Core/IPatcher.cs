@@ -1,9 +1,7 @@
-﻿using ApplicationPatcher.Core.Types.CommonMembers;
-
-// ReSharper disable UnusedMemberInSuper.Global
+﻿using ApplicationPatcher.Core.Types.CommonInterfaces;
 
 namespace ApplicationPatcher.Core {
 	internal interface IPatcher {
-		PatchResult Patch(CommonAssembly assembly);
+		PatchResult Patch(ICommonAssembly assembly);
 	}
 }

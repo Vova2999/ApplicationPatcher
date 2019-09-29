@@ -1,12 +1,16 @@
 ﻿using JetBrains.Annotations;
 
-// ReSharper disable UnusedMember.Global
-
 namespace ApplicationPatcher.Core.Extensions {
+	[PublicAPI]
 	public static class StringExtensions {
-		[ContractAnnotation("null => true; notnull => false")]
+		[ContractAnnotation("null => true")]
 		public static bool IsNullOrEmpty(this string str) {
 			return string.IsNullOrEmpty(str);
+		}
+
+		[ContractAnnotation("null => false")]
+		public static bool IsSignificant(this string str) {
+			return !string.IsNullOrEmpty(str);
 		}
 
 		public static string NullIfEmpty(this string str) {
