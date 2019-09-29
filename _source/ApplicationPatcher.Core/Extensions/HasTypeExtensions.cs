@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using ApplicationPatcher.Core.Types.BaseInterfaces;
 using JetBrains.Annotations;
 
@@ -37,6 +40,39 @@ namespace ApplicationPatcher.Core.Extensions {
 		}
 		public static bool IsNotInheritedFrom(this IHasType hasType, IHasType thatHasType) {
 			return !hasType.IsInheritedFrom(thatHasType);
+		}
+
+		public static IEnumerable<TAttribute> GetReflectionAttributes<TAttribute>(this IHasType hasType) where TAttribute : Attribute {
+			return hasType.Type.GetCustomAttributes<TAttribute>(false);
+		}
+		public static bool TryGetReflectionAttribute<TAttribute>(this IHasType hasType, out TAttribute foundAttribute) where TAttribute : Attribute {
+			return (foundAttribute = hasType.GetReflectionAttribute<TAttribute>()) != null;
+		}
+		public static TAttribute GetReflectionAttribute<TAttribute>(this IHasType hasType, bool throwExceptionIfNotFound = false) where TAttribute : Attribute {
+			return (TAttribute)hasType.GetReflectionAttribute(typeof(TAttribute), throwExceptionIfNotFound);
+		}
+		public static Attribute GetReflectionAttribute(this IHasType hasType, Type attributeType, bool throwExceptionIfNotFound = false) {
+			return (Attribute)hasType.Type.GetCustomAttributes(attributeType, false).SingleOrDefault(throwExceptionIfNotFound, attributeType.FullName);
+		}
+
+		public static bool ContainsReflectionAttribute<TAttribute>(this IHasType hasType) where TAttribute : Attribute {
+			return hasType.ContainsReflectionAttribute(typeof(TAttribute));
+		}
+		public static bool ContainsReflectionAttribute(this IHasType hasType, Type attributeType) {
+			return hasType.Type.GetCustomAttributes(attributeType).Any();
+		}
+		public static bool ContainsReflectionAttribute(this IHasType hasType, IHasType attributeHasType) {
+			return hasType.ContainsReflectionAttribute(attributeHasType.Type);
+		}
+
+		public static bool NotContainsReflectionAttribute<TAttribute>(this IHasType hasType) where TAttribute : Attribute {
+			return !hasType.ContainsReflectionAttribute<TAttribute>();
+		}
+		public static bool NotContainsReflectionAttribute(this IHasType hasType, Type attributeType) {
+			return !hasType.ContainsReflectionAttribute(attributeType);
+		}
+		public static bool NotContainsReflectionAttribute(this IHasType hasType, IHasType attributeHasType) {
+			return !hasType.ContainsReflectionAttribute(attributeHasType);
 		}
 	}
 }

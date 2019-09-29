@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using ApplicationPatcher.Core.Types.BaseInterfaces;
 using ApplicationPatcher.Core.Types.CommonInterfaces;
 using JetBrains.Annotations;
@@ -8,16 +9,6 @@ using JetBrains.Annotations;
 namespace ApplicationPatcher.Core.Extensions {
 	[PublicAPI]
 	public static class HasAttributesExtensions {
-		public static IEnumerable<TAttribute> GetReflectionAttributes<TAttribute>(this IHasAttributes hasAttributes) where TAttribute : Attribute {
-			return hasAttributes.GetAttributes<TAttribute>().Select(attribute => (TAttribute)attribute.Reflection);
-		}
-		public static bool TryGetReflectionAttribute<TAttribute>(this IHasAttributes hasAttributes, out TAttribute foundAttribute) where TAttribute : Attribute {
-			return (foundAttribute = hasAttributes.GetReflectionAttribute<TAttribute>()) != null;
-		}
-		public static TAttribute GetReflectionAttribute<TAttribute>(this IHasAttributes hasAttributes, bool throwExceptionIfNotFound = false) where TAttribute : Attribute {
-			return (TAttribute)hasAttributes.GetAttribute<TAttribute>(throwExceptionIfNotFound)?.Reflection;
-		}
-
 		public static bool TryGetAttribute<TAttribute>(this IHasAttributes hasAttributes, out ICommonAttribute foundCommonAttribute) where TAttribute : Attribute {
 			return (foundCommonAttribute = hasAttributes.GetAttribute<TAttribute>()) != null;
 		}
@@ -61,7 +52,7 @@ namespace ApplicationPatcher.Core.Extensions {
 			return hasAttributes.ContainsAttribute(typeof(TAttribute));
 		}
 		public static bool ContainsAttribute(this IHasAttributes hasAttributes, Type attributeType) {
-			return hasAttributes.TypeTypeToAttributes.CheckLoaded().ContainsKey(attributeType);
+			return hasAttributes.TypeTypeToAttributes.ContainsKey(attributeType);
 		}
 		public static bool ContainsAttribute(this IHasAttributes hasAttributes, IHasType attributeHasType) {
 			return hasAttributes.ContainsAttribute(attributeHasType.Type);
