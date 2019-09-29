@@ -46,7 +46,7 @@ namespace ApplicationPatcher.Core.Extensions {
 			}
 		}
 
-		public static TResultCollection CheckLoaded<TResultCollection>(this TResultCollection collection) where TResultCollection : IEnumerable {
+		internal static TResultCollection CheckLoaded<TResultCollection>(this TResultCollection collection) where TResultCollection : IEnumerable {
 			return Equals(collection, null) ? throw new InvalidOperationException("This object not loaded") : collection;
 		}
 	}

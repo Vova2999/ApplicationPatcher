@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using ApplicationPatcher.Core.Types.BaseInterfaces;
 using ApplicationPatcher.Core.Types.CommonInterfaces;
 using JetBrains.Annotations;
@@ -26,26 +25,26 @@ namespace ApplicationPatcher.Core.Extensions {
 			return hasAttributes.GetAttribute(typeof(TAttribute), throwExceptionIfNotFound);
 		}
 		public static ICommonAttribute GetAttribute(this IHasAttributes hasAttributes, Type attributeType, bool throwExceptionIfNotFound = false) {
-			return (hasAttributes.TypeTypeToAttributes.CheckLoaded().TryGetValue(attributeType, out var commonAttributes) ? commonAttributes : Enumerable.Empty<ICommonAttribute>()).SingleOrDefault(throwExceptionIfNotFound, attributeType.FullName);
+			return (hasAttributes.TypeTypeToAttributes.TryGetValue(attributeType, out var commonAttributes) ? commonAttributes : Enumerable.Empty<ICommonAttribute>()).SingleOrDefault(throwExceptionIfNotFound, attributeType.FullName);
 		}
 		public static ICommonAttribute GetAttribute(this IHasAttributes hasAttributes, IHasType attributeHasType, bool throwExceptionIfNotFound = false) {
 			return hasAttributes.GetAttribute(attributeHasType.Type, throwExceptionIfNotFound);
 		}
 		public static ICommonAttribute GetAttribute(this IHasAttributes hasAttributes, string attributeTypeFullName, bool throwExceptionIfNotFound = false) {
-			return (hasAttributes.TypeFullNameToAttributes.CheckLoaded().TryGetValue(attributeTypeFullName, out var commonAttributes) ? commonAttributes : Enumerable.Empty<ICommonAttribute>()).SingleOrDefault(throwExceptionIfNotFound, attributeTypeFullName);
+			return (hasAttributes.TypeFullNameToAttributes.TryGetValue(attributeTypeFullName, out var commonAttributes) ? commonAttributes : Enumerable.Empty<ICommonAttribute>()).SingleOrDefault(throwExceptionIfNotFound, attributeTypeFullName);
 		}
 
 		public static IEnumerable<ICommonAttribute> GetAttributes<TAttribute>(this IHasAttributes hasAttributes) where TAttribute : Attribute {
 			return hasAttributes.GetAttributes(typeof(TAttribute));
 		}
 		public static IEnumerable<ICommonAttribute> GetAttributes(this IHasAttributes hasAttributes, Type attributeType) {
-			return hasAttributes.TypeTypeToAttributes.CheckLoaded().TryGetValue(attributeType, out var commonAttributes) ? commonAttributes : Enumerable.Empty<ICommonAttribute>();
+			return hasAttributes.TypeTypeToAttributes.TryGetValue(attributeType, out var commonAttributes) ? commonAttributes : Enumerable.Empty<ICommonAttribute>();
 		}
 		public static IEnumerable<ICommonAttribute> GetAttributes(this IHasAttributes hasAttributes, IHasType attributeHasType) {
 			return hasAttributes.GetAttributes(attributeHasType.Type);
 		}
 		public static IEnumerable<ICommonAttribute> GetAttributes(this IHasAttributes hasAttributes, string attributeTypeFullName) {
-			return hasAttributes.TypeFullNameToAttributes.CheckLoaded().TryGetValue(attributeTypeFullName, out var commonAttributes) ? commonAttributes : Enumerable.Empty<ICommonAttribute>();
+			return hasAttributes.TypeFullNameToAttributes.TryGetValue(attributeTypeFullName, out var commonAttributes) ? commonAttributes : Enumerable.Empty<ICommonAttribute>();
 		}
 
 		public static bool ContainsAttribute<TAttribute>(this IHasAttributes hasAttributes) where TAttribute : Attribute {
@@ -58,7 +57,7 @@ namespace ApplicationPatcher.Core.Extensions {
 			return hasAttributes.ContainsAttribute(attributeHasType.Type);
 		}
 		public static bool ContainsAttribute(this IHasAttributes hasAttributes, string attributeTypeFullName) {
-			return hasAttributes.TypeFullNameToAttributes.CheckLoaded().ContainsKey(attributeTypeFullName);
+			return hasAttributes.TypeFullNameToAttributes.ContainsKey(attributeTypeFullName);
 		}
 
 		public static bool NotContainsAttribute<TAttribute>(this IHasAttributes hasAttributes) where TAttribute : Attribute {

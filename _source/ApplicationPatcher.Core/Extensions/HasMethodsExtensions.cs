@@ -25,17 +25,17 @@ namespace ApplicationPatcher.Core.Extensions {
 			return hasMethods.GetMethod(methodName, Type.EmptyTypes, throwExceptionIfNotFound);
 		}
 		public static ICommonMethod GetMethod(this IHasMethods hasMethods, string methodName, Type[] methodParameterTypes, bool throwExceptionIfNotFound = false) {
-			return (hasMethods.MethodNameToMethods.CheckLoaded().TryGetValue(methodName, out var commonMethods) ? commonMethods : Enumerable.Empty<ICommonMethod>()).Where(method => method.ParameterTypes.SequenceEqual(methodParameterTypes ?? Type.EmptyTypes)).SingleOrDefault(throwExceptionIfNotFound, methodName);
+			return (hasMethods.MethodNameToMethods.TryGetValue(methodName, out var commonMethods) ? commonMethods : Enumerable.Empty<ICommonMethod>()).Where(method => method.ParameterTypes.SequenceEqual(methodParameterTypes ?? Type.EmptyTypes)).SingleOrDefault(throwExceptionIfNotFound, methodName);
 		}
 		public static ICommonMethod GetMethod(this IHasMethods hasMethods, string methodName, IHasType[] methodParameterHasTypes, bool throwExceptionIfNotFound = false) {
 			return hasMethods.GetMethod(methodName, methodParameterHasTypes.Select(type => type.Type).ToArray(), throwExceptionIfNotFound);
 		}
 		public static ICommonMethod GetMethod(this IHasMethods hasMethods, string methodName, string[] methodParameterTypeFullNames, bool throwExceptionIfNotFound = false) {
-			return (hasMethods.MethodNameToMethods.CheckLoaded().TryGetValue(methodName, out var commonMethods) ? commonMethods : Enumerable.Empty<ICommonMethod>()).Where(method => method.ParameterTypes.Select(type => type.FullName.NullIfEmpty() ?? type.Name).SequenceEqual(methodParameterTypeFullNames ?? new string[0])).SingleOrDefault(throwExceptionIfNotFound, methodName);
+			return (hasMethods.MethodNameToMethods.TryGetValue(methodName, out var commonMethods) ? commonMethods : Enumerable.Empty<ICommonMethod>()).Where(method => method.ParameterTypes.Select(type => type.FullName.NullIfEmpty() ?? type.Name).SequenceEqual(methodParameterTypeFullNames ?? new string[0])).SingleOrDefault(throwExceptionIfNotFound, methodName);
 		}
 
 		public static IEnumerable<ICommonMethod> GetMethods(this IHasMethods hasMethods, string methodName) {
-			return hasMethods.MethodNameToMethods.CheckLoaded().TryGetValue(methodName, out var commonMethods) ? commonMethods : Enumerable.Empty<ICommonMethod>();
+			return hasMethods.MethodNameToMethods.TryGetValue(methodName, out var commonMethods) ? commonMethods : Enumerable.Empty<ICommonMethod>();
 		}
 	}
 }

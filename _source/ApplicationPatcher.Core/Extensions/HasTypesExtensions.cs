@@ -9,7 +9,7 @@ namespace ApplicationPatcher.Core.Extensions {
 	[PublicAPI]
 	public static class HasTypesExtensions {
 		public static IEnumerable<ICommonType> GetInheritanceCommonTypes(this IHasTypes hasTypes, Type baseType) {
-			return hasTypes.Types.CheckLoaded().Where(type => type.IsInheritedFrom(baseType));
+			return hasTypes.Types.Where(type => type.IsInheritedFrom(baseType));
 		}
 		public static IEnumerable<ICommonType> GetInheritanceCommonTypes(this IHasTypes hasTypes, IHasType hasType) {
 			return hasTypes.GetInheritanceCommonTypes(hasType.Type);
@@ -23,10 +23,10 @@ namespace ApplicationPatcher.Core.Extensions {
 		}
 
 		public static ICommonType GetCommonType(this IHasTypes hasTypes, Type type, bool throwExceptionIfNotFound = false) {
-			return (hasTypes.TypeTypeToTypes.CheckLoaded().TryGetValue(type, out var commonTypes) ? commonTypes : Enumerable.Empty<ICommonType>()).SingleOrDefault(throwExceptionIfNotFound, type.FullName);
+			return (hasTypes.TypeTypeToTypes.TryGetValue(type, out var commonTypes) ? commonTypes : Enumerable.Empty<ICommonType>()).SingleOrDefault(throwExceptionIfNotFound, type.FullName);
 		}
 		public static ICommonType GetCommonType(this IHasTypes hasTypes, string typeFullName, bool throwExceptionIfNotFound = false) {
-			return (hasTypes.TypeFullNameToTypes.CheckLoaded().TryGetValue(typeFullName, out var commonTypes) ? commonTypes : Enumerable.Empty<ICommonType>()).SingleOrDefault(throwExceptionIfNotFound, typeFullName);
+			return (hasTypes.TypeFullNameToTypes.TryGetValue(typeFullName, out var commonTypes) ? commonTypes : Enumerable.Empty<ICommonType>()).SingleOrDefault(throwExceptionIfNotFound, typeFullName);
 		}
 	}
 }
