@@ -5,6 +5,6 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.CommonInterfaces {
 	[PublicAPI]
-	public interface ICommonParameter : ICommonMember<ICommonParameter, ParameterDefinition, ParameterInfo>, IHasType {
+	public interface ICommonParameter : ICommonMember<ICommonParameter, ParameterDefinition, ParameterInfo>, IHasAttributes, IHasType {
 	}
 }
