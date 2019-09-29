@@ -25,7 +25,7 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 				return PatchResult.Continue;
 			}
 
-			constsType.GetField("PublicKey").MonoCecil.Constant = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey.ToHexString();
+			constsType.Load().GetField("PublicKey").MonoCecil.Constant = applicationPatcherSelfConfiguration.MonoCecilNewPublicKey.ToHexString();
 
 			log.Info($"'{constsTypeFullName}' type was patched");
 			return PatchResult.Continue;

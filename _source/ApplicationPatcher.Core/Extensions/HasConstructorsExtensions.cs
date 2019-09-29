@@ -24,13 +24,13 @@ namespace ApplicationPatcher.Core.Extensions {
 			return hasConstructors.GetConstructor(Type.EmptyTypes, throwExceptionIfNotFound);
 		}
 		public static ICommonConstructor GetConstructor(this IHasConstructors hasConstructors, Type[] constructorParameterTypes, bool throwExceptionIfNotFound = false) {
-			return hasConstructors.Constructors.SingleOrDefault(constructor => constructor.ParameterTypes.SequenceEqual(constructorParameterTypes ?? Type.EmptyTypes), throwExceptionIfNotFound, ".ctor");
+			return hasConstructors.Constructors.CheckLoaded().SingleOrDefault(constructor => constructor.ParameterTypes.SequenceEqual(constructorParameterTypes ?? Type.EmptyTypes), throwExceptionIfNotFound, ".ctor");
 		}
 		public static ICommonConstructor GetConstructor(this IHasConstructors hasConstructors, IHasType[] constructorParameterHasTypes, bool throwExceptionIfNotFound = false) {
 			return hasConstructors.GetConstructor(constructorParameterHasTypes.Select(type => type.Type).ToArray(), throwExceptionIfNotFound);
 		}
 		public static ICommonConstructor GetConstructor(this IHasConstructors hasConstructors, string[] constructorParameterTypeFullNames, bool throwExceptionIfNotFound = false) {
-			return hasConstructors.Constructors.SingleOrDefault(constructor => constructor.ParameterTypes.Select(type => type.FullName.NullIfEmpty() ?? type.Name).SequenceEqual(constructorParameterTypeFullNames ?? new string[0]), throwExceptionIfNotFound, ".ctor");
+			return hasConstructors.Constructors.CheckLoaded().SingleOrDefault(constructor => constructor.ParameterTypes.Select(type => type.FullName.NullIfEmpty() ?? type.Name).SequenceEqual(constructorParameterTypeFullNames ?? new string[0]), throwExceptionIfNotFound, ".ctor");
 		}
 	}
 }

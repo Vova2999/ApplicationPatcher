@@ -12,17 +12,17 @@ namespace ApplicationPatcher.Core.Extensions {
 			return (foundCommonProperty = hasProperties.GetProperty(propertyName)) != null;
 		}
 		public static ICommonProperty GetProperty(this IHasProperties hasProperties, string propertyName, bool throwExceptionIfNotFound = false) {
-			return (hasProperties.PropertyNameToProperties.TryGetValue(propertyName, out var commonProperties) ? commonProperties : Enumerable.Empty<ICommonProperty>()).SingleOrDefault(throwExceptionIfNotFound, propertyName);
+			return (hasProperties.PropertyNameToProperties.CheckLoaded().TryGetValue(propertyName, out var commonProperties) ? commonProperties : Enumerable.Empty<ICommonProperty>()).SingleOrDefault(throwExceptionIfNotFound, propertyName);
 		}
 
 		public static IEnumerable<ICommonProperty> GetProperties(this IHasProperties hasProperties, IHasType hasType) {
 			return hasProperties.GetProperties(hasType.Type);
 		}
 		public static IEnumerable<ICommonProperty> GetProperties(this IHasProperties hasProperties, Type propertyType) {
-			return hasProperties.Properties.Where(property => property.Is(propertyType));
+			return hasProperties.Properties.CheckLoaded().Where(property => property.Is(propertyType));
 		}
 		public static IEnumerable<ICommonProperty> GetProperties(this IHasProperties hasProperties, string propertyTypeFullName) {
-			return hasProperties.Properties.Where(property => property.Is(propertyTypeFullName));
+			return hasProperties.Properties.CheckLoaded().Where(property => property.Is(propertyTypeFullName));
 		}
 	}
 }

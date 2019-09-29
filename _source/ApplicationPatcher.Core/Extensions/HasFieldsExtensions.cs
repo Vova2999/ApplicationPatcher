@@ -12,17 +12,17 @@ namespace ApplicationPatcher.Core.Extensions {
 			return (foundCommonField = hasFields.GetField(fieldName)) != null;
 		}
 		public static ICommonField GetField(this IHasFields hasFields, string fieldName, bool throwExceptionIfNotFound = false) {
-			return (hasFields.FieldNameToFields.TryGetValue(fieldName, out var commonFields) ? commonFields : Enumerable.Empty<ICommonField>()).SingleOrDefault(throwExceptionIfNotFound, fieldName);
+			return (hasFields.FieldNameToFields.CheckLoaded().TryGetValue(fieldName, out var commonFields) ? commonFields : Enumerable.Empty<ICommonField>()).SingleOrDefault(throwExceptionIfNotFound, fieldName);
 		}
 
 		public static IEnumerable<ICommonField> GetFields(this IHasFields hasFields, IHasType hasType) {
 			return hasFields.GetFields(hasType.Type);
 		}
 		public static IEnumerable<ICommonField> GetFields(this IHasFields hasFields, Type parameterType) {
-			return hasFields.Fields.Where(field => field.Is(parameterType));
+			return hasFields.Fields.CheckLoaded().Where(field => field.Is(parameterType));
 		}
 		public static IEnumerable<ICommonField> GetFields(this IHasFields hasFields, string parameterTypeFullName) {
-			return hasFields.Fields.Where(field => field.Is(parameterTypeFullName));
+			return hasFields.Fields.CheckLoaded().Where(field => field.Is(parameterTypeFullName));
 		}
 	}
 }

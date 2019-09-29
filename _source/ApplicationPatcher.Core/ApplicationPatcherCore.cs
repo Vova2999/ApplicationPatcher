@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using ApplicationPatcher.Core.Extensions;
 using ApplicationPatcher.Core.Factories;
+using ApplicationPatcher.Core.Helpers;
 using ApplicationPatcher.Core.Logs;
 using ApplicationPatcher.Core.Patchers;
 
@@ -34,7 +35,7 @@ namespace ApplicationPatcher.Core {
 			var assembly = commonAssemblyFactory.Create(applicationPath);
 			log.Info("Assembly was readed");
 
-			if (patchersOnNotLoadedApplication.PatchApplication(assembly, log) == PatchResult.Cancel)
+			if (PatchHelper.PatchApplication(patchersOnNotLoadedApplication, patcher => patcher.Patch(assembly), log) == PatchResult.Cancel)
 				return;
 
 			log.Info("Loading assembly...");
@@ -46,10 +47,10 @@ namespace ApplicationPatcher.Core {
 			else
 				log.Debug("Types from this assembly not found");
 
-			if (patchersOnLoadedApplication.PatchApplication(assembly, log) == PatchResult.Cancel)
+			if (PatchHelper.PatchApplication(patchersOnLoadedApplication, patcher => patcher.Patch(assembly), log) == PatchResult.Cancel)
 				return;
 
-			if (patchersOnPatchedApplication.PatchApplication(assembly, log) == PatchResult.Cancel)
+			if (PatchHelper.PatchApplication(patchersOnPatchedApplication, patcher => patcher.Patch(assembly), log) == PatchResult.Cancel)
 				return;
 
 			log.Info("Application was patched");

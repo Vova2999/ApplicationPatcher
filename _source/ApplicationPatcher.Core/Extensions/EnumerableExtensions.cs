@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -11,6 +12,11 @@ namespace ApplicationPatcher.Core.Extensions {
 		}
 
 		public static void ForEach<TValue>(this IEnumerable<TValue> values, Action<TValue> actionOnValue) {
+			foreach (var value in values)
+				actionOnValue(value);
+		}
+
+		public static void ForEach<TValue, TResult>(this IEnumerable<TValue> values, Func<TValue, TResult> actionOnValue) {
 			foreach (var value in values)
 				actionOnValue(value);
 		}
@@ -38,6 +44,10 @@ namespace ApplicationPatcher.Core.Extensions {
 				default:
 					throw new InvalidOperationException($"Found more than one '{valueFullName}'");
 			}
+		}
+
+		public static TResultCollection CheckLoaded<TResultCollection>(this TResultCollection collection) where TResultCollection : IEnumerable {
+			return Equals(collection, null) ? throw new InvalidOperationException("This object not loaded") : collection;
 		}
 	}
 }

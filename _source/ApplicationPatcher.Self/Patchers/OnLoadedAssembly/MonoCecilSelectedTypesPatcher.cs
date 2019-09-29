@@ -31,7 +31,7 @@ namespace ApplicationPatcher.Self.Patchers.OnLoadedAssembly {
 				return PatchResult.Continue;
 			}
 
-			log.Debug("Selected types found:", foundSelectedPatchingTypes.Select(viewModel => viewModel.FullName).OrderBy(fullName => fullName));
+			log.Debug("Selected types found:", foundSelectedPatchingTypes.Select(type => type.FullName).OrderBy(fullName => fullName));
 
 			foreach (var type in foundSelectedPatchingTypes) {
 				log.Info($"Patching type '{type.FullName}'...");

@@ -11,7 +11,6 @@ using Mono.Cecil;
 namespace ApplicationPatcher.Core.Types.CommonMembers {
 	[PublicAPI]
 	public class CommonAssembly : CommonMember<ICommonAssembly, AssemblyDefinition, Assembly>, ICommonAssembly {
-		// todo: remove GetOrCreate?
 		public override string Name => GetOrCreate(() => MonoCecil.Name.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 
@@ -22,7 +21,7 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 		public IDictionary<Type, ICommonAttribute[]> TypeTypeToAttributes { get; private set; }
 		public IDictionary<string, ICommonAttribute[]> TypeFullNameToAttributes { get; private set; }
 
-		public ICommonType[] TypesFromThisAssembly => GetOrCreate(() => Load().Types.WhereFrom(this).ToArray());
+		public ICommonType[] TypesFromThisAssembly => GetOrCreate(() => Types.CheckLoaded().WhereFrom(this).ToArray());
 
 		public bool HaveSymbolStore { get; }
 		public Assembly[] ReferencedReflectionAssemblies { get; }

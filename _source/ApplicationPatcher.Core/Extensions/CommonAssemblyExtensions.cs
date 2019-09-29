@@ -19,17 +19,17 @@ namespace ApplicationPatcher.Core.Extensions {
 		}
 
 		public static ICommonType GetCommonTypeFromThisAssembly(this ICommonAssembly commonAssembly, Type type, bool throwExceptionIfNotFound = false) {
-			return (commonAssembly.TypeTypeToTypes.TryGetValue(type, out var commonTypes) ? commonTypes : Enumerable.Empty<ICommonType>()).WhereFrom(commonAssembly).SingleOrDefault(throwExceptionIfNotFound, type.FullName);
+			return (commonAssembly.TypeTypeToTypes.CheckLoaded().TryGetValue(type, out var commonTypes) ? commonTypes : Enumerable.Empty<ICommonType>()).WhereFrom(commonAssembly).SingleOrDefault(throwExceptionIfNotFound, type.FullName);
 		}
 		public static ICommonType GetCommonTypeFromThisAssembly(this ICommonAssembly commonAssembly, IHasType hasType, bool throwExceptionIfNotFound = false) {
 			return commonAssembly.GetCommonTypeFromThisAssembly(hasType.Type, throwExceptionIfNotFound);
 		}
 		public static ICommonType GetCommonTypeFromThisAssembly(this ICommonAssembly commonAssembly, string typeFullName, bool throwExceptionIfNotFound = false) {
-			return (commonAssembly.TypeFullNameToTypes.TryGetValue(typeFullName, out var commonTypes) ? commonTypes : Enumerable.Empty<ICommonType>()).WhereFrom(commonAssembly).SingleOrDefault(throwExceptionIfNotFound, typeFullName);
+			return (commonAssembly.TypeFullNameToTypes.CheckLoaded().TryGetValue(typeFullName, out var commonTypes) ? commonTypes : Enumerable.Empty<ICommonType>()).WhereFrom(commonAssembly).SingleOrDefault(throwExceptionIfNotFound, typeFullName);
 		}
 
 		public static IEnumerable<ICommonType> GetInheritanceCommonTypesFromThisAssembly(this ICommonAssembly commonAssembly, Type baseType) {
-			return commonAssembly.TypesFromThisAssembly.Where(type => type.IsInheritedFrom(baseType));
+			return commonAssembly.TypesFromThisAssembly.CheckLoaded().Where(type => type.IsInheritedFrom(baseType));
 		}
 		public static IEnumerable<ICommonType> GetInheritanceCommonTypesFromThisAssembly(this ICommonAssembly commonAssembly, IHasType baseHasType) {
 			return commonAssembly.GetInheritanceCommonTypesFromThisAssembly(baseHasType.Type);
