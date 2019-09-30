@@ -10,6 +10,6 @@ namespace ApplicationPatcher.Core.Types {
 		TMonoCecil MonoCecil { get; }
 		TReflection Reflection { get; }
 
-		TCommonMember Load();
+		TCommonMember Load(int depth = 0);
 	}
 }

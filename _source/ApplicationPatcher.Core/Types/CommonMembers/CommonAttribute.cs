@@ -14,5 +14,8 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 
 		protected override void LoadInternal() {
 		}
+
+		protected override void LoadInDepth(int depth) {
+		}
 	}
 }

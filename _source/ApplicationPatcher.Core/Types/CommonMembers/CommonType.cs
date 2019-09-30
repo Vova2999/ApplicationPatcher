@@ -62,5 +62,13 @@ namespace ApplicationPatcher.Core.Types.CommonMembers {
 			typeTypeToAttributes = Attributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray());
 			typeFullNameToAttributes = Attributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray());
 		}
+
+		protected override void LoadInDepth(int depth) {
+			Fields.ForEach(field => field.Load(depth));
+			Methods.ForEach(method => method.Load(depth));
+			Properties.ForEach(property => property.Load(depth));
+			Attributes.ForEach(attribute => attribute.Load(depth));
+			Constructors.ForEach(constructor => constructor.Load(depth));
+		}
 	}
 }

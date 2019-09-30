@@ -33,7 +33,7 @@ namespace ApplicationPatcher.Tests.Unit.Patchers.OnLoadedAssembly {
 
 		[TearDown]
 		public void CheckOtherTypes() {
-			otherTypes.Select(FakeCommonTypeBuilder.GetMockFor).ForEach(otherTypeMock => otherTypeMock.Verify(mock => mock.Load(), Times.Never));
+			otherTypes.Select(FakeCommonTypeBuilder.GetMockFor).ForEach(otherTypeMock => otherTypeMock.Verify(mock => mock.Load(It.IsAny<int>()), Times.Never));
 		}
 
 		[Test]

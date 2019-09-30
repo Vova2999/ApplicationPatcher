@@ -38,7 +38,7 @@ namespace ApplicationPatcher.Tests {
 
 			commonAssemblyMock.Setup(assembly => assembly.Types).Returns(() => commonTypes.ToArray());
 			commonAssemblyMock.Setup(assembly => assembly.TypesFromThisAssembly).Returns(() => commonTypesFromThisAssembly.ToArray());
-			commonAssemblyMock.Setup(assembly => assembly.Load());
+			commonAssemblyMock.Setup(assembly => assembly.Load(It.IsAny<int>())).Returns(() => commonAssemblyMock.Object);
 
 			commonAssemblyMock.Setup(assembly => assembly.TypeTypeToTypes).Returns(() => commonTypes.GroupBy(type => type.Type).ToDictionary(group => group.Key, group => group.ToArray()));
 			commonAssemblyMock.Setup(assembly => assembly.TypeFullNameToTypes).Returns(() => commonTypes.GroupBy(type => type.FullName).ToDictionary(group => group.Key, group => group.ToArray()));

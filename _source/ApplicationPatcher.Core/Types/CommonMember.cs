@@ -22,18 +22,20 @@ namespace ApplicationPatcher.Core.Types {
 			values = new ConcurrentDictionary<string, object>();
 		}
 
-		public TCommonMember Load() {
-			var commonMember = (TCommonMember)(ICommonMember<TCommonMember, TMonoCecil, TReflection>)this;
+		public TCommonMember Load(int depth = 0) {
+			if (!isLoaded) {
+				LoadInternal();
+				isLoaded = true;
+			}
 
-			if (isLoaded)
-				return commonMember;
+			if (depth != 0)
+				LoadInDepth(depth - 1);
 
-			LoadInternal();
-			isLoaded = true;
-			return commonMember;
+			return (TCommonMember)(ICommonMember<TCommonMember, TMonoCecil, TReflection>)this;
 		}
 
 		protected abstract void LoadInternal();
+		protected abstract void LoadInDepth(int depth);
 
 		protected TValue GetOrCreate<TValue>(Func<TValue> value) {
 			return (TValue)values.GetOrAdd(new StackTrace().GetFrame(1).GetMethod().Name, _ => value());

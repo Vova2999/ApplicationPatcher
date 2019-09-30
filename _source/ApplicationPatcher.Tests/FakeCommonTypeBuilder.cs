@@ -168,7 +168,7 @@ namespace ApplicationPatcher.Tests {
 			commonType.Setup(type => type.Fields).Returns(() => commonFields);
 			commonType.Setup(type => type.Methods).Returns(() => commonMethods);
 			commonType.Setup(type => type.Properties).Returns(() => commonProperties);
-			commonType.Setup(type => type.Load()).Returns(() => commonType.Object);
+			commonType.Setup(type => type.Load(It.IsAny<int>())).Returns(() => commonType.Object);
 
 			commonType.Setup(type => type.FieldNameToFields).Returns(() => commonFields.GroupBy(field => field.Name).ToDictionary(group => group.Key, group => group.ToArray()));
 			commonType.Setup(type => type.MethodNameToMethods).Returns(() => commonMethods.GroupBy(method => method.Name).ToDictionary(group => group.Key, group => group.ToArray()));
@@ -207,7 +207,7 @@ namespace ApplicationPatcher.Tests {
 			commonAttribute.Setup(attribute => attribute.MonoCecil).Returns(() => monoCecilAttribute.Object);
 			commonAttribute.Setup(attribute => attribute.Reflection).Returns(() => fakeAttribute.AttributeInstance);
 			commonAttribute.Setup(attribute => attribute.Type).Returns(() => fakeAttribute.AttributeType);
-			commonAttribute.Setup(attribute => attribute.Load()).Returns(() => commonAttribute.Object);
+			commonAttribute.Setup(attribute => attribute.Load(It.IsAny<int>())).Returns(() => commonAttribute.Object);
 
 			return commonAttribute.Object;
 		}
@@ -241,7 +241,7 @@ namespace ApplicationPatcher.Tests {
 			commonConstructor.Setup(constructor => constructor.Attributes).Returns(() => commonAttributes);
 			commonConstructor.Setup(constructor => constructor.Parameters).Returns(() => commonParameters);
 			commonConstructor.Setup(constructor => constructor.ParameterTypes).Returns(() => commonParameters.Select(parameter => parameter.Type).ToArray());
-			commonConstructor.Setup(constructor => constructor.Load()).Returns(() => commonConstructor.Object);
+			commonConstructor.Setup(constructor => constructor.Load(It.IsAny<int>())).Returns(() => commonConstructor.Object);
 
 			commonConstructor.Setup(constructor => constructor.TypeTypeToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
 			commonConstructor.Setup(constructor => constructor.TypeFullNameToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
@@ -275,7 +275,7 @@ namespace ApplicationPatcher.Tests {
 			commonField.Setup(field => field.Reflection).Returns(() => reflectionField.Object);
 			commonField.Setup(field => field.Type).Returns(() => CreateReflectionType(fakeField.FieldType));
 			commonField.Setup(field => field.Attributes).Returns(() => commonAttributes);
-			commonField.Setup(field => field.Load()).Returns(() => commonField.Object);
+			commonField.Setup(field => field.Load(It.IsAny<int>())).Returns(() => commonField.Object);
 
 			commonField.Setup(field => field.TypeTypeToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
 			commonField.Setup(field => field.TypeFullNameToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
@@ -318,7 +318,7 @@ namespace ApplicationPatcher.Tests {
 			commonMethod.Setup(method => method.Parameters).Returns(() => commonParameters);
 			commonMethod.Setup(method => method.ReturnType).Returns(() => fakeMethod.ReturnType.Type);
 			commonMethod.Setup(method => method.ParameterTypes).Returns(() => commonParameters.Select(parameter => parameter.Type).ToArray());
-			commonMethod.Setup(method => method.Load()).Returns(() => commonMethod.Object);
+			commonMethod.Setup(method => method.Load(It.IsAny<int>())).Returns(() => commonMethod.Object);
 
 			commonMethod.Setup(method => method.TypeTypeToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
 			commonMethod.Setup(method => method.TypeFullNameToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
@@ -344,7 +344,7 @@ namespace ApplicationPatcher.Tests {
 			commonParameter.Setup(parameter => parameter.MonoCecil).Returns(() => monoCecilParameter.Object);
 			commonParameter.Setup(parameter => parameter.Reflection).Returns(() => reflectionParameter.Object);
 			commonParameter.Setup(parameter => parameter.Type).Returns(() => CreateReflectionType(fakeParameter.ParameterType));
-			commonParameter.Setup(parameter => parameter.Load()).Returns(() => commonParameter.Object);
+			commonParameter.Setup(parameter => parameter.Load(It.IsAny<int>())).Returns(() => commonParameter.Object);
 
 			return commonParameter.Object;
 		}
@@ -387,7 +387,7 @@ namespace ApplicationPatcher.Tests {
 			commonProperty.Setup(property => property.Attributes).Returns(() => commonAttributes);
 			commonProperty.Setup(property => property.GetMethod).Returns(() => propertyGetMethod);
 			commonProperty.Setup(property => property.SetMethod).Returns(() => propertySetMethod);
-			commonProperty.Setup(property => property.Load()).Returns(() => commonProperty.Object);
+			commonProperty.Setup(property => property.Load(It.IsAny<int>())).Returns(() => commonProperty.Object);
 
 			commonProperty.Setup(property => property.TypeTypeToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.Type).ToDictionary(group => group.Key, group => group.ToArray()));
 			commonProperty.Setup(property => property.TypeFullNameToAttributes).Returns(() => commonAttributes.GroupBy(attribute => attribute.FullName).ToDictionary(group => group.Key, group => group.ToArray()));
