@@ -8,6 +8,19 @@ using JetBrains.Annotations;
 namespace ApplicationPatcher.Core.Extensions {
 	[PublicAPI]
 	public static class HasAttributesExtensions {
+		public static IEnumerable<TAttribute> GetCastedAttributes<TAttribute>(this IHasAttributes hasAttributes) where TAttribute : Attribute {
+			return hasAttributes.GetAttributes<TAttribute>().Select(attribute => (TAttribute)attribute.Reflection);
+		}
+		public static bool TryGetCastedAttribute<TAttribute>(this IHasAttributes hasAttributes, out TAttribute foundAttribute) where TAttribute : Attribute {
+			return (foundAttribute = hasAttributes.GetAttribute<TAttribute>()?.Reflection as TAttribute) != null;
+		}
+		public static TAttribute GetCastedAttribute<TAttribute>(this IHasAttributes hasAttributes, bool throwExceptionIfNotFound = false) where TAttribute : Attribute {
+			return hasAttributes.GetAttribute<TAttribute>(throwExceptionIfNotFound)?.Reflection as TAttribute;
+		}
+		public static Attribute GetCastedAttribute(this IHasAttributes hasAttributes, Type attributeType, bool throwExceptionIfNotFound = false) {
+			return hasAttributes.GetAttribute(attributeType, throwExceptionIfNotFound)?.Reflection;
+		}
+
 		public static bool TryGetAttribute<TAttribute>(this IHasAttributes hasAttributes, out ICommonAttribute foundCommonAttribute) where TAttribute : Attribute {
 			return (foundCommonAttribute = hasAttributes.GetAttribute<TAttribute>()) != null;
 		}
