@@ -8,7 +8,7 @@ using ApplicationPatcher.Core.Types.CommonInterfaces;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.CommonMembers {
-	public class CommonMethod : CommonMember<ICommonMethod, MethodDefinition, MethodInfo>, ICommonMethod {
+	internal class CommonMethod : CommonMember<ICommonMethod, MethodDefinition, MethodInfo>, ICommonMethod {
 		public override string Name => GetOrCreate(() => MonoCecil.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 

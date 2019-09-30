@@ -3,7 +3,7 @@ using ApplicationPatcher.Core.Types.CommonInterfaces;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.CommonMembers {
-	public class CommonAttribute : CommonMember<ICommonAttribute, CustomAttribute, Attribute>, ICommonAttribute {
+	internal class CommonAttribute : CommonMember<ICommonAttribute, CustomAttribute, Attribute>, ICommonAttribute {
 		public override string Name => GetOrCreate(() => MonoCecil.AttributeType.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.AttributeType.FullName);
 

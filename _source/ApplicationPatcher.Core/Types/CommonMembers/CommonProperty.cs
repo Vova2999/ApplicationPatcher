@@ -8,7 +8,7 @@ using ApplicationPatcher.Core.Types.CommonInterfaces;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.CommonMembers {
-	public class CommonProperty : CommonMember<ICommonProperty, PropertyDefinition, PropertyInfo>, ICommonProperty {
+	internal class CommonProperty : CommonMember<ICommonProperty, PropertyDefinition, PropertyInfo>, ICommonProperty {
 		public override string Name => GetOrCreate(() => MonoCecil.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 

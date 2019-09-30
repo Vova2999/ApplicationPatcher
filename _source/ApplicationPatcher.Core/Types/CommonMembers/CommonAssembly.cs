@@ -10,7 +10,7 @@ using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.CommonMembers {
 	[PublicAPI]
-	public class CommonAssembly : CommonMember<ICommonAssembly, AssemblyDefinition, Assembly>, ICommonAssembly {
+	internal class CommonAssembly : CommonMember<ICommonAssembly, AssemblyDefinition, Assembly>, ICommonAssembly {
 		public override string Name => GetOrCreate(() => MonoCecil.Name.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 

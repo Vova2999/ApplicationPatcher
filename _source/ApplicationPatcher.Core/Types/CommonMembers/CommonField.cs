@@ -8,7 +8,7 @@ using ApplicationPatcher.Core.Types.CommonInterfaces;
 using Mono.Cecil;
 
 namespace ApplicationPatcher.Core.Types.CommonMembers {
-	public class CommonField : CommonMember<ICommonField, FieldDefinition, FieldInfo>, ICommonField {
+	internal class CommonField : CommonMember<ICommonField, FieldDefinition, FieldInfo>, ICommonField {
 		public override string Name => GetOrCreate(() => MonoCecil.Name);
 		public override string FullName => GetOrCreate(() => MonoCecil.FullName);
 
